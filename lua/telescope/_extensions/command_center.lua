@@ -12,35 +12,57 @@ local actions = require("telescope.actions")
 local action_state = require("telescope.actions.state")
 local entry_display = require("telescope.pickers.entry_display")
 local conf = require("telescope.config").values
+-- local defaulter = require('telescope.utils').make_default_callable
 
+local command_center = require("command_center")
+local opts
 
-local items
-
-local function setup(passed_items)
-  items = passed_items or {}
+local function setup(passed_opts)
+  opts = passed_opts or {}
 end
 
-local function search(opts)
-  opts = opts or {}
+
+local function run(opts)
+  opts = themes.get_dropdown(opts)
+  -- opts = opts or {}
   pickers.new(opts, {
     prompt_title = "Command Center",
+
     finder = finders.new_table({
-      results = items
-    })
+      results = command_center.items,
+      entry_maker = function(entry)
+        return {
+          value = entry,
+          display = entry.description,
+          ordinal = entry.description
+        }
+      end,
+    }),
+
+    sorter = conf.generic_sorter(opts),
+
+    attach_mappings = function(prompt_bufnr, map)
+      actions.select_default:replace(function()
+        actions.close(prompt_bufnr)
+        local selection = action_state.get_selected_entry()
+        -- print(vim.inspect(selection))
+        vim.api.nvim_exec(selection.value.command, true)
+      end)
+      return true
+    end,
+
+    -- previewer = defaulter(function(opts)
+    --   get_command = function(entry)
+    --     return {"echo", "Hello World"}
+    --   end
+    -- end)
   }):find()
-end
-
-
-local function run()
-  print("COMMAND CENTER")
-  search(themes.get_dropdown())
-  -- categories(require("telescope.themes").vscode({}))
 end
 
 return telescope.register_extension({
   setup = setup,
   exports = {
-    -- Default when to argument is given, i.e. :Telescope command_palette
+    -- Default when to argument is given, i.e. :Telescope command_center
     command_center = run
   },
 })
