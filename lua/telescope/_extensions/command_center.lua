@@ -29,6 +29,7 @@ local user_opts = {
     component.COMMAND,
   },
   seperator = " ",
+  auto_replace_desc_with_cmd = true,
 }
 
 
@@ -57,7 +58,8 @@ function themes.command_center(opts)
       end,
 
       height = function(_, _, max_lines)
-        return math.min(max_lines, 20)
+        -- Max 20 lines, smaller if have less than 20 entries in total
+        return math.min(max_lines, opts.num_items + 4, 20)
       end,
     },
 
@@ -91,8 +93,15 @@ local function run(opts)
     local items = {}
 
     for _, v in ipairs(opts.components) do
-      table.insert(display, entry.value[v])
-      table.insert(items, { width = max_length[v] } )
+
+      if opts.auto_replace_desc_with_cmd and v == component.DESCRIPTION then
+        table.insert(display, entry.value[component.COMMAND])
+        table.insert(items, { width = math.max(max_length[v], max_length[component.COMMAND]) } )
+      else
+        table.insert(display, entry.value[v])
+        table.insert(items, { width = max_length[v] } )
+      end
+
     end
 
     -- Set the columns in telecope
@@ -105,7 +114,8 @@ local function run(opts)
   end
 
   -- Insert the calculated length constants
-  opts.max_width = utils.get_max_width(user_opts.components, max_length, user_opts.seperator)
+  opts.max_width = utils.get_max_width(user_opts, max_length)
+  opts.num_items = #M.items
   opts = themes.command_center(opts)
 
   -- opts = opts or {}
@@ -137,8 +147,7 @@ local function run(opts)
       actions.select_default:replace(function()
         actions.close(prompt_bufnr)
         local selection = action_state.get_selected_entry()
-        -- print(vim.inspect(selection))
-        vim.api.nvim_exec(selection.value.command, true)
+        vim.api.nvim_exec(selection.value[component.COMMAND], true)
       end)
       return true
     end,

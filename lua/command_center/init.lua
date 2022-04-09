@@ -5,14 +5,14 @@ local utils = require("command_center.utils")
 local constants = require("command_center.constants")
 local component = constants.component
 local max_length = constants.max_length
-local add_mode = constants.add_mode
+local add_mode = constants.mode
 
 M.items = {}
 
 M.add = function(passed_items, mode)
 
   -- Add and register keybindings by defualt
-  mode = mode or constants.add_mode.ADD_AND_REGISTER
+  mode = mode or constants.mode.ADD_AND_REGISTER
 
   -- Default empty array
   passed_items = passed_items or {}
@@ -25,8 +25,8 @@ M.add = function(passed_items, mode)
       -- Override mode if specified
       mode = value.mode or mode
 
-      -- Replace descirption with command if not exit
-      value.description = value.description or value.command
+      -- Making sure description is not nil
+      value.description = value.description or ""
 
       -- Properly format keybindings for further process
       value.keybindings = utils.format_keybindings(value.keybindings)
@@ -69,5 +69,9 @@ M.add = function(passed_items, mode)
 
 end
 
+-- Add some constants to M
+-- to ease the customization of command center
+M.mode = constants.mode
+M.component = constants.component
 
 return M

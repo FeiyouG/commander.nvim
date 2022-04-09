@@ -7,7 +7,7 @@ constants.component = {
   KEYBINDINGS = 3,
 }
 
-constants.add_mode = {
+constants.mode = {
   ADD_ONLY = 1,
   REGISTER_ONLY = 2,
   ADD_AND_REGISTER = 3,

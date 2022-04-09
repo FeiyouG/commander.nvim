@@ -46,7 +46,7 @@ utils.get_keybindings_string = function(keybindings)
         res = res .. "," .. value[2]
       else
         mode = value[1]
-        res = res .. "; " .. mode .. "|" .. value[2]
+        res = res .. " " .. mode .. "|" .. value[2]
       end
     end
   end
@@ -56,24 +56,30 @@ end
 -- Get the max width of the result display
 -- takes into consideration of the length of each component
 -- and what component to display
--- @param components  An array specifying what component to display and in what order
+-- @param user_opts   user settings, must contains the following entries:
+--                    component:  an array specifying what component to display and in what order
+--                    seperateor: the seperator used, default to " "
 -- @param length      a table contains the max length for each component
--- @param seperator   the seperator used, default to " "
-utils.get_max_width = function(components, length, seperator)
-  components = components or {
+utils.get_max_width = function(user_opts, length)
+  user_opts.components = user_opts.components or {
     constants.component.DESCRIPTION,
     constants.component.KEYBINDINGS,
     constants.component.COMMAND,
   }
   length = length or constants.max_length
-  seperator = seperator or " "
+  user_opts.seperator = user_opts.seperator or " "
 
   local max_width = 0
-  for i, component in ipairs(components) do
-    max_width = max_width + length[component]
+  for i, component in ipairs(user_opts.components) do
+
+    if user_opts.auto_replace_desc_with_cmd and component == constants.component.DESCRIPTION then
+      max_width = max_width + math.max(length[component], length[constants.component.COMMAND])
+    else
+      max_width = max_width + length[component]
+    end
 
     if i > 0 then
-      max_width = max_width + #seperator
+      max_width = max_width + #user_opts.seperator
     end
 
   end
