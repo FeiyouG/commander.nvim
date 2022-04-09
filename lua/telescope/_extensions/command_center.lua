@@ -14,26 +14,112 @@ local entry_display = require("telescope.pickers.entry_display")
 local conf = require("telescope.config").values
 -- local defaulter = require('telescope.utils').make_default_callable
 
-local command_center = require("command_center")
-local opts
+local M = require("command_center")
+local utils = require("command_center.utils")
 
-local function setup(passed_opts)
-  opts = passed_opts or {}
+local constants = require("command_center.constants")
+local argument = constants.argument
+local max_length = constants.max_length
+
+-- Initial opts to defualt values
+local user_opts = {
+  arguments = {
+    argument.DESCRIPTION,
+    argument.KEYMAPS,
+    argument.COMMAND,
+  },
+  seperator = " ",
+}
+
+
+-- Override default opts by user
+local function setup(opts)
+  opts = opts or {}
+  utils.merge_tables(user_opts, opts)
+end
+
+-- Custom theme for command center
+function themes.command_center(opts)
+  opts = opts or {}
+
+  local theme_opts = {
+    theme = "command_center",
+    results_title = false,
+    sorting_strategy = "ascending",
+    layout_strategy = "center",
+    layout_config = {
+      preview_cutoff = 1, -- Preview should always show (unless previewer = false)
+      anchor = "N",
+      prompt_position = "top",
+
+      width = function(_, max_columns, _)
+        return math.min(max_columns, opts.max_width or 99)
+      end,
+
+      height = function(_, _, max_lines)
+        return math.min(max_lines, 20)
+      end,
+    },
+
+    border = true,
+    borderchars = {
+      prompt = { "─", "│", " ", "│", "╭", "╮", "│", "│" },
+      results = { "─", "│", "─", "│", "├", "┤", "╯", "╰" },
+    },
+  }
+
+  if opts.layout_config and opts.layout_config.prompt_position == "bottom" then
+    theme_opts.borderchars = {
+      prompt = { "─", "│", "─", "│", "╭", "╮", "╯", "╰" },
+      results = { "─", "│", "─", "│", "╭", "╮", "┤", "├" },
+    }
+  end
+
+  return vim.tbl_deep_extend("force", theme_opts, opts)
 end
 
 
+
 local function run(opts)
-  opts = themes.get_dropdown(opts)
+  opts = opts or {}
+  utils.merge_tables(opts, user_opts)
+
+  -- P(M.items)
+
+  -- Set three columns in telecope
+  local displayer = entry_display.create({
+    separator = user_opts.seperator,
+    items = {
+      { width = max_length[argument.DESCRIPTION] },
+      { width = max_length[argument.KEYMAPS] },
+      { remaining = true }
+    },
+  })
+
+
+  local make_display = function(entry)
+    P(entry)
+    return displayer({
+      entry.value.description,
+      entry.value.keymaps_string,
+      entry.value.command,
+    })
+  end
+
+  -- Insert the calculated length constants
+  opts.max_width = utils.get_max_width(user_opts.arguments, max_length, user_opts.seperator)
+  opts = themes.command_center(opts)
+
   -- opts = opts or {}
   pickers.new(opts, {
     prompt_title = "Command Center",
 
     finder = finders.new_table({
-      results = command_center.items,
+      results = M.items,
       entry_maker = function(entry)
         return {
           value = entry,
-          display = entry.description,
+          display = make_display,
           ordinal = entry.description
         }
       end,
@@ -51,11 +137,6 @@ local function run(opts)
       return true
     end,
 
-    -- previewer = defaulter(function(opts)
-    --   get_command = function(entry)
-    --     return {"echo", "Hello World"}
-    --   end
-    -- end)
   }):find()
 end
 
