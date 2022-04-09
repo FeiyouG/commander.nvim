@@ -18,15 +18,15 @@ local M = require("command_center")
 local utils = require("command_center.utils")
 
 local constants = require("command_center.constants")
-local argument = constants.argument
+local component = constants.component
 local max_length = constants.max_length
 
 -- Initial opts to defualt values
 local user_opts = {
-  arguments = {
-    argument.DESCRIPTION,
-    argument.KEYMAPS,
-    argument.COMMAND,
+  components = {
+    component.DESCRIPTION,
+    component.KEYMAPS,
+    component.COMMAND,
   },
   seperator = " ",
 }
@@ -87,11 +87,11 @@ local function run(opts)
   -- Only display what the user specifies
   -- And in the right order
   local make_display = function(entry)
-    local to_display = {}
+    local display = {}
     local items = {}
 
-    for _, v in ipairs(opts.arguments) do
-      table.insert(to_display, entry.value[v])
+    for _, v in ipairs(opts.components) do
+      table.insert(display, entry.value[v])
       table.insert(items, { width = max_length[v] } )
     end
 
@@ -101,12 +101,11 @@ local function run(opts)
       items = items,
     })
 
-    return displayer(to_display)
+    return displayer(display)
   end
 
-
   -- Insert the calculated length constants
-  opts.max_width = utils.get_max_width(user_opts.arguments, max_length, user_opts.seperator)
+  opts.max_width = utils.get_max_width(user_opts.component, max_length, user_opts.seperator)
   opts = themes.command_center(opts)
 
   -- opts = opts or {}
@@ -116,10 +115,18 @@ local function run(opts)
     finder = finders.new_table({
       results = M.items,
       entry_maker = function(entry)
+
+        -- Concatenate components for ordinal
+        -- For better sorting
+        local ordinal = ""
+        for _, v in ipairs(opts.components) do
+          ordinal = ordinal .. entry[v]
+        end
+
         return {
           value = entry,
           display = make_display,
-          ordinal = entry[1]
+          ordinal = ordinal
         }
       end,
     }),
@@ -142,7 +149,6 @@ end
 return telescope.register_extension({
   setup = setup,
   exports = {
-    -- Default when to argument is given, i.e. :Telescope command_center
     command_center = run
   },
 })

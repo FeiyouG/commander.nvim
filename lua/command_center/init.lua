@@ -3,7 +3,7 @@ local M = {}
 local utils = require("command_center.utils")
 
 local constants = require("command_center.constants")
-local argument = constants.argument
+local component = constants.component
 local max_length = constants.max_length
 
 M.items = {}
@@ -22,8 +22,8 @@ M.add = function(passed_items, mode)
     if value.command then
 
       -- Update maximum description length
-      max_length[argument.COMMAND] =
-        math.max(max_length[argument.COMMAND], #value.command)
+      max_length[component.COMMAND] =
+        math.max(max_length[component.COMMAND], #value.command)
 
       -- If has keymaps specified
       if value.keymaps then
@@ -37,25 +37,24 @@ M.add = function(passed_items, mode)
         -- Get the string representation of the keymaps for display
         -- And Update maximum keymaps length
         value.keymaps_string = utils.get_keymaps_string(value.keymaps)
-        max_length[argument.KEYMAPS] =
-            math.max(max_length[argument.KEYMAPS], #value.keymaps_string)
+        max_length[component.KEYMAPS] =
+            math.max(max_length[component.KEYMAPS], #value.keymaps_string)
       end
 
       -- Replace descirption with command if not exit
       -- And update maximum description length
       value.description = value.description or value.command
-      max_length[argument.DESCRIPTION] =
-          math.max(max_length[argument.DESCRIPTION], #value.description)
+      max_length[component.DESCRIPTION] =
+          math.max(max_length[component.DESCRIPTION], #value.description)
 
 
       -- Insert the vlaue into M
-      -- The same order as it is defined in constans.argument
+      -- The same order as it is defined in constans.compnent
       table.insert(M.items, {
         value.command,
         value.description,
         value.keymaps_string or "",
       })
-      -- table.insert(M.items, value)
     end
 
   end

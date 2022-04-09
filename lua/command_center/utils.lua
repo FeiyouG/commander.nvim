@@ -54,23 +54,23 @@ utils.get_keymaps_string = function(keymaps)
 end
 
 -- Get the max width of the result display
--- takes into consideration of the length of each arguments
--- and what arguments to display
--- @param arguments   An array specifying what arugmetns to display and in what order
--- @param length      a table contains the max length for each argument types
+-- takes into consideration of the length of each component
+-- and what component to display
+-- @param components  An array specifying what component to display and in what order
+-- @param length      a table contains the max length for each component
 -- @param seperator   the seperator used, default to " "
-utils.get_max_width = function(arguments, length, seperator)
-  arguments = arguments or {
-    constants.argument.DESCRIPTION,
-    constants.argument.KEYMAPS,
-    constants.argument.COMMAND,
+utils.get_max_width = function(components, length, seperator)
+  components = components or {
+    constants.component.DESCRIPTION,
+    constants.component.KEYMAPS,
+    constants.component.COMMAND,
   }
   length = length or constants.max_length
   seperator = seperator or " "
 
   local max_width = 0
-  for i, argument in ipairs(arguments) do
-    max_width = max_width + length[argument]
+  for i, component in ipairs(components) do
+    max_width = max_width + length[component]
 
     if i > 0 then
       max_width = max_width + #seperator
