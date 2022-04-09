@@ -2,18 +2,19 @@ local constants = require("command_center.constants")
 
 local utils = {}
 
--- Convert keymaps to a 2D array if it is passed in as an array of single keymap
+-- Convert keybings to a 2D array
+-- if it is passed in as an array of single keiybindings
 -- then sort the array based on mode
-utils.format_keymap = function(keymaps)
-  if #keymaps >=2 and #keymaps <= 3 and type(keymaps[1]) == "string" then
-    keymaps = { keymaps }
+utils.format_keybindings = function(keybindings)
+  keybindings = keybindings or {}
+
+  if #keybindings >=2 and #keybindings <= 3 and type(keybindings[1]) == "string" then
+    keybindings = { keybindings }
   end
 
   local res = {}
-  for _, value in ipairs(keymaps or {}) do
-    if #value < 2 or type(value[1]) ~= "string" or type(value[2]) ~= "string" then
-      print("Bad Keymaps")
-    else
+  for _, value in ipairs(keybindings or {}) do
+    if #value >= 2 and type(value[1]) == "string" and type(value[2]) == "string" then
       table.insert(res, value)
     end
   end
@@ -22,22 +23,21 @@ utils.format_keymap = function(keymaps)
   return res
 end
 
--- Set the keymaps if they are valid
--- Assumes:
----- keymaps are properly formatte (by calling format_keymap)
-utils.set_keymap = function(keymaps, command)
-  for _, value in ipairs(keymaps or {}) do
+-- Register the keybindings if they are valid
+-- @param keybindings   properly formatted keybindings (by called format_keybindings)
+-- @param command       the command the the keybindings map to
+utils.register_keybindings = function(keybindings, command)
+  for _, value in ipairs(keybindings or {}) do
     vim.api.nvim_set_keymap(value[1], value[2], "<cmd>" .. command .. "<cr>", value[3] or {})
   end
 end
 
--- Generate the string representation of keymaps
--- Assumes:
----- keymaps are properly formatte (by calling format_keymap)
-utils.get_keymaps_string = function(keymaps)
+-- Generate the string representation of keybindings
+-- @param keybindings   properly formatted keybindings (by called format_keybindings)
+utils.get_keybindings_string = function(keybindings)
   local res = ""
   local mode
-  for i, value in ipairs(keymaps or {}) do
+  for i, value in ipairs(keybindings or {}) do
     if i == 1 then
       mode = value[1]
       res = mode .. "|" .. value[2]
@@ -62,7 +62,7 @@ end
 utils.get_max_width = function(components, length, seperator)
   components = components or {
     constants.component.DESCRIPTION,
-    constants.component.KEYMAPS,
+    constants.component.KEYBINDINGS,
     constants.component.COMMAND,
   }
   length = length or constants.max_length

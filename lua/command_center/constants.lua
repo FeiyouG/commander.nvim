@@ -4,7 +4,7 @@ local constants = {}
 constants.component = {
   COMMAND = 1,
   DESCRIPTION = 2,
-  KEYMAPS = 3,
+  KEYBINDINGS = 3,
 }
 
 constants.add_mode = {

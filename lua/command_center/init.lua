@@ -5,12 +5,13 @@ local utils = require("command_center.utils")
 local constants = require("command_center.constants")
 local component = constants.component
 local max_length = constants.max_length
+local add_mode = constants.add_mode
 
 M.items = {}
 
 M.add = function(passed_items, mode)
 
-  -- Add and register keymaps by defualt
+  -- Add and register keybindings by defualt
   mode = mode or constants.add_mode.ADD_AND_REGISTER
 
   -- Default empty array
@@ -21,43 +22,51 @@ M.add = function(passed_items, mode)
     -- Ignore entries that do not have comands
     if value.command then
 
-      -- Update maximum description length
-      max_length[component.COMMAND] =
-        math.max(max_length[component.COMMAND], #value.command)
-
-      -- If has keymaps specified
-      if value.keymaps then
-        value.keymaps = utils.format_keymap(value.keymaps)
-
-        -- Set the keymap if requested by the user
-        if (mode == constants.add_mode.REGISTER_ONLY or mode == constants.add_mode.ADD_AND_REGISTER) then
-          utils.set_keymap(value.keymaps, value.command)
-        end
-
-        -- Get the string representation of the keymaps for display
-        -- And Update maximum keymaps length
-        value.keymaps_string = utils.get_keymaps_string(value.keymaps)
-        max_length[component.KEYMAPS] =
-            math.max(max_length[component.KEYMAPS], #value.keymaps_string)
-      end
+      -- Override mode if specified
+      mode = value.mode or mode
 
       -- Replace descirption with command if not exit
-      -- And update maximum description length
       value.description = value.description or value.command
-      max_length[component.DESCRIPTION] =
-          math.max(max_length[component.DESCRIPTION], #value.description)
 
+      -- Properly format keybindings for further process
+      value.keybindings = utils.format_keybindings(value.keybindings)
 
-      -- Insert the vlaue into M
-      -- The same order as it is defined in constans.compnent
-      table.insert(M.items, {
-        value.command,
-        value.description,
-        value.keymaps_string or "",
-      })
+      -- Register the keybindings
+      -- Only if mode is not ADD_ONLY
+      if mode ~= add_mode.ADD_ONLY then
+        utils.register_keybindings(value.keybindings, value.command)
+      end
+
+      -- Update maximum description length
+      -- And insert value to M.items
+      -- Only if the command is going to be added to command_center
+      if mode ~= add_mode.REGISTER_ONLY then
+
+        max_length[component.COMMAND] =
+          math.max(max_length[component.COMMAND], #value.command)
+
+        max_length[component.DESCRIPTION] =
+            math.max(max_length[component.DESCRIPTION], #value.description)
+
+        -- Get the string representation of the keybindings for display
+        -- And Update maximum keybinding length
+        value.keybinding_str = utils.get_keybindings_string(value.keybindings)
+        max_length[component.KEYBINDINGS] =
+            math.max(max_length[component.KEYBINDINGS], #value.keybinding_str)
+
+        -- Insert the vlaue into M
+        -- The same order as it is defined in constans.compnent
+        table.insert(M.items, {
+          value.command,
+          value.description,
+          value.keybinding_str or "",
+        })
+      end
+
     end
 
   end
+
 end
 
 

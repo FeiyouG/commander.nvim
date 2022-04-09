@@ -25,7 +25,7 @@ local max_length = constants.max_length
 local user_opts = {
   components = {
     component.DESCRIPTION,
-    component.KEYMAPS,
+    component.KEYBINDINGS,
     component.COMMAND,
   },
   seperator = " ",
@@ -105,7 +105,7 @@ local function run(opts)
   end
 
   -- Insert the calculated length constants
-  opts.max_width = utils.get_max_width(user_opts.component, max_length, user_opts.seperator)
+  opts.max_width = utils.get_max_width(user_opts.components, max_length, user_opts.seperator)
   opts = themes.command_center(opts)
 
   -- opts = opts or {}
