@@ -21,7 +21,6 @@ M.add = function(passed_items, mode)
     -- Ignore entries that do not have comands
     if value.command then
 
-
       -- Update maximum description length
       max_length[argument.COMMAND] =
         math.max(max_length[argument.COMMAND], #value.command)
@@ -49,21 +48,14 @@ M.add = function(passed_items, mode)
           math.max(max_length[argument.DESCRIPTION], #value.description)
 
 
-      -- Reformat value
-      local formatted_value = {
-        argument = {
-          value.command,
-          value.keymaps,
-          value.description
-        },
-        cached = {
-          keymaps_str = value.keymaps_string or ""
-        }
-      }
-
-      -- P(formatted_value)
       -- Insert the vlaue into M
-      table.insert(M.items, value)
+      -- The same order as it is defined in constans.argument
+      table.insert(M.items, {
+        value.command,
+        value.description,
+        value.keymaps_string or "",
+      })
+      -- table.insert(M.items, value)
     end
 
   end

@@ -84,27 +84,26 @@ local function run(opts)
   opts = opts or {}
   utils.merge_tables(opts, user_opts)
 
-  -- P(M.items)
-
-  -- Set three columns in telecope
-  local displayer = entry_display.create({
-    separator = user_opts.seperator,
-    items = {
-      { width = max_length[argument.DESCRIPTION] },
-      { width = max_length[argument.KEYMAPS] },
-      { remaining = true }
-    },
-  })
-
-
+  -- Only display what the user specifies
+  -- And in the right order
   local make_display = function(entry)
-    P(entry)
-    return displayer({
-      entry.value.description,
-      entry.value.keymaps_string,
-      entry.value.command,
+    local to_display = {}
+    local items = {}
+
+    for _, v in ipairs(opts.arguments) do
+      table.insert(to_display, entry.value[v])
+      table.insert(items, { width = max_length[v] } )
+    end
+
+    -- Set the columns in telecope
+    local displayer = entry_display.create({
+      separator = user_opts.seperator,
+      items = items,
     })
+
+    return displayer(to_display)
   end
+
 
   -- Insert the calculated length constants
   opts.max_width = utils.get_max_width(user_opts.arguments, max_length, user_opts.seperator)
@@ -120,7 +119,7 @@ local function run(opts)
         return {
           value = entry,
           display = make_display,
-          ordinal = entry.description
+          ordinal = entry[1]
         }
       end,
     }),

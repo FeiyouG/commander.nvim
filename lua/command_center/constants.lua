@@ -14,6 +14,6 @@ constants.add_mode = {
 }
 
 -- Default (minimum) length for each argyment type
-constants.max_length = { 20, 8, 15,}
+constants.max_length = { 15, 20, 8}
 
 return constants
