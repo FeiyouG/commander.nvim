@@ -3,7 +3,6 @@
 An esay-to-config command palette
 for neovim written in lua.
 
-## Table of contents
 <!-- TOC GFM -->
 
 - [Demo](#demo)
@@ -21,6 +20,8 @@ for neovim written in lua.
 <!-- /TOC -->
 
 ## Demo
+
+![demo](https://github.com/gfeiyou/command-center.nvim/blob/assets/demo.gif)
 
 ## Installation
 
@@ -266,7 +267,7 @@ telescope.setup {
       components = {
         command_center.component.DESCRIPTION,
         command_center.component.KEYBINDINGS,
-        -- cc.component.COMMAND,
+        -- command_center.component.COMMAND,
       },
       auto_replace_desc_with_cmd = false,
     }

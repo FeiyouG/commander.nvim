@@ -24,9 +24,9 @@ local max_length = constants.max_length
 -- Initial opts to defualt values
 local user_opts = {
   components = {
+    component.COMMAND,
     component.DESCRIPTION,
     component.KEYBINDINGS,
-    component.COMMAND,
   },
   seperator = " ",
   auto_replace_desc_with_cmd = true,
@@ -54,7 +54,7 @@ function themes.command_center(opts)
       prompt_position = "top",
 
       width = function(_, max_columns, _)
-        return math.min(max_columns, opts.max_width or 99)
+        return math.min(max_columns, opts.max_width)
       end,
 
       height = function(_, _, max_lines)
