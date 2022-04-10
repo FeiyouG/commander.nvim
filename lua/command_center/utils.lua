@@ -73,7 +73,7 @@ utils.get_max_width = function(user_opts, length)
   for i, component in ipairs(user_opts.components) do
 
     if user_opts.auto_replace_desc_with_cmd and component == constants.component.DESCRIPTION then
-      max_width = max_width + math.max(length[component], length[constants.component.COMMAND])
+      max_width = max_width + length[constants.private_component.REPLACE_DESC_WITH_CMD]
     else
       max_width = max_width + length[component]
     end

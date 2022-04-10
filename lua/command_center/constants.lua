@@ -7,6 +7,10 @@ constants.component = {
   KEYBINDINGS = 3,
 }
 
+constants.private_component = {
+  REPLACE_DESC_WITH_CMD = 4
+}
+
 constants.mode = {
   ADD_ONLY = 1,
   REGISTER_ONLY = 2,
@@ -14,7 +18,7 @@ constants.mode = {
 }
 
 -- Default (minimum) length for each argyment type
--- In the order of constants.component
-constants.max_length = { 15, 20, 8}
+-- In the order of constants.component + if_replace_desc_with_cmd
+constants.max_length = { 8, 8, 8, 8}
 
 return constants

@@ -4,6 +4,7 @@ local utils = require("command_center.utils")
 
 local constants = require("command_center.constants")
 local component = constants.component
+local private_component = constants.private_component
 local max_length = constants.max_length
 local add_mode = constants.mode
 
@@ -20,7 +21,7 @@ M.add = function(passed_items, mode)
   for _, value in ipairs(passed_items) do
 
     -- Ignore entries that do not have comands
-    if value.command then
+    if value.command and value.command ~= "" then
 
       -- Override mode if specified
       mode = value.mode or mode
@@ -47,6 +48,16 @@ M.add = function(passed_items, mode)
 
         max_length[component.DESCRIPTION] =
             math.max(max_length[component.DESCRIPTION], #value.description)
+
+        -- This is used when user wants to replace desc with cmd
+        if (value.description == "") then
+          max_length[private_component.REPLACE_DESC_WITH_CMD] =
+            math.max(max_length[private_component.REPLACE_DESC_WITH_CMD], #value.command)
+        else
+          max_length[private_component.REPLACE_DESC_WITH_CMD] =
+            math.max(max_length[private_component.REPLACE_DESC_WITH_CMD], #value.description)
+
+        end
 
         -- Get the string representation of the keybindings for display
         -- And Update maximum keybinding length

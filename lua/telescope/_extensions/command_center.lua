@@ -93,16 +93,15 @@ local function run(opts)
     local items = {}
 
     for _, v in ipairs(opts.components) do
-
-      if opts.auto_replace_desc_with_cmd and v == component.DESCRIPTION then
+      if opts.auto_replace_desc_with_cmd and v == component.DESCRIPTION and entry.value[v] == nil then
         table.insert(display, entry.value[component.COMMAND])
         table.insert(items, { width = math.max(max_length[v], max_length[component.COMMAND]) } )
       else
         table.insert(display, entry.value[v])
         table.insert(items, { width = max_length[v] } )
       end
-
     end
+
 
     -- Set the columns in telecope
     local displayer = entry_display.create({
