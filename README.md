@@ -15,6 +15,7 @@ for neovim written in lua.
     - [`command_center.mode`](#command_centermode)
   - [configuration](#configuration)
     - [Example complete configuration](#example-complete-configuration)
+- [Todos](#todos)
 
 <!-- /TOC -->
 
@@ -273,3 +274,8 @@ telescope.setup {
 
 telescope.load_extension('command_center')
 ```
+
+## Todos
+
+- [ ] Allow some commands to show up only in specific file types
+- [ ] Add a `CATEGORY` component
