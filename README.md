@@ -3,11 +3,10 @@
 An esay-to-config command palette
 for neovim written in lua.
 
-## Demo
-
-
+## Table of contents
 <!-- TOC GFM -->
 
+- [Demo](#demo)
 - [Installation](#installation)
   - [vim-plug](#vim-plug)
   - [Packer](#packer)
@@ -17,8 +16,11 @@ for neovim written in lua.
   - [Add commands](#add-commands)
     - [`command_center.mode`](#command_centermode)
   - [configuration](#configuration)
+    - [Example complete configuration](#example-complete-configuration)
 
 <!-- /TOC -->
+
+## Demo
 
 ## Installation
 
@@ -57,22 +59,15 @@ require("telescope").load_extension('command_center')
 Then,
 you can open `command-center`
 by calling `:Telescope command_center`.
+I also use the following keybinding:
 
-I created the following keybindings for `command-center`:
 ```lua
--- Use <leader>fc to open command center
 vim.cmd "nnoremap <leader>fc <cmd>Telescope command_center<cr>"
-vim.cmd "vnoremap <leader>fc <cmd>Telescope command_center<cr>"
--- If ever hesitate when using telescope
--- (most of my Telescope commands start with <leader>f)
--- also open command center
-vim.cmd "nnoremap <leader>f <cmd>Telescope command_center<cr>"
-vim.cmd "vnoremap <leader>f <cmd>Telescope command_center<cr>"
 ```
 
 And, of course,
 the above keybindings can also be created
-in `command-center` way.
+in [`command-center` way](#example-complete-configuration).
 Keep reading the following sections.
 
 
@@ -103,7 +98,7 @@ command_center.add({
     command = "Telescope find_files",
     keybindings = { "n", "<leader>ff", noremap },
   }, {
-    -- If no keybindings specified, no keybindings will be created
+    -- If no keybindings specified, no keybindings will be displayed or registered
     description = "Find hidden files",
     command = "Telescope find_files hidden=true",
   }, {
@@ -115,7 +110,7 @@ command_center.add({
       {"n", "<leader>ssd", noremap},
     },
   }, {
-    -- ... and for different mode
+    -- ... and for different modes
     description = "Show function signaure (hover)",
     command = "lua vim.lsp.buf.hover()",
     keybindings = {
@@ -131,7 +126,8 @@ command_center.add({
 ```
 If you have above snippet in your config,
 `command-center` will create your specified keybindings automatically.
-And your `command-center` will like this:
+And calling `:Telescope command_center`
+will open a prompt like this.
 
 ![demo1](https://github.com/gfeiyou/command-center.nvim/blob/assets/demo_add.png)
 
@@ -144,9 +140,9 @@ to override this behavior.
 
 ```lua
 mode = {
-  COMMAND = 1,
-  DESCRIPTION = 2,
-  KEYBINDINGS = 3,
+  ADD_ONLY = 1,
+  REGISTER_ONLY = 2,
+  ADD_AND_REGISTER = 3,
 }
 ```
 
@@ -159,7 +155,7 @@ local silent_noremap = {noremap = true, silent = true}
 
 -- Set the keybindings for the comand while ignoring them in command-center
 -- This allows you to use command-center just as a convenient
--- and organized way to create keybinginds
+-- and organized way to manage your keybinginds
 command_center.add({
   {
     description = "Find files",
@@ -175,10 +171,12 @@ command_center.add({
 
 
 -- Only add the commands to command-center but not create the keybindings
+-- This is helpful if you already registered the keybindings somewhere else
+-- and want to avoid set the exact keybindings twice
 command_center.add({
   {
-    -- If keybindings are specified
-    -- then they will still show up in command-center but are not registered
+    -- If keybindings are specified,
+    -- then they will still show up in command-center but won't be registered
     description = "Find hidden files",
     command = "Telescope find_files hidden=true",
     keybindings = { "n", "<leader>f.f", noremap },
@@ -186,7 +184,7 @@ command_center.add({
     description = "Show document symbols",
     command = "Telescope lsp_document_symbols",
   }, {
-    -- The mode can be even further override within each item
+    -- The mode can be even further overridden within each item
     description = "LSP cdoe actions",
     command = "Telescope lsp_code_actions",
     keybinginds = { "n", "<leader>sa", noremap },
@@ -197,12 +195,11 @@ command_center.add({
 ```
 
 Above snippet will register the keybindings
-for *"Find files"* and *"LSP cdoe actions"*,
+for *"Find files"* and *"LSP code actions"*,
 but not for others.
-result in `command-center` look like this:
+The resulted `command-center` looks like this:
 
 ![demo2](https://github.com/gfeiyou/command-center.nvim/blob/assets/demo_mode.png)
-
 
 ### configuration
 
@@ -214,10 +211,10 @@ local command_center = require("command_center")
 
 telescope.setup {
   extensions = {
-    -- Override default settings go here ...
+    -- Below are default settings that can be overriden ...
 
     -- Change what to show on telescope prompt and in which order
-    -- Currently supporting the following three component
+    -- Currently support the following three components
     -- Components may repeat
     components = {
       command_center.component.DESCRIPTION,
@@ -228,8 +225,8 @@ telescope.setup {
     -- Change the seperator used to seperate each component
     seperator = " ",
 
-    -- When set to false, description compoenent wil be empty
-    -- if it is not set
+    -- When set to false,
+    -- The description compoenent will be empty if it is not specified
     auto_replace_desc_with_cmd = true,
   }
 }
@@ -237,3 +234,44 @@ telescope.setup {
 telescope.load_extension("command_center")
 ```
 
+#### Example complete configuration
+
+Below is my personal configuration for `command_center`.
+You can use it as a reference.
+
+```lua
+local telescope = require("telescope")
+local command_center = require("command_center")
+local noremap = { noremap = true }
+
+command_center.add({
+  {
+    description = "Open command_center",
+    command = "Telescope command_center",
+    keybindings = {
+      {"n", "<Leader>fc", noremap},
+      {"v", "<Leader>fc", noremap},
+
+      -- If ever hesitate when using telescope start with <leader>f,
+      -- also open command center
+      {"n", "<Leader>f", noremap},
+      {"v", "<Leader>f", noremap},
+    },
+  }
+}, command_center.mode.REGISTER_ONLY)
+
+telescope.setup {
+  extensions = {
+    command_center = {
+      components = {
+        command_center.component.DESCRIPTION,
+        command_center.component.KEYBINDINGS,
+        -- cc.component.COMMAND,
+      },
+      auto_replace_desc_with_cmd = false,
+    }
+  }
+}
+
+telescope.load_extension('command_center')
+```
