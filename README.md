@@ -9,7 +9,6 @@ for neovim written in lua.
 - [Installation](#installation)
   - [vim-plug](#vim-plug)
   - [Packer](#packer)
-- [Features](#features)
 - [Setup and configuration](#setup-and-configuration)
   - [Setup](#setup)
   - [Add commands](#add-commands)
@@ -38,11 +37,9 @@ Plug "gfeiyou/command-center.nvim"
 ### Packer
 
 ```lua
-Use { "gfeiyou/command-center.nvim", require = { "nvim-telescope/telescope.nvim" } }
+use { "nvim-telescope/telescope.nvim" }
+use { "gfeiyou/command-center.nvim" }
 ```
-
-## Features
-
 
 ## Setup and configuration
 
