@@ -1,7 +1,8 @@
 # command-center.nvim
 
-An esay-to-config command palette
-for neovim written in lua.
+Create and manage keybindings and commands
+in a more organized manner,
+and search them quickly through Telescope.
 
 <!-- TOC GFM -->
 
@@ -14,7 +15,7 @@ for neovim written in lua.
   - [Add commands](#add-commands)
     - [`command_center.mode`](#command_centermode)
   - [configuration](#configuration)
-    - [Example complete configuration](#example-complete-configuration)
+    - [Example configuration](#example-configuration)
 - [Todos](#todos)
 
 <!-- /TOC -->
@@ -233,7 +234,7 @@ telescope.setup {
 telescope.load_extension("command_center")
 ```
 
-#### Example complete configuration
+#### Example configuration
 
 Below is my personal configuration for `command_center`.
 You can use it as a reference.

@@ -24,9 +24,9 @@ local max_length = constants.max_length
 -- Initial opts to defualt values
 local user_opts = {
   components = {
-    component.COMMAND,
     component.DESCRIPTION,
     component.KEYBINDINGS,
+    component.COMMAND,
   },
   seperator = " ",
   auto_replace_desc_with_cmd = true,
