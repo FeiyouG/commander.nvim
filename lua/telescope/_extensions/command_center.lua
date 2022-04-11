@@ -98,7 +98,8 @@ local function run(opts)
       -- When user chooses to replace desc with cmd ...
       if opts.auto_replace_desc_with_cmd and v == component.DESCRIPTION then
 
-        if not entry.value[v] == "" then
+        if entry.value[v] == "" then
+          print("HERE")
           -- ... and desc is empty, replace desc with cmd
           table.insert(display, entry.value[component.COMMAND])
         else
