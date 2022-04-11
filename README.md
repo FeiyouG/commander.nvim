@@ -1,12 +1,16 @@
-# command-center.nvim
+# command_center.nvim
 
 Create and manage keybindings and commands
 in a more organized manner,
 and search them quickly through Telescope.
 
+## Demo
+
+![demo](https://github.com/gfeiyou/command-center.nvim/blob/assets/demo.gif)
+
+## Table of Contents
 <!-- TOC GFM -->
 
-- [Demo](#demo)
 - [Installation](#installation)
   - [vim-plug](#vim-plug)
   - [Packer](#packer)
@@ -16,13 +20,9 @@ and search them quickly through Telescope.
     - [`command_center.mode`](#command_centermode)
   - [configuration](#configuration)
     - [Example configuration](#example-configuration)
-- [Todos](#todos)
+- [To-dos](#to-dos)
 
 <!-- /TOC -->
-
-## Demo
-
-![demo](https://github.com/gfeiyou/command-center.nvim/blob/assets/demo.gif)
 
 ## Installation
 
@@ -67,7 +67,7 @@ vim.cmd "nnoremap <leader>fc <cmd>Telescope command_center<cr>"
 
 And, of course,
 the above keybindings can also be created
-in [`command-center` way](#example-complete-configuration).
+in [`command-center` way](#example-configuration).
 Keep reading the following sections.
 
 
@@ -188,13 +188,13 @@ command_center.add({
     description = "LSP cdoe actions",
     command = "Telescope lsp_code_actions",
     keybinginds = { "n", "<leader>sa", noremap },
-    mode = command_center.mode.ADD_AND_REGISTER
+    mode = command_center.mode.ADD_AND_REGISTER,
   }
 }, command_center.mode.ADD_ONLY)
 
 ```
 
-Above snippet will register the keybindings
+Above snippet will only register the keybindings
 for *"Find files"* and *"LSP code actions"*,
 but not for others.
 The resulted `command-center` looks like this:
@@ -276,7 +276,7 @@ telescope.setup {
 telescope.load_extension('command_center')
 ```
 
-## Todos
+## To-dos
 
 - [ ] Allow some commands to show up only in specific file types
 - [ ] Add a `CATEGORY` component
