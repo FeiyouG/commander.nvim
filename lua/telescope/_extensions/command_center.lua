@@ -19,6 +19,7 @@ local utils = require("command_center.utils")
 
 local constants = require("command_center.constants")
 local component = constants.component
+local private_component = constants.private_component
 local max_length = constants.max_length
 
 -- Initial opts to defualt values
@@ -49,7 +50,7 @@ function themes.command_center(opts)
     sorting_strategy = "ascending",
     layout_strategy = "center",
     layout_config = {
-      preview_cutoff = 1, -- Preview should always show (unless previewer = false)
+      preview_cutoff = 0,
       anchor = "N",
       prompt_position = "top",
 
@@ -90,23 +91,33 @@ local function run(opts)
   -- And in the right order
   local make_display = function(entry)
     local display = {}
-    local items = {}
+    local component_info = {}
 
     for _, v in ipairs(opts.components) do
-      if opts.auto_replace_desc_with_cmd and v == component.DESCRIPTION and entry.value[v] == nil then
-        table.insert(display, entry.value[component.COMMAND])
-        table.insert(items, { width = math.max(max_length[v], max_length[component.COMMAND]) } )
+
+      -- When user chooses to replace desc with cmd ...
+      if opts.auto_replace_desc_with_cmd and v == component.DESCRIPTION then
+
+        if not entry.value[v] == "" then
+          -- ... and desc is empty, replace desc with cmd
+          table.insert(display, entry.value[component.COMMAND])
+        else
+          -- .. and desc is not empty, use desc
+          table.insert(display, entry.value[v])
+        end
+
+        -- Update the legnth of desc componenet
+        table.insert(component_info, { width = max_length[private_component.REPLACE_DESC_WITH_CMD] })
       else
         table.insert(display, entry.value[v])
-        table.insert(items, { width = max_length[v] } )
+        table.insert(component_info, { width = max_length[v] } )
       end
     end
-
 
     -- Set the columns in telecope
     local displayer = entry_display.create({
       separator = user_opts.seperator,
-      items = items,
+      items = component_info,
     })
 
     return displayer(display)
