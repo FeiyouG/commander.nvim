@@ -39,8 +39,10 @@ Plug "gfeiyou/command-center.nvim"
 ### Packer
 
 ```lua
-use { "nvim-telescope/telescope.nvim" }
-use { "gfeiyou/command-center.nvim" }
+use {
+  "gfeiyou/command-center.nvim",
+  requires = { "nvim-telescope/telescope.nvim" }
+}
 ```
 
 ## Setup and configuration
