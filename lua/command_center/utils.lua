@@ -88,8 +88,16 @@ utils.get_max_width = function(user_opts, length)
 end
 
 -- Merge the key value pairs of table1 into table2
-utils.merge_tables = function(table1, table2)
-  for k,v in pairs(table2) do table1[k] = v end
+utils.merge_tables = function(t1, t2)
+  for k,v in pairs(t2) do t1[k] = v end
+end
+
+utils.get_values = function(t)
+  local keys = {}
+  for _, v in pairs(t) do
+    table.insert(keys, v)
+  end
+  return keys
 end
 
 return utils
