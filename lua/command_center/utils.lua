@@ -7,7 +7,7 @@ utils.command_drepcated_notified = false
 
 utils.warn_command_deprecated = function()
   if utils.command_drepcated_notified then return end
-  local message = "command is deprecated in favor of cmd. See README.md for details."
+  local message = "'command' is deprecated in favor of 'cmd'. See README.md for details."
   utils.warn(message)
   utils.command_drepcated_notified = true
 end
@@ -29,7 +29,7 @@ end
 utils.format_keybindings = function(keybindings)
   keybindings = keybindings or {}
 
-  if #keybindings >=2 and #keybindings <= 3 and type(keybindings[1]) == "string" then
+  if #keybindings >= 2 and #keybindings <= 3 and type(keybindings[1]) == "string" then
     keybindings = { keybindings }
   end
 
@@ -49,7 +49,11 @@ end
 -- @param command       the command the the keybindings map to
 utils.register_keybindings = function(keybindings, command)
   for _, value in ipairs(keybindings or {}) do
-    vim.api.nvim_set_keymap(value[1], value[2], command, value[3] or {})
+    if type(command) == "function" then
+      vim.api.nvim_set_keymap(value[1], value[2], '', {callback = command})
+    else
+      vim.api.nvim_set_keymap(value[1], value[2], command, value[3] or {})
+    end
   end
 end
 
@@ -94,7 +98,7 @@ utils.get_max_width = function(user_opts, length)
   for i, component in ipairs(user_opts.components) do
 
     if user_opts.auto_replace_desc_with_cmd and component == constants.component.DESCRIPTION then
-      max_width = max_width + length[constants.private_component.REPLACE_DESC_WITH_CMD]
+      max_width = max_width + length[constants.component.REPLACE_DESC_WITH_CMD]
     else
       max_width = max_width + length[component]
     end
@@ -110,7 +114,7 @@ end
 
 -- Merge the key value pairs of table1 into table2
 utils.merge_tables = function(t1, t2)
-  for k,v in pairs(t2) do t1[k] = v end
+  for k, v in pairs(t2) do t1[k] = v end
 end
 
 return utils

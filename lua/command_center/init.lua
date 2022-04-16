@@ -4,7 +4,6 @@ local utils = require("command_center.utils")
 
 local constants = require("command_center.constants")
 local component = constants.component
-local private_component = constants.private_component
 local max_length = constants.max_length
 local add_mode = constants.mode
 
@@ -32,11 +31,13 @@ M.add = function(passed_items, mode)
 
     -- Map command to cmd
     value.cmd = value.cmd or ("<cmd>" .. value.command .. "<CR>")
+    value.cmd_str = type(value.cmd) == "function" and constants.lua_func_str or value.cmd
 
     -- Override mode if specified
     value.mode = value.mode or mode
 
     -- Making sure description is not nil
+    value.replace_desc_with_cmd = value.description or value.cmd_str
     value.description = value.description or ""
 
     -- Properly format keybindings for further process
@@ -46,9 +47,9 @@ M.add = function(passed_items, mode)
     value.keybinding_str = utils.get_keybindings_string(value.keybindings)
 
     -- Ignore duplicate entries
-    local key = value.cmd .. value.description ..
-                  value.keybinding_str .. value.mode
-    -- if M.items[key] then goto continue end
+    local key = value.cmd_str .. value.description ..
+      value.keybinding_str .. value.mode
+
     if M._duplicate_detector[key] then goto continue end
     M._duplicate_detector[key] = true
 
@@ -61,32 +62,29 @@ M.add = function(passed_items, mode)
     if value.mode == add_mode.REGISTER_ONLY then goto continue end
 
     -- Update maximum command length
-    max_length[component.COMMAND] =
-      math.max(max_length[component.COMMAND], #value.cmd)
+    max_length[component.COMMAND_STR] =
+      math.max(max_length[component.COMMAND_STR], #value.cmd_str)
 
     -- Update maximum description length
     max_length[component.DESCRIPTION] =
       math.max(max_length[component.DESCRIPTION], #value.description)
 
     -- And Update maximum keybinding length
-    max_length[component.KEYBINDINGS] =
-      math.max(max_length[component.KEYBINDINGS], #value.keybinding_str)
+    max_length[component.KEYBINDINGS_STR] =
+      math.max(max_length[component.KEYBINDINGS_STR], #value.keybinding_str)
 
     -- This is used when user wants to replace desc with cmd
-    if (value.description == "") then
-      max_length[private_component.REPLACE_DESC_WITH_CMD] =
-      math.max(max_length[private_component.REPLACE_DESC_WITH_CMD], #value.cmd)
-    else
-      max_length[private_component.REPLACE_DESC_WITH_CMD] =
-      math.max(max_length[private_component.REPLACE_DESC_WITH_CMD], #value.description)
-
-    end
+    max_length[component.REPLACE_DESC_WITH_CMD] =
+      math.max(max_length[component.REPLACE_DESC_WITH_CMD], #value.replace_desc_with_cmd)
 
     -- Add the entry to M.items
     table.insert(M.items, {
       value.cmd,
       value.description,
-      value.keybinding_str
+      value.keybindings,
+      value.cmd_str,
+      value.keybinding_str,
+      value.replace_desc_with_cmd,
     })
 
     -- We need signal Telescop to cache again
@@ -100,6 +98,10 @@ end
 -- Add some constants to M
 -- to ease the customization of command center
 M.mode = constants.mode
-M.component = constants.component
+M.component = {
+  COMMAND = constants.component.COMMAND_STR,
+  DESCRIPTION = constants.component.DESCRIPTION,
+  KEYBINDINGS = constants.component.KEYBINDINGS_STR
+}
 
 return M

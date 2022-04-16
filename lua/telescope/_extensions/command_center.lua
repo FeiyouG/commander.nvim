@@ -19,15 +19,14 @@ local utils = require("command_center.utils")
 
 local constants = require("command_center.constants")
 local component = constants.component
-local private_component = constants.private_component
 local max_length = constants.max_length
 
 -- Initial opts to defualt values
 local user_opts = {
   components = {
-    component.DESCRIPTION,
-    component.KEYBINDINGS,
-    component.COMMAND,
+    M.component.DESCRIPTION,
+    M.component.KEYBINDINGS,
+    M.component.COMMAND,
   },
   seperator = " ",
   auto_replace_desc_with_cmd = true,
@@ -97,16 +96,16 @@ local function run(opts)
       -- When user chooses to replace desc with cmd ...
       if opts.auto_replace_desc_with_cmd and v == component.DESCRIPTION then
 
-        if entry.value[v] == "" then
-          -- ... and desc is empty, replace desc with cmd
-          table.insert(display, entry.value[component.COMMAND])
-        else
-          -- .. and desc is not empty, use desc
-          table.insert(display, entry.value[v])
-        end
-
-        -- Update the legnth of desc componenet
-        table.insert(component_info, { width = max_length[private_component.REPLACE_DESC_WITH_CMD] })
+        -- if entry.value[v] == "" then
+        --   -- ... and desc is empty, replace desc with cmd
+        --   table.insert(display, entry.value[component.COMMAND_STR])
+        -- else
+        --   -- .. and desc is not empty, use desc
+        --   table.insert(display, entry.value[v])
+        -- end
+        --
+        table.insert(display, entry.value[component.REPLACE_DESC_WITH_CMD])
+        table.insert(component_info, { width = max_length[component.REPLACE_DESC_WITH_CMD] })
       else
         table.insert(display, entry.value[v])
         table.insert(component_info, { width = max_length[v] } )
@@ -155,9 +154,15 @@ local function run(opts)
       actions.select_default:replace(function()
         actions.close(prompt_bufnr)
         local selection = action_state.get_selected_entry()
-        local cmd = vim.api.nvim_replace_termcodes(selection.value[component.COMMAND], true, false, true)
+
         -- Handle keys as if they were typed
-        vim.api.nvim_feedkeys(cmd, "t", true)
+        local cmd = selection.value[component.COMMAND]
+        if type(cmd) == "function" then
+          cmd()
+        else
+          cmd = vim.api.nvim_replace_termcodes(cmd, true, false, true)
+          vim.api.nvim_feedkeys(cmd, "t", true)
+        end
       end)
       return true
     end,

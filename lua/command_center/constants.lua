@@ -5,10 +5,11 @@ constants.component = {
   COMMAND = 1,
   DESCRIPTION = 2,
   KEYBINDINGS = 3,
-}
 
-constants.private_component = {
-  REPLACE_DESC_WITH_CMD = 4
+  -- Private
+  COMMAND_STR = 4,
+  KEYBINDINGS_STR = 5,
+  REPLACE_DESC_WITH_CMD = 6,
 }
 
 constants.mode = {
@@ -19,6 +20,8 @@ constants.mode = {
 
 -- Default (minimum) length for each argyment type
 -- In the order of constants.component + if_replace_desc_with_cmd
-constants.max_length = { 8, 8, 8, 8}
+constants.max_length = { nil, 8, nil,  8, 8, 8}
+
+constants.lua_func_str = "Lua Function"
 
 return constants
