@@ -23,7 +23,7 @@ M.add = function(passed_items, mode)
   for _, value in ipairs(passed_items) do
 
     if value.command then
-      utils.warn_command_deprecated()
+      utils.warn_once("`command` is deprecated in favor of `cmd`. See README.md for detail.")
     end
 
     -- Ignore entries that do not have comands

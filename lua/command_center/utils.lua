@@ -1,18 +1,19 @@
 local constants = require("command_center.constants")
 
 local utils = {}
+
+utils._notified = {}
 local has_notify, notify = pcall(require, "notify")
 
 utils.command_drepcated_notified = false
 
-utils.warn_command_deprecated = function()
-  if utils.command_drepcated_notified then return end
-  local message = "'command' is deprecated in favor of 'cmd'. See README.md for details."
+utils.warn_once = function(message)
+  if (utils._notified[message]) then return end
   utils.warn(message)
-  utils.command_drepcated_notified = true
+  utils._notified[message] = true
 end
 
-utils.warn = function(message, showed)
+utils.warn = function(message)
   vim.schedule(function()
     if has_notify then
       notify(message, vim.log.levels.WARN, { title = "command_center.nvim" })
@@ -50,7 +51,11 @@ end
 utils.register_keybindings = function(keybindings, command)
   for _, value in ipairs(keybindings or {}) do
     if type(command) == "function" then
-      vim.api.nvim_set_keymap(value[1], value[2], '', {callback = command})
+      if vim.fn.has("nvim-0.7") then
+        vim.api.nvim_set_keymap(value[1], value[2], '', {callback = command})
+      else
+        utils.warn_once("Binding lua function to key is only support in NeoVim 0.7+.")
+      end
     else
       vim.api.nvim_set_keymap(value[1], value[2], command, value[3] or {})
     end

@@ -87,8 +87,8 @@ Keep reading the following sections.
 
 The function `command_center.add`
 does two things:
-1. Register the keybindings
-2. Add the keybindings to `command_center`
+1. Register the keybindings (if any)
+2. Add the commands to `command_center`
 
 You can find an example below:
 
@@ -135,7 +135,7 @@ command_center.add({
     keybindings = {"n", "<leader>Ac", noremap}
   }, {
     -- You can also pass in a lua functions as command
-    -- NOTE: This only works with neovim 0.7
+    -- NOTE: binding lua funciton with key only works with neovim 0.7
     description = "Run lua function",
     cmd = function() print("ANONYMOUS LUA FUNCTION") end,
     keybindings = {"n", "<leader>alf", noremap},
@@ -146,6 +146,17 @@ command_center.add({
   }
 })
 ```
+
+**NOTE**:
+- If you are on neovim 0.6,
+  then you can add a Lua function
+  as a `cmd` and execute it in `command_center`,
+  but you are not able to register it with a keybinding.
+
+- If you are on neovim 0.7,
+  then you can both register the Lua function
+  with a keybinding
+  and execute it in `command_center`.
 
 If you have above snippet in your config,
 `command-center` will create your specified keybindings automatically.
