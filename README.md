@@ -8,6 +8,13 @@ and search them quickly through Telescope.
 
 ![demo](https://github.com/gfeiyou/command-center.nvim/blob/assets/demo.gif)
 
+## Change log
+
+- Here is a GitHub issue documents
+  [breaking changes](https://github.com/FeiyouG/command_center.nvim/issues/4)
+  for `command_center.nvim`.
+
+
 ## Table of Contents
 <!-- TOC GFM -->
 
@@ -17,10 +24,11 @@ and search them quickly through Telescope.
 - [Setup and configuration](#setup-and-configuration)
   - [Setup](#setup)
   - [Add commands](#add-commands)
+    - [`command_center.add`](#command_centeradd)
     - [`command_center.mode`](#command_centermode)
   - [configuration](#configuration)
     - [Example configuration](#example-configuration)
-- [To-dos](#to-dos)
+- [Related Projects](#related-projects)
 
 <!-- /TOC -->
 
@@ -75,14 +83,15 @@ Keep reading the following sections.
 
 ### Add commands
 
-Why write the same thing twice
-for two purposes
-if you can get them both done
-at the same time?
+#### `command_center.add`
 
-`command-center` lets you register keybindings
-and add them into `command-center`
-simultaneously.
+The function `command_center.add`
+does two things:
+1. Register the keybindings
+2. Add the keybindings to `command_center`
+
+You can find an example below:
+
 
 ```lua
 local command_center = require("command_center")
@@ -92,21 +101,21 @@ local silent_noremap = {noremap = true, silent = true}
 command_center.add({
   {
     description = "Search inside current buffer",
-    command = "Telescope current_buffer_fuzzy_find",
+    cmd = "<CMD>Telescope current_buffer_fuzzy_find<CR>",
     keybindings = { "n", "<leader>fl", noremap },
   },  {
     -- If no descirption is specified, command is used to replace descirption by default
     -- You can change this behavior in settigns
-    command = "Telescope find_files",
+    cmd = "<CMD>Telescope find_files<CR>",
     keybindings = { "n", "<leader>ff", noremap },
   }, {
     -- If no keybindings specified, no keybindings will be displayed or registered
     description = "Find hidden files",
-    command = "Telescope find_files hidden=true",
+    cmd = "<CMD>Telescope find_files hidden=true<CR>",
   }, {
     -- You can specify multiple keybindings for the same command ...
     description = "Show document symbols",
-    command = "Telescope lsp_document_symbols",
+    cmd = "<CMD>Telescope lsp_document_symbols<CR>",
     keybindings = {
       {"n", "<leader>ss", noremap},
       {"n", "<leader>ssd", noremap},
@@ -114,18 +123,30 @@ command_center.add({
   }, {
     -- ... and for different modes
     description = "Show function signaure (hover)",
-    command = "lua vim.lsp.buf.hover()",
+    cmd = "<CMD>lua vim.lsp.buf.hover()<CR>",
     keybindings = {
       {"n", "K", silent_noremap },
       {"i", "<C-k>", silent_noremap },
     }
   }, {
+    -- You can pass in a key sequence as if they were typed in neovim
+    description = "My favorite key sequence",
+    cmd = "A  -- Add a comment at the end of a line",
+    keybindings = {"n", "<leader>Ac", noremap}
+  }, {
+    -- You can also pass in a lua functions as command
+    -- NOTE: This only works with neovim 0.7
+    description = "Run lua function",
+    cmd = function() print("ANONYMOUS LUA FUNCTION") end,
+    keybindings = {"n", "<leader>alf", noremap},
+  }, {
     -- If no command is specified, then this entry is ignored
     description = "lsp run linter",
-    keybindings = "<leader>sf"
+    keybindings = {"n", "<leader>sf", noremap},
   }
 })
 ```
+
 If you have above snippet in your config,
 `command-center` will create your specified keybindings automatically.
 And calling `:Telescope command_center`
@@ -135,7 +156,7 @@ will open a prompt like this.
 
 #### `command_center.mode`
 
-`command_center.add()` will add and register
+`command_center.add()` will add **and** register
 the keybindings for you by default.
 You can use `command_center.mode`
 to override this behavior.
@@ -161,13 +182,13 @@ local silent_noremap = {noremap = true, silent = true}
 command_center.add({
   {
     description = "Find files",
-    command = "telescope find_files",
+    cmd = "<CMR>telescope find_files<CR>",
     keybindings = { "n", "<leader>ff", noremap },
   }, {
     -- If keybindings is not specified, then this enery is ignored
     -- since there is nothing to register
     description = "Search inside current buffer",
-    command = "Telescope current_buffer_fuzzy_find",
+    cmd = "<CMD>Telescope current_buffer_fuzzy_find<CR>",
   }
 }, command_center.mode.REGISTER_ONLY)
 
@@ -180,15 +201,15 @@ command_center.add({
     -- If keybindings are specified,
     -- then they will still show up in command-center but won't be registered
     description = "Find hidden files",
-    command = "Telescope find_files hidden=true",
+    cmd = "<CMD>Telescope find_files hidden=true<CR>",
     keybindings = { "n", "<leader>f.f", noremap },
   }, {
     description = "Show document symbols",
-    command = "Telescope lsp_document_symbols",
+    cmd = "<CMD>Telescope lsp_document_symbols<CR>",
   }, {
     -- The mode can be even further overridden within each item
     description = "LSP cdoe actions",
-    command = "Telescope lsp_code_actions",
+    cmd = "<CMD>Telescope lsp_code_actions<CR>",
     keybinginds = { "n", "<leader>sa", noremap },
     mode = command_center.mode.ADD_AND_REGISTER,
   }
@@ -249,7 +270,7 @@ local noremap = { noremap = true }
 command_center.add({
   {
     description = "Open command_center",
-    command = "Telescope command_center",
+    cmd = "<CMD>Telescope command_center<CR>",
     keybindings = {
       {"n", "<Leader>fc", noremap},
       {"v", "<Leader>fc", noremap},
@@ -277,8 +298,9 @@ telescope.setup {
 
 telescope.load_extension('command_center')
 ```
+## Related Projects
 
-## To-dos
+- [legendary.nvim](https://github.com/mrjones2014/legendary.nvim)
+- [Telescope-command-palette](https://github.com/LinArcX/telescope-command-palette.nvim)
+- [which-key](https://github.com/folke/which-key.nvim)
 
-- [ ] Allow some commands to show up only in specific file types
-- [ ] Add a `CATEGORY` component
