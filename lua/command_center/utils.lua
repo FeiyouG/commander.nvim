@@ -1,6 +1,27 @@
 local constants = require("command_center.constants")
 
 local utils = {}
+local has_notify, notify = pcall(require, "notify")
+
+utils.command_drepcated_notified = false
+
+utils.warn_command_deprecated = function()
+  if utils.command_drepcated_notified then return end
+  local message = "command is deprecated in favor of cmd. See README.md for details."
+  utils.warn(message)
+  utils.command_drepcated_notified = true
+end
+
+utils.warn = function(message, showed)
+  vim.schedule(function()
+    if has_notify then
+      notify(message, vim.log.levels.WARN, { title = "command_center.nvim" })
+    else
+      vim.notify("[command_center.nvim] " .. message, vim.log.levels.WARN)
+    end
+  end)
+end
+
 
 -- Convert keybings to a 2D array
 -- if it is passed in as an array of single keiybindings
@@ -28,7 +49,7 @@ end
 -- @param command       the command the the keybindings map to
 utils.register_keybindings = function(keybindings, command)
   for _, value in ipairs(keybindings or {}) do
-    vim.api.nvim_set_keymap(value[1], value[2], "<cmd>" .. command .. "<cr>", value[3] or {})
+    vim.api.nvim_set_keymap(value[1], value[2], command, value[3] or {})
   end
 end
 
@@ -90,14 +111,6 @@ end
 -- Merge the key value pairs of table1 into table2
 utils.merge_tables = function(t1, t2)
   for k,v in pairs(t2) do t1[k] = v end
-end
-
-utils.get_values = function(t)
-  local keys = {}
-  for _, v in pairs(t) do
-    table.insert(keys, v)
-  end
-  return keys
 end
 
 return utils

@@ -33,8 +33,6 @@ local user_opts = {
   auto_replace_desc_with_cmd = true,
 }
 
-local cached_items = {}
-
 -- Override default opts by user
 local function setup(opts)
   opts = opts or {}
@@ -88,13 +86,6 @@ local function run(opts)
   opts = opts or {}
   utils.merge_tables(opts, user_opts)
 
-  -- Get the keys from M.items
-  -- Use M.cached to prevent unneccesaary cache
-  if not M.cached then
-    cached_items = utils.get_values(M.items)
-    M.cached = true
-  end
-
   -- Only display what the user specifies
   -- And in the right order
   local make_display = function(entry)
@@ -132,7 +123,7 @@ local function run(opts)
 
   -- Insert the calculated length constants
   opts.max_width = utils.get_max_width(user_opts, max_length)
-  opts.num_items = #cached_items
+  opts.num_items = #M.items
   opts = themes.command_center(opts)
 
   -- opts = opts or {}
@@ -140,7 +131,7 @@ local function run(opts)
     prompt_title = "Command Center",
 
     finder = finders.new_table({
-      results = cached_items,
+      results = M.items,
       entry_maker = function(entry)
 
         -- Concatenate components for ordinal
@@ -164,7 +155,9 @@ local function run(opts)
       actions.select_default:replace(function()
         actions.close(prompt_bufnr)
         local selection = action_state.get_selected_entry()
-        vim.api.nvim_exec(selection.value[component.COMMAND], true)
+        local cmd = vim.api.nvim_replace_termcodes(selection.value[component.COMMAND], true, false, true)
+        -- Handle keys as if they were typed
+        vim.api.nvim_feedkeys(cmd, "t", true)
       end)
       return true
     end,

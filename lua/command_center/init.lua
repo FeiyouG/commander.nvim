@@ -10,6 +10,8 @@ local add_mode = constants.mode
 
 -- Actual comamnd_center.items are stored here
 M.items = {}
+M._duplicate_detector = {}
+
 
 M.add = function(passed_items, mode)
 
@@ -21,8 +23,15 @@ M.add = function(passed_items, mode)
 
   for _, value in ipairs(passed_items) do
 
+    if value.command then
+      utils.warn_command_deprecated()
+    end
+
     -- Ignore entries that do not have comands
-    if not value.command then goto continue end
+    if not value.cmd and not value.command then goto continue end
+
+    -- Map command to cmd
+    value.cmd = value.cmd or ("<cmd>" .. value.command .. "<CR>")
 
     -- Override mode if specified
     value.mode = value.mode or mode
@@ -37,25 +46,23 @@ M.add = function(passed_items, mode)
     value.keybinding_str = utils.get_keybindings_string(value.keybindings)
 
     -- Ignore duplicate entries
-    local key = value.command .. value.description ..
+    local key = value.cmd .. value.description ..
                   value.keybinding_str .. value.mode
-    if M.items[key] then goto continue end
+    -- if M.items[key] then goto continue end
+    if M._duplicate_detector[key] then goto continue end
+    M._duplicate_detector[key] = true
 
     -- Register the keybindings (only if mode is not ADD_ONLY)
     if value.mode ~= add_mode.ADD_ONLY then
-      utils.register_keybindings(value.keybindings, value.command)
+      utils.register_keybindings(value.keybindings, value.cmd)
     end
 
     -- If REGISTER_ONLY, then we are done!
     if value.mode == add_mode.REGISTER_ONLY then goto continue end
 
-
-    -- And insert value to M.items
-    -- Only if the command is going to be added to command_center
-
     -- Update maximum command length
     max_length[component.COMMAND] =
-      math.max(max_length[component.COMMAND], #value.command)
+      math.max(max_length[component.COMMAND], #value.cmd)
 
     -- Update maximum description length
     max_length[component.DESCRIPTION] =
@@ -68,7 +75,7 @@ M.add = function(passed_items, mode)
     -- This is used when user wants to replace desc with cmd
     if (value.description == "") then
       max_length[private_component.REPLACE_DESC_WITH_CMD] =
-      math.max(max_length[private_component.REPLACE_DESC_WITH_CMD], #value.command)
+      math.max(max_length[private_component.REPLACE_DESC_WITH_CMD], #value.cmd)
     else
       max_length[private_component.REPLACE_DESC_WITH_CMD] =
       math.max(max_length[private_component.REPLACE_DESC_WITH_CMD], #value.description)
@@ -76,11 +83,11 @@ M.add = function(passed_items, mode)
     end
 
     -- Add the entry to M.items
-    M.items[key] = {
-      value.command,
+    table.insert(M.items, {
+      value.cmd,
       value.description,
       value.keybinding_str
-    }
+    })
 
     -- We need signal Telescop to cache again
     M.cached = false
