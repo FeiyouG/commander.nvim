@@ -88,7 +88,7 @@ end
 -- and what component to display
 -- @param user_opts   user settings, must contains the following entries:
 --                    component:  an array specifying what component to display and in what order
---                    seperateor: the seperator used, default to " "
+--                    separator: the separator used, default to " "
 -- @param length      a table contains the max length for each component
 utils.get_max_width = function(user_opts, length)
   user_opts.components = user_opts.components or {
@@ -97,7 +97,8 @@ utils.get_max_width = function(user_opts, length)
     constants.component.COMMAND,
   }
   length = length or constants.max_length
-  user_opts.seperator = user_opts.seperator or " "
+  -- Read seperator too to avoid breaking existing configurations
+  user_opts.separator = user_opts.separator or user_opts.seperator or " "
 
   local max_width = 0
   for i, component in ipairs(user_opts.components) do
@@ -109,7 +110,7 @@ utils.get_max_width = function(user_opts, length)
     end
 
     if i > 0 then
-      max_width = max_width + #user_opts.seperator
+      max_width = max_width + #user_opts.separator
     end
 
   end
