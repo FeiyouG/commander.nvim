@@ -257,8 +257,8 @@ telescope.setup {
         command_center.component.COMMAND,
       },
 
-      -- Change the seperator used to seperate each component
-      seperator = " ",
+      -- Change the separator used to separate each component
+      separator = " ",
 
       -- When set to false,
       -- The description compoenent will be empty if it is not specified

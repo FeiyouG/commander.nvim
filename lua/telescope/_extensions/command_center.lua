@@ -28,7 +28,7 @@ local user_opts = {
     M.component.KEYBINDINGS,
     M.component.COMMAND,
   },
-  seperator = " ",
+  separator = " ",
   auto_replace_desc_with_cmd = true,
 }
 
@@ -113,7 +113,7 @@ local function run(opts)
     end
 
     local displayer = entry_display.create({
-      separator = user_opts.seperator,
+      separator = user_opts.separator,
       items = component_info,
     })
 
