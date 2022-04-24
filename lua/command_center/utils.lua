@@ -97,7 +97,7 @@ utils.get_max_width = function(user_opts, length)
     constants.component.COMMAND,
   }
   length = length or constants.max_length
-  -- Read seperator too to avoid breaking existing configurations
+  -- Read "seperator" too to avoid breaking existing configurations
   if user_opts.seperator then
       user_opts.separator = user_opts.seperator
   end
