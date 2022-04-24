@@ -245,23 +245,25 @@ local command_center = require("command_center")
 
 telescope.setup {
   extensions = {
-    -- Below are default settings that can be overriden ...
+    command_center = {
+      -- Below are default settings that can be overriden ...
 
-    -- Change what to show on telescope prompt and in which order
-    -- Currently support the following three components
-    -- Components may repeat
-    components = {
-      command_center.component.DESCRIPTION,
-      command_center.component.KEYBINDINGS,
-      command_center.component.COMMAND,
-    },
+      -- Change what to show on telescope prompt and in which order
+      -- Currently support the following three components
+      -- Components may repeat
+      components = {
+        command_center.component.DESCRIPTION,
+        command_center.component.KEYBINDINGS,
+        command_center.component.COMMAND,
+      },
 
-    -- Change the seperator used to seperate each component
-    seperator = " ",
+      -- Change the seperator used to seperate each component
+      seperator = " ",
 
-    -- When set to false,
-    -- The description compoenent will be empty if it is not specified
-    auto_replace_desc_with_cmd = true,
+      -- When set to false,
+      -- The description compoenent will be empty if it is not specified
+      auto_replace_desc_with_cmd = true,
+    }
   }
 }
 
