@@ -98,7 +98,10 @@ utils.get_max_width = function(user_opts, length)
   }
   length = length or constants.max_length
   -- Read seperator too to avoid breaking existing configurations
-  user_opts.separator = user_opts.separator or user_opts.seperator or " "
+  if user_opts.seperator then
+      user_opts.separator = user_opts.seperator
+  end
+  user_opts.separator = user_opts.separator or " "
 
   local max_width = 0
   for i, component in ipairs(user_opts.components) do
