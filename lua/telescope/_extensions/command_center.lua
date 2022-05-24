@@ -81,9 +81,10 @@ end
 
 
 
-local function run(opts)
-  opts = opts or {}
-  utils.merge_tables(opts, user_opts)
+local function run(filter)
+  filter = filter or {}
+  local filtered_items = utils.filter_items(M.items, filter)
+  local opts = user_opts
 
   -- Only display what the user specifies
   -- And in the right order
@@ -95,15 +96,6 @@ local function run(opts)
 
       -- When user chooses to replace desc with cmd ...
       if opts.auto_replace_desc_with_cmd and v == component.DESCRIPTION then
-
-        -- if entry.value[v] == "" then
-        --   -- ... and desc is empty, replace desc with cmd
-        --   table.insert(display, entry.value[component.COMMAND_STR])
-        -- else
-        --   -- .. and desc is not empty, use desc
-        --   table.insert(display, entry.value[v])
-        -- end
-        --
         table.insert(display, entry.value[component.REPLACE_DESC_WITH_CMD])
         table.insert(component_info, { width = max_length[component.REPLACE_DESC_WITH_CMD] })
       else
@@ -113,7 +105,7 @@ local function run(opts)
     end
 
     local displayer = entry_display.create({
-      separator = user_opts.separator,
+      separator = opts.separator,
       items = component_info,
     })
 
@@ -121,8 +113,9 @@ local function run(opts)
   end
 
   -- Insert the calculated length constants
-  opts.max_width = utils.get_max_width(user_opts, max_length)
-  opts.num_items = #M.items
+  opts.max_width = utils.get_max_width(opts, max_length)
+  opts.num_items = #filtered_items
+  P(opts)
   opts = themes.command_center(opts)
 
   -- opts = opts or {}
@@ -130,7 +123,7 @@ local function run(opts)
     prompt_title = "Command Center",
 
     finder = finders.new_table({
-      results = M.items,
+      results = filtered_items,
       entry_maker = function(entry)
 
         -- Concatenate components for ordinal
@@ -173,7 +166,7 @@ end
 return telescope.register_extension({
   setup = setup,
   exports = {
-    command_center = run
+    command_center = run,
   },
 })
 

@@ -52,7 +52,7 @@ utils.register_keybindings = function(keybindings, command)
   for _, value in ipairs(keybindings or {}) do
     if type(command) == "function" then
       if vim.fn.has("nvim-0.7") then
-        vim.api.nvim_set_keymap(value[1], value[2], '', {callback = command})
+        vim.api.nvim_set_keymap(value[1], value[2], '', { callback = command })
       else
         utils.warn_once("Binding lua function to key is only support in NeoVim 0.7+.")
       end
@@ -122,5 +122,42 @@ end
 utils.merge_tables = function(t1, t2)
   for k, v in pairs(t2) do t1[k] = v end
 end
+
+local filter_item_by_mode = function(item, mode)
+  if not mode or not item then return true end
+
+  for _, keybinding in ipairs(item[constants.component.KEYBINDINGS]) do
+    if (keybinding[1] == mode) then
+      return true
+    end
+  end
+  return false
+end
+
+local filter_item_by_category = function(item, category)
+  if not category or not item then return true end
+  return item[constants.component.CATEGORY] == category
+end
+
+-- Filter items based on filter
+-- return filtered items
+utils.filter_items = function(items, filter)
+  -- Early exit if filter or items are empty
+  if not items or not next(items) then return items end
+  if not filter or not next(filter) then return items end
+
+  local filtered_items = {}
+
+  for _, item in ipairs(items) do
+    if filter_item_by_mode(item, filter.mode)
+      and filter_item_by_category(item, filter.category) then
+      table.insert(filtered_items, item)
+    end
+  end
+
+  return filtered_items
+
+end
+
 
 return utils

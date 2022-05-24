@@ -235,6 +235,59 @@ The resulted `command-center` looks like this:
 
 ![demo2](https://github.com/gfeiyou/command-center.nvim/blob/assets/demo_mode.png)
 
+### Filter
+
+You can filter the commands upon invoking `:Telescope command_center`.
+
+Currently, you can filter either by mode or category.
+You can find some examples below:
+
+- Show only commands that has keybindings that work in normal mode
+```
+:Telescope command_center mode=n
+```
+
+- Show only commands that are filtered by category
+  ```
+  :Telescope command_center category=git
+  ```
+  To make this work,
+  you have to first set the category
+  when you add a command.
+  For example:
+
+  ```lua
+  command_center.add({
+    {
+      description = "Open git diffview",
+      cmd = "<CMD>DiffviewOpen<CR>",
+      keybindings = { "n", "<leader>gd", noremap },
+      category = "git",
+    }, {
+      description = "Close current git diffview",
+      cmd = "<CMD>DiffviewClose<CR>",
+      keybindings = { "n", "<leader>gc", noremap },
+      category = "git",
+    }, {
+      description = "Toggle markdown preview",
+      cmd = "<CMD>MarkdownPreviewToggle<CR>",
+      keybindings = { "n", "<leader>mp", noremap },
+      category = "markdown",
+    }
+  }, command_center.mode.ADD_ONLY)
+
+  ```
+  (note: the field `category` will not show up
+  in command_center;
+  it is only used to filter the commands)
+
+- Or both
+```
+:Telescope command_center mode=v category=markdown
+```
+
+
+
 ### configuration
 
 You can customize `command-center`:
@@ -318,5 +371,5 @@ telescope.load_extension('command_center')
 - [which-key](https://github.com/folke/which-key.nvim)
 
 ## To-do
-- [ ] Implement filter at the time of invoking `:Telescope Commmand_Center`
+- [X] Implement filter at the time of invoking `:Telescope Commmand_Center`
 - [ ] Enable adding commands using a similiar format to `nvim_set_keymap`

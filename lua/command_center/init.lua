@@ -14,7 +14,7 @@ M._duplicate_detector = {}
 
 M.add = function(passed_items, mode)
 
-  -- Early return from the function if passed in an empty table
+  -- Early exit from the function if passed in an empty table
   if not passed_items then return end
 
   -- Add and register keybindings by defualt
@@ -35,6 +35,10 @@ M.add = function(passed_items, mode)
 
     -- Override mode if specified
     value.mode = value.mode or mode
+
+    -- Emtpry category by defult
+    value.category = value.category or ""
+
 
     -- Making sure description is not nil
     value.replace_desc_with_cmd = value.description or value.cmd_str
@@ -82,6 +86,7 @@ M.add = function(passed_items, mode)
       value.cmd,
       value.description,
       value.keybindings,
+      value.category,
       value.cmd_str,
       value.keybinding_str,
       value.replace_desc_with_cmd,
