@@ -115,7 +115,6 @@ local function run(filter)
   -- Insert the calculated length constants
   opts.max_width = utils.get_max_width(opts, max_length)
   opts.num_items = #filtered_items
-  P(opts)
   opts = themes.command_center(opts)
 
   -- opts = opts or {}
