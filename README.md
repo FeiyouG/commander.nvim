@@ -317,3 +317,6 @@ telescope.load_extension('command_center')
 - [Telescope-command-palette](https://github.com/LinArcX/telescope-command-palette.nvim)
 - [which-key](https://github.com/folke/which-key.nvim)
 
+## To-do
+- [ ] Implement filter at the time of invoking `:Telescope Commmand_Center`
+- [ ] Enable adding commands using a similiar format to `nvim_set_keymap`
