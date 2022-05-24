@@ -16,7 +16,8 @@ and search them quickly through Telescope.
 
 
 ## Table of Contents
-<!-- TOC GFM -->
+
+<!-- vim-markdown-toc GFM -->
 
 - [Installation](#installation)
   - [vim-plug](#vim-plug)
@@ -26,9 +27,11 @@ and search them quickly through Telescope.
   - [Add commands](#add-commands)
     - [`command_center.add`](#command_centeradd)
     - [`command_center.mode`](#command_centermode)
+  - [Filter](#filter)
   - [configuration](#configuration)
     - [Example configuration](#example-configuration)
 - [Related Projects](#related-projects)
+- [To-do](#to-do)
 
 <!-- /TOC -->
 
