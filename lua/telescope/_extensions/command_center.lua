@@ -30,6 +30,7 @@ local user_opts = {
   },
   separator = " ",
   auto_replace_desc_with_cmd = true,
+  prompt_title = "Command Center",
 }
 
 -- Override default opts by user
@@ -119,7 +120,7 @@ local function run(filter)
 
   -- opts = opts or {}
   pickers.new(opts, {
-    prompt_title = "Command Center",
+    prompt_title = opts.prompt_title,
 
     finder = finders.new_table({
       results = filtered_items,
