@@ -147,6 +147,8 @@ local function run(filter)
         actions.close(prompt_bufnr)
         local selection = action_state.get_selected_entry()
 
+        if not selection then return false end
+
         -- Handle keys as if they were typed
         local cmd = selection.value[component.COMMAND]
         if type(cmd) == "function" then
