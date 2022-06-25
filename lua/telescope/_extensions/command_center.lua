@@ -28,6 +28,13 @@ local user_opts = {
     M.component.KEYBINDINGS,
     M.component.COMMAND,
   },
+
+  sort_by = {
+    M.component.DESCRIPTION,
+    M.component.KEYBINDINGS,
+    M.component.COMMAND,
+  },
+
   separator = " ",
   auto_replace_desc_with_cmd = true,
   prompt_title = "Command Center",
@@ -126,10 +133,9 @@ local function run(filter)
       results = filtered_items,
       entry_maker = function(entry)
 
-        -- Concatenate components for ordinal
-        -- For better sorting
+        -- Concatenate components specified in `sort_by` for better sorting
         local ordinal = ""
-        for _, v in ipairs(opts.components) do
+        for _, v in ipairs(opts.sort_by) do
           ordinal = ordinal .. entry[v]
         end
 

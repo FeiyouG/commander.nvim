@@ -304,10 +304,17 @@ telescope.setup {
     command_center = {
       -- Below are default settings that can be overriden ...
 
-      -- Change what to show on telescope prompt and in which order
-      -- Currently support the following three components
-      -- Components may repeat
+      -- Specify what components are shown in telescope prompt;
+      -- Order matters, and components may repeat
       components = {
+        command_center.component.DESCRIPTION,
+        command_center.component.KEYBINDINGS,
+        command_center.component.COMMAND,
+      },
+
+      -- Spcify by what components that search results are ordered;
+      -- Order does not matter
+      sort_by = {
         command_center.component.DESCRIPTION,
         command_center.component.KEYBINDINGS,
         command_center.component.COMMAND,
@@ -361,7 +368,10 @@ telescope.setup {
       components = {
         command_center.component.DESCRIPTION,
         command_center.component.KEYBINDINGS,
-        -- command_center.component.COMMAND,
+      },
+      sort_by = {
+        command_center.component.DESCRIPTION,
+        command_center.component.KEYBINDINGS,
       },
       auto_replace_desc_with_cmd = false,
     }
