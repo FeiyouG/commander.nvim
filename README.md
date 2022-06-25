@@ -319,6 +319,9 @@ telescope.setup {
       -- When set to false,
       -- The description compoenent will be empty if it is not specified
       auto_replace_desc_with_cmd = true,
+
+      -- Default title to Telescope prompt
+      prompt_title = "Command Center",
     }
   }
 }
