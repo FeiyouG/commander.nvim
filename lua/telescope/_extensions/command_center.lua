@@ -27,12 +27,14 @@ local user_opts = {
     M.component.DESCRIPTION,
     M.component.KEYBINDINGS,
     M.component.COMMAND,
+    M.component.CATEGORY,
   },
 
   sort_by = {
     M.component.DESCRIPTION,
     M.component.KEYBINDINGS,
     M.component.COMMAND,
+    M.component.CATEGORY,
   },
 
   separator = " ",
@@ -87,8 +89,6 @@ function themes.command_center(opts)
   return vim.tbl_deep_extend("force", theme_opts, opts)
 end
 
-
-
 local function run(filter)
   filter = filter or {}
   local filtered_items = utils.filter_items(M.items, filter)
@@ -108,7 +108,7 @@ local function run(filter)
         table.insert(component_info, { width = max_length[component.REPLACE_DESC_WITH_CMD] })
       else
         table.insert(display, entry.value[v])
-        table.insert(component_info, { width = max_length[v] } )
+        table.insert(component_info, { width = max_length[v] })
       end
     end
 
@@ -126,7 +126,7 @@ local function run(filter)
   opts = themes.command_center(opts)
 
   -- opts = opts or {}
-  pickers.new(opts, {
+  local telescope = pickers.new(opts, {
     prompt_title = opts.prompt_title,
 
     finder = finders.new_table({
@@ -168,7 +168,33 @@ local function run(filter)
       return true
     end,
 
-  }):find()
+  })
+
+  -- MARK: Save all current settings
+  -- vim.deepcopy() can't copy getfenv(),
+  -- Use force extend instead, as inpsired by hydra.nvim
+  local env = vim.tbl_deep_extend('force', getfenv(), {
+    vim = { o = {}, go = {}, bo = {}, wo = {} }
+  }) --[[@as table]]
+  local o   = env.vim.o
+  local go  = env.vim.go
+  local bo  = env.vim.bo
+  local wo  = env.vim.wo
+
+
+  -- MARK: Start telescope
+  vim.schedule(function()
+    vim.bo.modifiable = true
+    vim.cmd("startinsert")
+  end)
+
+  telescope:find()
+
+  -- MAKR: Restore all settings
+  env.vim.o = o
+  env.vim.go = go
+  env.vim.bo = bo
+  env.vim.wo = wo
 end
 
 return telescope.register_extension({
@@ -177,4 +203,3 @@ return telescope.register_extension({
     command_center = run,
   },
 })
-

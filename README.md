@@ -280,16 +280,22 @@ You can find some examples below:
   }, command_center.mode.ADD_ONLY)
 
   ```
-  (note: the field `category` will not show up
-  in command_center;
-  it is only used to filter the commands)
 
 - Or both
 ```
 :Telescope command_center mode=v category=markdown
 ```
 
+### Converter
 
+The functions in `command_center.converter`
+can be used to convert commands
+used by command_center's to/from
+the conventions used by another plugin.
+
+Current available converters are:
+- `command_center.converter.to_nvim_set_keymap(commands)`
+- `command_center.converter.to_hydra_heads(commands)`
 
 ### configuration
 
@@ -310,6 +316,7 @@ telescope.setup {
         command_center.component.DESCRIPTION,
         command_center.component.KEYBINDINGS,
         command_center.component.COMMAND,
+        command_center.component.CATEGORY,
       },
 
       -- Spcify by what components that search results are ordered;
@@ -318,6 +325,7 @@ telescope.setup {
         command_center.component.DESCRIPTION,
         command_center.component.KEYBINDINGS,
         command_center.component.COMMAND,
+        command_center.component.CATEGORY,
       },
 
       -- Change the separator used to separate each component

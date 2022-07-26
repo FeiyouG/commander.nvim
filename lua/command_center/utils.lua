@@ -1,19 +1,19 @@
 local constants = require("command_center.constants")
 
-local utils = {}
+local M = {}
 
-utils._notified = {}
+M._notified = {}
 local has_notify, notify = pcall(require, "notify")
 
-utils.command_drepcated_notified = false
+M.command_drepcated_notified = false
 
-utils.warn_once = function(message)
-  if (utils._notified[message]) then return end
-  utils.warn(message)
-  utils._notified[message] = true
+M.warn_once = function(message)
+  if (M._notified[message]) then return end
+  M.warn(message)
+  M._notified[message] = true
 end
 
-utils.warn = function(message)
+M.warn = function(message)
   vim.schedule(function()
     if has_notify then
       notify(message, vim.log.levels.WARN, { title = "command_center.nvim" })
@@ -27,7 +27,7 @@ end
 -- Convert keybings to a 2D array
 -- if it is passed in as an array of single keiybindings
 -- then sort the array based on mode
-utils.format_keybindings = function(keybindings)
+M.format_keybindings = function(keybindings)
   keybindings = keybindings or {}
 
   if #keybindings >= 2 and #keybindings <= 3 and type(keybindings[1]) == "string" then
@@ -48,13 +48,13 @@ end
 -- Register the keybindings if they are valid
 -- @param keybindings   properly formatted keybindings (by called format_keybindings)
 -- @param command       the command the the keybindings map to
-utils.register_keybindings = function(keybindings, command)
+M.register_keybindings = function(keybindings, command)
   for _, value in ipairs(keybindings or {}) do
     if type(command) == "function" then
       if vim.fn.has("nvim-0.7") then
         vim.api.nvim_set_keymap(value[1], value[2], '', { callback = command })
       else
-        utils.warn_once("Binding lua function to key is only support in NeoVim 0.7+.")
+        M.warn_once("Binding lua function to key is only support in NeoVim 0.7+.")
       end
     else
       vim.api.nvim_set_keymap(value[1], value[2], command, value[3] or {})
@@ -64,7 +64,7 @@ end
 
 -- Generate the string representation of keybindings
 -- @param keybindings   properly formatted keybindings (by called format_keybindings)
-utils.get_keybindings_string = function(keybindings)
+M.get_keybindings_string = function(keybindings)
   local res = ""
   local mode
   for i, value in ipairs(keybindings or {}) do
@@ -90,7 +90,7 @@ end
 --                    component:  an array specifying what component to display and in what order
 --                    separator: the separator used, default to " "
 -- @param length      a table contains the max length for each component
-utils.get_max_width = function(user_opts, length)
+M.get_max_width = function(user_opts, length)
   user_opts.components = user_opts.components or {
     constants.component.DESCRIPTION,
     constants.component.KEYBINDINGS,
@@ -118,8 +118,8 @@ utils.get_max_width = function(user_opts, length)
   return max_width + 6 -- Leave some margin at the end
 end
 
--- Merge the key value pairs of table1 into table2
-utils.merge_tables = function(t1, t2)
+-- Merge the key value pairs of table2 into table1
+M.merge_tables = function(t1, t2)
   for k, v in pairs(t2) do t1[k] = v end
 end
 
@@ -141,7 +141,7 @@ end
 
 -- Filter items based on filter
 -- return filtered items
-utils.filter_items = function(items, filter)
+M.filter_items = function(items, filter)
   -- Early exit if filter or items are empty
   if not items or not next(items) then return items end
   if not filter or not next(filter) then return items end
@@ -156,8 +156,6 @@ utils.filter_items = function(items, filter)
   end
 
   return filtered_items
-
 end
 
-
-return utils
+return M
