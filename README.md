@@ -28,6 +28,7 @@ and search them quickly through Telescope.
     - [`command_center.add`](#command_centeradd)
     - [`command_center.mode`](#command_centermode)
   - [Filter](#filter)
+  - [Converter](#converter)
   - [configuration](#configuration)
     - [Example configuration](#example-configuration)
 - [Related Projects](#related-projects)
@@ -296,6 +297,9 @@ the conventions used by another plugin.
 Current available converters are:
 - `command_center.converter.to_nvim_set_keymap(commands)`
 - `command_center.converter.to_hydra_heads(commands)`
+
+You can find some examples of converters
+in [wiki page](https://github.com/FeiyouG/command_center.nvim/wiki/Integrations).
 
 ### configuration
 
