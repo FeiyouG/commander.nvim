@@ -24,14 +24,14 @@ local max_length = constants.max_length
 -- Initial opts to defualt values
 local user_opts = {
   components = {
-    M.component.DESCRIPTION,
+    M.component.DESc,
     M.component.KEYBINDINGS,
     M.component.COMMAND,
     M.component.CATEGORY,
   },
 
   sort_by = {
-    M.component.DESCRIPTION,
+    M.component.DESc,
     M.component.KEYBINDINGS,
     M.component.COMMAND,
     M.component.CATEGORY,
@@ -91,7 +91,7 @@ end
 
 local function run(filter)
   filter = filter or {}
-  local filtered_items = utils.filter_items(M.items, filter)
+  local filtered_items = utils.filter_items(M._items, filter)
   local opts = user_opts
 
   -- Only display what the user specifies
@@ -103,9 +103,9 @@ local function run(filter)
     for _, v in ipairs(opts.components) do
 
       -- When user chooses to replace desc with cmd ...
-      if opts.auto_replace_desc_with_cmd and v == component.DESCRIPTION then
-        table.insert(display, entry.value[component.REPLACE_DESC_WITH_CMD])
-        table.insert(component_info, { width = max_length[component.REPLACE_DESC_WITH_CMD] })
+      if opts.auto_replace_desc_with_cmd and v == component.DESC then
+        table.insert(display, entry.value[component.REPLACED_DESC])
+        table.insert(component_info, { width = max_length[component.REPLACED_DESC] })
       else
         table.insert(display, entry.value[v])
         table.insert(component_info, { width = max_length[v] })
@@ -157,7 +157,7 @@ local function run(filter)
         if not selection then return false end
 
         -- Handle keys as if they were typed
-        local cmd = selection.value[component.COMMAND]
+        local cmd = selection.value[component.CMD]
         if type(cmd) == "function" then
           cmd()
         else

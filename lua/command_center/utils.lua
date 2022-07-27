@@ -35,8 +35,9 @@ M.format_keybindings = function(keybindings)
   end
 
   local res = {}
-  for _, value in ipairs(keybindings or {}) do
+  for _, value in ipairs(keybindings) do
     if #value >= 2 and type(value[1]) == "string" and type(value[2]) == "string" then
+      value[3] = value[3] or {}
       table.insert(res, value)
     end
   end
@@ -92,9 +93,9 @@ end
 -- @param length      a table contains the max length for each component
 M.get_max_width = function(user_opts, length)
   user_opts.components = user_opts.components or {
-    constants.component.DESCRIPTION,
-    constants.component.KEYBINDINGS,
-    constants.component.COMMAND,
+    constants.component.DESC,
+    constants.component.KEYS,
+    constants.component.CMD,
   }
   length = length or constants.max_length
   -- Read "seperator" too to avoid breaking existing configurations
@@ -103,8 +104,8 @@ M.get_max_width = function(user_opts, length)
   local max_width = 0
   for i, component in ipairs(user_opts.components) do
 
-    if user_opts.auto_replace_desc_with_cmd and component == constants.component.DESCRIPTION then
-      max_width = max_width + length[constants.component.REPLACE_DESC_WITH_CMD]
+    if user_opts.auto_replace_desc_with_cmd and component == constants.component.DESC then
+      max_width = max_width + length[constants.component.REPLACED_DESC]
     else
       max_width = max_width + length[component]
     end
@@ -126,7 +127,7 @@ end
 local filter_item_by_mode = function(item, mode)
   if not mode or not item then return true end
 
-  for _, keybinding in ipairs(item[constants.component.KEYBINDINGS]) do
+  for _, keybinding in ipairs(item[constants.component.KEYS]) do
     if (keybinding[1] == mode) then
       return true
     end
@@ -143,12 +144,12 @@ end
 -- return filtered items
 M.filter_items = function(items, filter)
   -- Early exit if filter or items are empty
-  if not items or not next(items) then return items end
-  if not filter or not next(filter) then return items end
+  if not items then return items end
+  if not filter then return items end
 
   local filtered_items = {}
 
-  for _, item in ipairs(items) do
+  for _, item in pairs(items) do
     if filter_item_by_mode(item, filter.mode)
       and filter_item_by_category(item, filter.category) then
       table.insert(filtered_items, item)

@@ -17,7 +17,7 @@ and search them quickly through Telescope.
 
 ## Table of Contents
 
-<!-- vim-markdown-toc GFM -->
+<!-- TOC GFM -->
 
 - [Installation](#installation)
   - [vim-plug](#vim-plug)
@@ -27,12 +27,12 @@ and search them quickly through Telescope.
   - [Add commands](#add-commands)
     - [`command_center.add`](#command_centeradd)
     - [`command_center.mode`](#command_centermode)
+  - [Remove commands](#remove-commands)
   - [Filter](#filter)
   - [Converter](#converter)
   - [configuration](#configuration)
     - [Example configuration](#example-configuration)
 - [Related Projects](#related-projects)
-- [To-do](#to-do)
 
 <!-- /TOC -->
 
@@ -89,7 +89,7 @@ Keep reading the following sections.
 
 #### `command_center.add`
 
-The function `command_center.add`
+The function `command_center.add(commands, opts)`
 does two things:
 1. Register the keybindings (if any)
 2. Add the commands to `command_center`
@@ -104,49 +104,49 @@ local silent_noremap = {noremap = true, silent = true}
 
 command_center.add({
   {
-    description = "Search inside current buffer",
+    desc = "Search inside current buffer",
     cmd = "<CMD>Telescope current_buffer_fuzzy_find<CR>",
-    keybindings = { "n", "<leader>fl", noremap },
+    keys = { "n", "<leader>fl", noremap },
   },  {
     -- If no descirption is specified, command is used to replace descirption by default
-    -- You can change this behavior in settigns
+    -- You can change this behavior in setup()
     cmd = "<CMD>Telescope find_files<CR>",
-    keybindings = { "n", "<leader>ff", noremap },
+    keys = { "n", "<leader>ff", noremap },
   }, {
-    -- If no keybindings specified, no keybindings will be displayed or registered
-    description = "Find hidden files",
+    -- If no keys are specified, no keybindings will be displayed nor registered
+    desc = "Find hidden files",
     cmd = "<CMD>Telescope find_files hidden=true<CR>",
   }, {
-    -- You can specify multiple keybindings for the same command ...
-    description = "Show document symbols",
+    -- You can specify multiple keys for the same command ...
+    desc = "Show document symbols",
     cmd = "<CMD>Telescope lsp_document_symbols<CR>",
-    keybindings = {
+    keys = {
       {"n", "<leader>ss", noremap},
       {"n", "<leader>ssd", noremap},
     },
   }, {
     -- ... and for different modes
-    description = "Show function signaure (hover)",
+    desc = "Show function signaure (hover)",
     cmd = "<CMD>lua vim.lsp.buf.hover()<CR>",
-    keybindings = {
+    keys = {
       {"n", "K", silent_noremap },
       {"i", "<C-k>", silent_noremap },
     }
   }, {
     -- You can pass in a key sequence as if they were typed in neovim
-    description = "My favorite key sequence",
+    desc = "My favorite key sequence",
     cmd = "A  -- Add a comment at the end of a line",
-    keybindings = {"n", "<leader>Ac", noremap}
+    keys = {"n", "<leader>Ac", noremap}
   }, {
-    -- You can also pass in a lua functions as command
-    -- NOTE: binding lua funciton with key only works with neovim 0.7
-    description = "Run lua function",
+    -- You can also pass in a lua functions as cmd
+    -- NOTE: binding lua funciton with key requires at least nvim 0.7
+    desc = "Run lua function",
     cmd = function() print("ANONYMOUS LUA FUNCTION") end,
-    keybindings = {"n", "<leader>alf", noremap},
+    keys = {"n", "<leader>alf", noremap},
   }, {
-    -- If no command is specified, then this entry is ignored
-    description = "lsp run linter",
-    keybindings = {"n", "<leader>sf", noremap},
+    -- If no command is specified, then this entry will be ignored
+    desc = "lsp run linter",
+    keys = {"n", "<leader>sf", noremap},
   }
 })
 ```
@@ -154,8 +154,8 @@ command_center.add({
 **NOTE**:
 - If you are on neovim 0.6,
   then you can add a Lua function
-  as a `cmd` and execute it in `command_center`,
-  but you are not able to register it with a keybinding.
+  as a `cmd` and execute it inside `command_center`.
+  However, you are not able to register it with a keybinding.
 
 - If you are on neovim 0.7,
   then you can both register the Lua function
@@ -196,39 +196,43 @@ local silent_noremap = {noremap = true, silent = true}
 -- and organized way to manage your keybinginds
 command_center.add({
   {
-    description = "Find files",
+    desc = "Find files",
     cmd = "<CMR>telescope find_files<CR>",
-    keybindings = { "n", "<leader>ff", noremap },
+    keys = { "n", "<leader>ff", noremap },
   }, {
-    -- If keybindings is not specified, then this enery is ignored
+    -- If keys is not specified, then this enery is ignored
     -- since there is nothing to register
-    description = "Search inside current buffer",
+    desc = "Search inside current buffer",
     cmd = "<CMD>Telescope current_buffer_fuzzy_find<CR>",
   }
-}, command_center.mode.REGISTER_ONLY)
+}, {
+  mode = command_center.mode.REGISTER_ONLY
+})
 
 
--- Only add the commands to command-center but not create the keybindings
--- This is helpful if you already registered the keybindings somewhere else
+-- Only add the commands to command-center but not create the keybindings.
+-- This is helpful if you already registered the keys somewhere else
 -- and want to avoid set the exact keybindings twice
 command_center.add({
   {
-    -- If keybindings are specified,
+    -- If keys are specified,
     -- then they will still show up in command-center but won't be registered
-    description = "Find hidden files",
+    desc = "Find hidden files",
     cmd = "<CMD>Telescope find_files hidden=true<CR>",
-    keybindings = { "n", "<leader>f.f", noremap },
+    keys = { "n", "<leader>f.f", noremap },
   }, {
-    description = "Show document symbols",
+    desc = "Show document symbols",
     cmd = "<CMD>Telescope lsp_document_symbols<CR>",
   }, {
     -- The mode can be even further overridden within each item
-    description = "LSP cdoe actions",
+    desc = "LSP cdoe actions",
     cmd = "<CMD>Telescope lsp_code_actions<CR>",
     keybinginds = { "n", "<leader>sa", noremap },
     mode = command_center.mode.ADD_AND_REGISTER,
   }
-}, command_center.mode.ADD_ONLY)
+}, {
+  mode = command_center.mode.ADD_ONLY
+})
 
 ```
 
@@ -238,6 +242,19 @@ but not for others.
 The resulted `command-center` looks like this:
 
 ![demo2](https://github.com/gfeiyou/command-center.nvim/blob/assets/demo_mode.png)
+
+### Remove commands
+
+You can also remove commands from `command_center`,
+with the following limitations:
+
+1.  You need to pass in a command with the exact same
+    description, command, and keys
+    in order to remove it from `command_centier`.
+1. `command_center` can't unregister keymaps for you.
+
+You can find an example usage
+in the [wiki page](https://github.com/FeiyouG/command_center.nvim/wiki/Integrations).
 
 ### Filter
 
@@ -278,7 +295,29 @@ You can find some examples below:
       keybindings = { "n", "<leader>mp", noremap },
       category = "markdown",
     }
-  }, command_center.mode.ADD_ONLY)
+  })
+
+  -- Or you can set up the category for multiple commands at once
+  command_center.add({
+    {
+      description = "Open git diffview",
+      cmd = "<CMD>DiffviewOpen<CR>",
+      keybindings = { "n", "<leader>gd", noremap },
+    }, {
+      description = "Close current git diffview",
+      cmd = "<CMD>DiffviewClose<CR>",
+      keybindings = { "n", "<leader>gc", noremap },
+    }, {
+      -- category set in a smaller scope takes precedence
+      description = "Toggle markdown preview",
+      cmd = "<CMD>MarkdownPreviewToggle<CR>",
+      keybindings = { "n", "<leader>mp", noremap },
+      category = "markdown",
+    }
+  }, {
+    mode = command_center.mode.ADD_ONLY,
+    category = "git"
+  })
 
   ```
 
@@ -291,19 +330,20 @@ You can find some examples below:
 
 The functions in `command_center.converter`
 can be used to convert commands
-used by command_center's to/from
+used by command_center to/from
 the conventions used by another plugin.
 
 Current available converters are:
 - `command_center.converter.to_nvim_set_keymap(commands)`
 - `command_center.converter.to_hydra_heads(commands)`
 
-You can find some examples of converters
+You can find some example usage of converters
 in [wiki page](https://github.com/FeiyouG/command_center.nvim/wiki/Integrations).
 
 ### configuration
 
-You can customize `command-center`:
+The following is the default configuration
+for `command_center`:
 
 ```lua
 local telescope = require("telescope")
@@ -360,9 +400,9 @@ local noremap = { noremap = true }
 
 command_center.add({
   {
-    description = "Open command_center",
+    desc = "Open command_center",
     cmd = "<CMD>Telescope command_center<CR>",
-    keybindings = {
+    keys = {
       {"n", "<Leader>fc", noremap},
       {"v", "<Leader>fc", noremap},
 
@@ -397,7 +437,3 @@ telescope.load_extension('command_center')
 - [legendary.nvim](https://github.com/mrjones2014/legendary.nvim)
 - [Telescope-command-palette](https://github.com/LinArcX/telescope-command-palette.nvim)
 - [which-key](https://github.com/folke/which-key.nvim)
-
-## To-do
-- [X] Implement filter at the time of invoking `:Telescope Commmand_Center`
-- [ ] Enable adding commands using a similiar format to `nvim_set_keymap`

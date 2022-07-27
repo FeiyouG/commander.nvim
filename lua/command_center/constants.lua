@@ -2,15 +2,15 @@
 local constants = {}
 
 constants.component = {
-  COMMAND = 1,
-  DESCRIPTION = 2,
-  KEYBINDINGS = 3,
+  CMD = 1,
+  DESC = 2,
+  KEYS = 3,
   CATEGORY = 4,
 
   -- Private
-  COMMAND_STR = 5,
-  KEYBINDINGS_STR = 6,
-  REPLACE_DESC_WITH_CMD = 7,
+  CMD_STR = 5,
+  KEYS_STR = 6,
+  REPLACED_DESC = 7,
   ID = 8
 }
 
