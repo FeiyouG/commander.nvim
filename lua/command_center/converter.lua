@@ -36,7 +36,7 @@ local convert_to_helper = function(items, args_to_perserve)
 
       -- Insert additional args to opts
       if args_to_perserve and item[args_to_perserve] then
-        utils.merge_tables(keymap[4], item[args_to_perserve])
+        keymap[4] = vim.tbl_extend("force", keymap[4], item[args_to_perserve])
       end
 
       table.insert(res, keymap)
@@ -48,10 +48,45 @@ local convert_to_helper = function(items, args_to_perserve)
   return res
 end
 
+---Converts a list of commands used by `command_center`
+--- ```lua
+---{
+---  {
+---    desc = ... -- will be inserted into opts
+---    cmd = ...
+---    keys = { mode, lhs [, opts]}
+---  }
+---}
+---```
+---to the format used by `nvim_set_keymap`:
+---```lua
+---{
+--- { mode, lhs, rhs [, opts] }
+---}
+---```
+---@param commands table?: the commands to be converted
 M.to_nvim_set_keymap = function(commands)
   return convert_to_helper(commands)
 end
 
+---Converts a list of commands used by `command_center`
+--- ```lua
+---{
+---  {
+---    desc = ...
+---    cmd = ...
+---    keys = { mode, lhs [, opts]},
+---    hydra_head_args = { ... } -- e.g. optional hydra specific opts; e.g { exit = true }
+---  }
+---}
+---```
+---to the format used by `hydra.nvim`'s heads:
+---```lua
+---{
+--- { lhs, rhs [, opts] }
+---}
+---```
+---@param commands table?: the commands to be converted
 M.to_hydra_heads = function(commands)
   local keybindings = convert_to_helper(commands, "hydra_head_args")
 
@@ -61,6 +96,9 @@ M.to_hydra_heads = function(commands)
   end
 
   return keybindings
+end
+
+M.to_which_key = function(commands)
 end
 
 

@@ -19,19 +19,19 @@ local utils = require("command_center.utils")
 
 local constants = require("command_center.constants")
 local component = constants.component
-local max_length = constants.max_length
+local max_length = constants.max_len
 
 -- Initial opts to defualt values
 local user_opts = {
   components = {
-    M.component.DESc,
+    M.component.DESCRIPTION,
     M.component.KEYBINDINGS,
     M.component.COMMAND,
     M.component.CATEGORY,
   },
 
   sort_by = {
-    M.component.DESc,
+    M.component.DESCRIPTION,
     M.component.KEYBINDINGS,
     M.component.COMMAND,
     M.component.CATEGORY,
@@ -44,8 +44,7 @@ local user_opts = {
 
 -- Override default opts by user
 local function setup(opts)
-  opts = opts or {}
-  utils.merge_tables(user_opts, opts)
+  user_opts = vim.tbl_extend("force", user_opts, opts or {})
 end
 
 -- Custom theme for command center

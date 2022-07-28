@@ -1,7 +1,8 @@
 -- Mimic enum in C
-local constants = {}
+local M = {}
 
-constants.component = {
+M.component = {
+  -- public
   CMD = 1,
   DESC = 2,
   KEYS = 3,
@@ -14,16 +15,19 @@ constants.component = {
   ID = 8
 }
 
-constants.mode = {
+M.mode = {
   ADD_ONLY = 1,
   REGISTER_ONLY = 2,
   ADD_AND_REGISTER = 3,
 }
 
--- Default (minimum) length for each argyment type
--- In the order of constants.component + if_replace_desc_with_cmd
-constants.max_length = { nil, 8, nil, 8, 8, 8, 8, nil}
+-- Set the minimal length for each component to 8
+local MINI_LEN = 8
+M.max_len = {}
+for _, component in pairs(M.component) do
+  M.max_len[component] = MINI_LEN
+end
 
-constants.lua_func_str = "Lua Function"
+M.lua_func_desc = "Lua Function"
 
-return constants
+return M
