@@ -15,11 +15,12 @@ M.add = function(passed_items, opts)
   -- Early exit from if passed in an empty table
   if not passed_items then return end
 
+  -- Configure opts (backward capatibility)
   opts = opts or {}
-
-  local mode = opts
-  if type(opts) == "table" then
-    mode = opts.mode
+  if type(opts) == "number" then
+    opts = { mode = opts }
+  elseif type(opts) == "string" then
+      opts = {category = opts}
   end
 
   for _, item in ipairs(passed_items) do
@@ -33,7 +34,7 @@ M.add = function(passed_items, opts)
     item.cmd_str = type(item.cmd) == "function" and constants.lua_func_str or item.cmd
 
     -- Configure mode and category
-    item.mode = item.mode or mode or constants.mode.ADD_AND_REGISTER
+    item.mode = item.mode or opts.mode or constants.mode.ADD_AND_REGISTER
     item.category = item.category or opts.category or ""
 
     -- Configure desc
