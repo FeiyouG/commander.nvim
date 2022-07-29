@@ -24,16 +24,16 @@ local max_length = constants.max_len
 -- Initial opts to defualt values
 local user_opts = {
   components = {
-    M.component.DESCRIPTION,
-    M.component.KEYBINDINGS,
-    M.component.COMMAND,
+    M.component.DESC,
+    M.component.KEYS,
+    M.component.CMD,
     M.component.CATEGORY,
   },
 
   sort_by = {
-    M.component.DESCRIPTION,
-    M.component.KEYBINDINGS,
-    M.component.COMMAND,
+    M.component.DESC,
+    M.component.KEYS,
+    M.component.CMD,
     M.component.CATEGORY,
   },
 

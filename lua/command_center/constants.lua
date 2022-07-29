@@ -16,9 +16,9 @@ M.component = {
 }
 
 M.mode = {
-  ADD_ONLY = 1,
-  REGISTER_ONLY = 2,
-  ADD_AND_REGISTER = 3,
+  ADD = 1,
+  SET = 2,
+  -- ADD_AND_REGISTER = 3,
 }
 
 -- Set the minimal length for each component to 8

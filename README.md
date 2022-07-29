@@ -245,13 +245,17 @@ The resulted `command-center` looks like this:
 
 ### Remove commands
 
+```lua
+command_center.remove()
+```
+
 You can also remove commands from `command_center`,
 with the following limitations:
 
 1.  You need to pass in a command with the exact same
     description, command, and keys
     in order to remove it from `command_centier`.
-1. `command_center` can't unregister keymaps for you.
+
 
 You can find an example usage
 in the [wiki page](https://github.com/FeiyouG/command_center.nvim/wiki/Integrations).
