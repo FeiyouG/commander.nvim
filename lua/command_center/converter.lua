@@ -48,6 +48,35 @@ local convert_to_helper = function(items, args_to_perserve)
   return res
 end
 
+local convert_from_helper = function(items)
+  -- Early exit from the function if passed in an empty table
+  if not items then return {} end
+
+  local res = {}
+
+  for _, item in ipairs(items) do
+
+    --- { mode, lhs, rhs [, opts] }
+    if #item < 3 then return end
+
+    item = vim.deepcopy(item)
+    local converted_item = {}
+
+    converted_item.cmd = item[3]
+
+    if #item >= 4 then
+      converted_item.desc = item[4].desc
+    end
+
+    converted_item.keys = { item[1], item[2], item[4] }
+
+
+    table.insert(res, converted_item)
+  end
+
+  return res
+end
+
 ---Converts a list of commands used by `command_center`
 --- ```lua
 ---{
@@ -98,7 +127,26 @@ M.to_hydra_heads = function(commands)
   return keybindings
 end
 
-M.to_which_key = function(commands)
+
+---Converts a list of commands used by `nvim_set_keymap`:
+---```lua
+---{
+--- { mode, lhs, rhs [, opts] }
+---}
+---```
+---to the format used by `command_center`:
+--- ```lua
+---{
+---  {
+---    desc = ... -- will be inserted into opts
+---    cmd = ...
+---    keys = { mode, lhs [, opts]}
+---  }
+---}
+---```
+---@param commands table?: the commands to be converted
+M.from_nvim_set_keymap = function(commands)
+  return convert_from_helper(commands)
 end
 
 
