@@ -27,14 +27,14 @@ local user_opts = {
     M.component.DESC,
     M.component.KEYS,
     M.component.CMD,
-    M.component.CATEGORY,
+    M.component.CAT,
   },
 
   sort_by = {
     M.component.DESC,
     M.component.KEYS,
     M.component.CMD,
-    M.component.CATEGORY,
+    M.component.CAT,
   },
 
   separator = " ",
@@ -90,8 +90,8 @@ end
 
 local function run(filter)
   filter = filter or {}
-  local filtered_items = utils.filter_items(M._items, filter)
-  local opts = user_opts
+  local filtered_items, cnt = utils.filter_items(M._items, filter)
+  local opts = vim.deepcopy(user_opts)
 
   -- Only display what the user specifies
   -- And in the right order
@@ -102,7 +102,7 @@ local function run(filter)
     for _, v in ipairs(opts.components) do
 
       -- When user chooses to replace desc with cmd ...
-      if opts.auto_replace_desc_with_cmd and v == component.DESC then
+      if v == component.DESC and opts.auto_replace_desc_with_cmd then
         table.insert(display, entry.value[component.REPLACED_DESC])
         table.insert(component_info, { width = max_length[component.REPLACED_DESC] })
       else
@@ -121,11 +121,11 @@ local function run(filter)
 
   -- Insert the calculated length constants
   opts.max_width = utils.get_max_width(opts, max_length)
-  opts.num_items = #filtered_items
+  opts.num_items = cnt
   opts = themes.command_center(opts)
 
   -- opts = opts or {}
-  local telescope = pickers.new(opts, {
+  local telescope_obj = pickers.new(opts, {
     prompt_title = opts.prompt_title,
 
     finder = finders.new_table({
@@ -187,7 +187,7 @@ local function run(filter)
     vim.cmd("startinsert")
   end)
 
-  telescope:find()
+  telescope_obj:find()
 
   -- MAKR: Restore all settings
   env.vim.o = o

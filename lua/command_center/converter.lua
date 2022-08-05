@@ -1,152 +1,64 @@
 local M = {}
-
 local utils = require("command_center.utils")
 
-local convert_to_helper = function(items, args_to_perserve)
-  -- Early exit from the function if passed in an empty table
-  if not items then return {} end
+local function convert_to_helper(items, opts, args_to_perserve, callback)
 
-  local res = {}
+  if not utils.is_nonempty_list(items) then return end
+  opts = utils.convert_opts(opts)
+
 
   for _, item in ipairs(items) do
 
-    -- Make a deepcopy to avoid modifying parameters
-    item = vim.deepcopy(item)
-
-    -- Valid and configure cmd
-    item.cmd = item.cmd or item.command
-    if not item.cmd then goto continue end
-
-    -- Configure desc
-    item.desc = item.desc or item.description or ""
-
-    -- Configure keys
-    item.keys = item.keys or item.keybindings
-    item.keys = utils.format_keybindings(item.keys)
-
-    -- Convert keybindings
-    for _, keymap in ipairs(item.keys) do
-      -- nvim_set_keymap({mode}, {lhs}, {rhs}, {*opts})
-
-      -- insert cmd as rhs
-      table.insert(keymap, 3, item.cmd)
-
-      -- Insert desc into opts
-      keymap[4]["desc"] = item.description
-
-      -- Insert additional args to opts
-      if args_to_perserve and item[args_to_perserve] then
-        keymap[4] = vim.tbl_extend("force", keymap[4], item[args_to_perserve])
+    if args_to_perserve then
+      local perserved = item[args_to_perserve] or opts[args_to_perserve]
+      if perserved then
+        opts.keys_opts = vim.tbl_extend("force", opts.keys_opts or {}, perserved)
       end
+    end
 
-      table.insert(res, keymap)
+    item = utils.convert_item(item, opts)
+    if not item then goto continue end
+
+    for _, key in ipairs(item.keys) do
+      callback(key, item)
     end
 
     ::continue::
   end
 
-  return res
 end
 
-local convert_from_helper = function(items)
-  -- Early exit from the function if passed in an empty table
-  if not items then return {} end
+---Converts a list of commands used by `command_center`
+---@param commands table?: the commands to be converted
+function M.to_nvim_set_keymap(commands, opts)
+  local keys = {}
 
-  local res = {}
+  convert_to_helper(commands, opts, nil, function(key)
+    vim.list_extend(keys, { { key.mode, key.lhs, key.rhs, key.opts } })
+  end)
 
-  for _, item in ipairs(items) do
+  return keys
 
-    --- { mode, lhs, rhs [, opts] }
-    if #item < 3 then return end
+end
 
-    item = vim.deepcopy(item)
-    local converted_item = {}
+---Converts a list of commands used by `command_center`
+---@param commands table?: the commands to be converted
+function M.to_hydra_heads(commands, opts)
+  local keys = {}
 
-    converted_item.cmd = item[3]
+  convert_to_helper(commands, opts, "hydra_head_args", function(key)
 
-    if #item >= 4 then
-      converted_item.desc = item[4].desc
+    local cmd = key.rhs
+
+    if key.opts and key.opts.callback then
+      cmd = key.opts.callback
+      key.opts.callback = nil
     end
 
-    converted_item.keys = { item[1], item[2], item[4] }
+    vim.list_extend(keys, { { key.lhs, cmd, key.opts } })
+  end)
 
-
-    table.insert(res, converted_item)
-  end
-
-  return res
-end
-
----Converts a list of commands used by `command_center`
---- ```lua
----{
----  {
----    desc = ... -- will be inserted into opts
----    cmd = ...
----    keys = { mode, lhs [, opts]}
----  }
----}
----```
----to the format used by `nvim_set_keymap`:
----```lua
----{
---- { mode, lhs, rhs [, opts] }
----}
----```
----@param commands table?: the commands to be converted
-M.to_nvim_set_keymap = function(commands)
-  return convert_to_helper(commands)
-end
-
----Converts a list of commands used by `command_center`
---- ```lua
----{
----  {
----    desc = ...
----    cmd = ...
----    keys = { mode, lhs [, opts]},
----    hydra_head_args = { ... } -- e.g. optional hydra specific opts; e.g { exit = true }
----  }
----}
----```
----to the format used by `hydra.nvim`'s heads:
----```lua
----{
---- { lhs, rhs [, opts] }
----}
----```
----@param commands table?: the commands to be converted
-M.to_hydra_heads = function(commands)
-  local keybindings = convert_to_helper(commands, "hydra_head_args")
-
-  for _, keybinding in ipairs(keybindings) do
-    -- remove mode
-    table.remove(keybinding, 1)
-  end
-
-  return keybindings
-end
-
-
----Converts a list of commands used by `nvim_set_keymap`:
----```lua
----{
---- { mode, lhs, rhs [, opts] }
----}
----```
----to the format used by `command_center`:
---- ```lua
----{
----  {
----    desc = ... -- will be inserted into opts
----    cmd = ...
----    keys = { mode, lhs [, opts]}
----  }
----}
----```
----@param commands table?: the commands to be converted
-M.from_nvim_set_keymap = function(commands)
-  return convert_from_helper(commands)
+  return keys
 end
 
 

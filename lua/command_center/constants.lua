@@ -3,16 +3,16 @@ local M = {}
 
 M.component = {
   -- public
-  CMD = 1,
-  DESC = 2,
-  KEYS = 3,
-  CATEGORY = 4,
+  CMD = "cmd",
+  DESC = "desc",
+  KEYS = "keys",
+  CAT = "cat",
 
   -- Private
-  CMD_STR = 5,
-  KEYS_STR = 6,
-  REPLACED_DESC = 7,
-  ID = 8
+  CMD_STR = "cmd_str",
+  KEYS_STR = "keys_str",
+  REPLACED_DESC = "replaced_desc",
+  ID = "id",
 }
 
 M.mode = {
@@ -28,6 +28,8 @@ for _, component in pairs(M.component) do
   M.max_len[component] = MINI_LEN
 end
 
-M.lua_func_desc = "Lua Function"
+M.anon_lua_func_name = "<anonymous> lua function"
+
+M.keymap_modes = { "n", "i", "c", "x", "v" }
 
 return M
