@@ -45,14 +45,14 @@ to be installed.
 
 ```vim
 Plug "nvim-telescope/telescope.nvim"
-Plug "FeiyouG/command-center.nvim"
+Plug "FeiyouG/command_center.nvim"
 ```
 
 ### Packer
 
 ```lua
 use {
-  "FeiyouG/command-center.nvim",
+  "FeiyouG/command_center.nvim",
   requires = { "nvim-telescope/telescope.nvim" }
 }
 ```
