@@ -30,6 +30,6 @@ end
 
 M.anon_lua_func_name = "<anonymous> lua function"
 
-M.keymap_modes = { "n", "i", "c", "x", "v" }
+M.keymap_modes = { "n", "i", "c", "x", "v", "t" }
 
 return M
