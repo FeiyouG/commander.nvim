@@ -176,7 +176,7 @@ to override this behavior.
 mode = {
   ADD = 1,      -- only add the commands to command_center
   SET = 2,      -- only set the keymaps
-  AND_SET = 3,  -- add the commands and set the keymaps
+  ADD_SET = 3,  -- add the commands and set the keymaps
 }
 ```
 
