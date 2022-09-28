@@ -408,7 +408,7 @@ telescope.setup {
     command_center = {
       components = {
         command_center.component.DESC,
-        command_center.component.KYES,
+        command_center.component.KEYS,
       },
       sort_by = {
         command_center.component.DESC,
