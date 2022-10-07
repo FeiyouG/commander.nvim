@@ -21,32 +21,6 @@ local constants = require("command_center.constants")
 local component = constants.component
 local max_length = constants.max_len
 
--- Initial opts to defualt values
-local user_opts = {
-  components = {
-    M.component.DESC,
-    M.component.KEYS,
-    M.component.CMD,
-    M.component.CAT,
-  },
-
-  sort_by = {
-    M.component.DESC,
-    M.component.KEYS,
-    M.component.CMD,
-    M.component.CAT,
-  },
-
-  separator = " ",
-  auto_replace_desc_with_cmd = true,
-  prompt_title = "Command Center",
-}
-
--- Override default opts by user
-local function setup(opts)
-  user_opts = vim.tbl_extend("force", user_opts, opts or {})
-end
-
 -- Custom theme for command center
 function themes.command_center(opts)
   opts = opts or {}
@@ -88,6 +62,34 @@ function themes.command_center(opts)
   return vim.tbl_deep_extend("force", theme_opts, opts)
 end
 
+-- Initial opts to defualt values
+local user_opts = {
+  components = {
+    M.component.DESC,
+    M.component.KEYS,
+    M.component.CMD,
+    M.component.CAT,
+  },
+
+  sort_by = {
+    M.component.DESC,
+    M.component.KEYS,
+    M.component.CMD,
+    M.component.CAT,
+  },
+
+  separator = " ",
+  auto_replace_desc_with_cmd = true,
+  prompt_title = "Command Center",
+  theme = themes.command_center,
+}
+
+-- Override default opts by user
+local function setup(opts)
+  user_opts = vim.tbl_extend("force", user_opts, opts or {})
+end
+
+
 local function run(filter)
   filter = filter or {}
   local filtered_items, cnt = utils.filter_items(M._items, filter)
@@ -122,7 +124,8 @@ local function run(filter)
   -- Insert the calculated length constants
   opts.max_width = utils.get_max_width(opts, max_length)
   opts.num_items = cnt
-  opts = themes.command_center(opts)
+  -- opts = themes.command_center(opts)
+  opts = opts.theme(opts)
 
   -- opts = opts or {}
   local telescope_obj = pickers.new(opts, {

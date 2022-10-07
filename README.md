@@ -14,7 +14,6 @@ and search them quickly through Telescope.
   [breaking changes](https://github.com/FeiyouG/command_center.nvim/issues/4)
   for `command_center.nvim`.
 
-
 ## Table of Contents
 
 <!-- TOC GFM -->
@@ -22,24 +21,23 @@ and search them quickly through Telescope.
 - [Install](#install)
   - [vim-plug](#vim-plug)
   - [Packer](#packer)
-- [Use](#use)
+- [Usage](#usage)
   - [Setup](#setup)
+  - [Configure](#configure)
+    - [Example configuration](#example-configuration)
   - [Add commands](#add-commands)
     - [`command_center.add`](#command_centeradd)
     - [`command_center.mode`](#command_centermode)
   - [Filter](#filter)
-  - [`command_center.remove()`](#command_centerremove)
+  - [`command_center.remove`](#command_centerremove)
   - [`command_center.converter`](#command_centerconverter)
-- [Configure](#configure)
-  - [Example configuration](#example-configuration)
 - [Related Projects](#related-projects)
 
 <!-- /TOC -->
 
 ## Install
 
-This plugin requires [Telescope](https://github.com/nvim-telescope/telescope.nvim)
-to be installed.
+This plugin requires [Telescope](https://github.com/nvim-telescope/telescope.nvim).
 
 ### vim-plug
 
@@ -57,7 +55,7 @@ use {
 }
 ```
 
-## Use
+## Usage
 
 ### Setup
 
@@ -84,6 +82,90 @@ the above keybindings can also be created
 in [`command-center`-way](#example-configuration).
 Keep reading the following sections.
 
+### Configure
+
+The following is the default configuration
+for `command_center`:
+
+```lua
+{
+  -- Specify what components are shown in telescope prompt;
+  -- Order matters, and components may repeat
+  components = {
+    command_center.component.DESC,
+    command_center.component.KEYS,
+    command_center.component.CMD,
+    command_center.component.CATEGORY,
+  },
+
+  -- Spcify by what components that search results are ordered;
+  -- Order does not matter
+  sort_by = {
+    command_center.component.DESC,
+    command_center.component.KEYS,
+    command_center.component.CMD,
+    command_center.component.CATEGORY,
+  },
+
+  -- Change the separator used to separate each component
+  separator = " ",
+
+  -- When set to false,
+  -- The description compoenent will be empty if it is not specified
+  auto_replace_desc_with_cmd = true,
+
+  -- Default title to Telescope prompt
+  prompt_title = "Command Center",
+
+  -- can be any builtin or custom telescope theme
+  theme = themes.command_center,
+}
+```
+
+#### Example configuration
+
+Below is my personal configuration for `command_center`.
+You can use it as a reference.
+
+```lua
+local telescope = require("telescope")
+local command_center = require("command_center")
+local noremap = { noremap = true }
+
+command_center.add({
+  {
+    desc = "Open command_center",
+    cmd = "<CMD>Telescope command_center<CR>",
+    keys = {
+      {"n", "<Leader>fc", noremap},
+      {"v", "<Leader>fc", noremap},
+
+      -- If ever hesitate when using telescope start with <leader>f,
+      -- also open command center
+      {"n", "<Leader>f", noremap},
+      {"v", "<Leader>f", noremap},
+    },
+  }
+}, command_center.mode.REGISTER_ONLY)
+
+telescope.setup {
+  extensions = {
+    command_center = {
+      components = {
+        command_center.component.DESC,
+        command_center.component.KEYS,
+      },
+      sort_by = {
+        command_center.component.DESC,
+        command_center.component.KEYS,
+      },
+      auto_replace_desc_with_cmd = false,
+    }
+  }
+}
+
+telescope.load_extension('command_center')
+```
 
 ### Add commands
 
@@ -150,13 +232,6 @@ command_center.add({
   }
 })
 ```
-
-**NOTE**:
-- If you are on neovim 0.6,
-  then you can add a Lua function
-  as a `cmd` and execute it inside `command_center`.
-  However, you are not able to set the keymaps
-  for the lua function.
 
 If you have above snippet in your config,
 `command-center` will create your specified keybindings automatically.
@@ -244,19 +319,18 @@ You can filter the commands upon invoking `:Telescope command_center`.
 Currently, you can filter either by mode or category.
 You can find some examples below:
 
-- Show only commands that has keymaps that work in normal mode
+1. Show only commands that has keymaps that work in normal mode
 ```
 :Telescope command_center mode=n
 ```
 
-- Show only commands that in "git" category
+2. Show only commands that in "git" category
   ```
   :Telescope command_center category=git
   ```
-  To make this work,
-  you have to first set the category
-  when you add a command.
-  For example:
+
+  You can specify the category of a command
+  as follows:
 
   ```lua
   command_center.add({
@@ -302,12 +376,12 @@ You can find some examples below:
 
   ```
 
-- Or both
+3. Or both
 ```
 :Telescope command_center mode=n category=markdown
 ```
 
-### `command_center.remove()`
+### `command_center.remove`
 
 ```lua
 command_center.remove(commands, opts)
@@ -340,87 +414,6 @@ You can find some example usage of converters
 in [wiki page](https://github.com/FeiyouG/command_center.nvim/wiki/Integrations).
 
 
-## Configure
-
-The following is the default configuration
-for `command_center`:
-
-```lua
-{
-  -- Specify what components are shown in telescope prompt;
-  -- Order matters, and components may repeat
-  components = {
-    command_center.component.DESC,
-    command_center.component.KEYS,
-    command_center.component.CMD,
-    command_center.component.CATEGORY,
-  },
-
-  -- Spcify by what components that search results are ordered;
-  -- Order does not matter
-  sort_by = {
-    command_center.component.DESC,
-    command_center.component.KEYS,
-    command_center.component.CMD,
-    command_center.component.CATEGORY,
-  },
-
-  -- Change the separator used to separate each component
-  separator = " ",
-
-  -- When set to false,
-  -- The description compoenent will be empty if it is not specified
-  auto_replace_desc_with_cmd = true,
-
-  -- Default title to Telescope prompt
-  prompt_title = "Command Center",
-}
-```
-
-### Example configuration
-
-Below is my personal configuration for `command_center`.
-You can use it as a reference.
-
-```lua
-local telescope = require("telescope")
-local command_center = require("command_center")
-local noremap = { noremap = true }
-
-command_center.add({
-  {
-    desc = "Open command_center",
-    cmd = "<CMD>Telescope command_center<CR>",
-    keys = {
-      {"n", "<Leader>fc", noremap},
-      {"v", "<Leader>fc", noremap},
-
-      -- If ever hesitate when using telescope start with <leader>f,
-      -- also open command center
-      {"n", "<Leader>f", noremap},
-      {"v", "<Leader>f", noremap},
-    },
-  }
-}, command_center.mode.REGISTER_ONLY)
-
-telescope.setup {
-  extensions = {
-    command_center = {
-      components = {
-        command_center.component.DESC,
-        command_center.component.KEYS,
-      },
-      sort_by = {
-        command_center.component.DESC,
-        command_center.component.KEYS,
-      },
-      auto_replace_desc_with_cmd = false,
-    }
-  }
-}
-
-telescope.load_extension('command_center')
-```
 ## Related Projects
 
 - [which-key](https://github.com/folke/which-key.nvim)
