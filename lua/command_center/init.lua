@@ -21,6 +21,7 @@ local function process_commands(items, opts, set_callback, add_callback)
     item = utils.convert_item(item, opts)
     if not item then goto continue end
 
+
     -- Register/unregister the keybindings
     if item.mode == constants.mode.SET or item.mode == constants.mode.ADD_SET then
       if type(set_callback) == "function" then

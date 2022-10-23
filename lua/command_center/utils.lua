@@ -74,7 +74,7 @@ local function validate_item(item)
       end
       return false
     end, "comment_center.mode" },
-    category = { item.category, "string", true },
+    cat = { item.cat, "string", true },
 
     hydra_head_args = { item.hydra_head_args, "table", true },
   })
@@ -208,13 +208,13 @@ function M.convert_keys(desc, cmd, keys, opts)
   return converted_key
 end
 
- function M.set_converted_keys(keys)
+function M.set_converted_keys(keys)
   for _, key in ipairs(keys) do
     vim.keymap.set(key.mode, key.lhs, key.rhs, key.opts)
   end
 end
 
- function M.del_converted_keys(keys)
+function M.del_converted_keys(keys)
   for _, key in ipairs(keys) do
     vim.keymap.del(key.mode, key.lhs, key.opts)
   end
@@ -255,7 +255,6 @@ function M.format_keys(keys, opts)
   table.sort(formatted_keys, function(lhs, rhs) return lhs[1] < rhs[2] end)
   return formatted_keys
 end
-
 
 ---Generate the string representation of keybindings
 ---@param keybindings table: properly formatted keybindings (by called format_keybindings)
@@ -302,10 +301,9 @@ function M.get_max_width(user_opts, length)
   return max_width + 6 -- Leave some margin at the end
 end
 
-
 -- Filter items based on filter
 ---@return table: filtered item as a list
-function M.filter_items(items,filter)
+function M.filter_items(items, filter)
 
   local function filter_mode(item, mode)
     for _, key in ipairs(item) do

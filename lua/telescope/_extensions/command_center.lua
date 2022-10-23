@@ -93,6 +93,7 @@ end
 local function run(filter)
   filter = filter or {}
   local filtered_items, cnt = utils.filter_items(M._items, filter)
+
   local opts = vim.deepcopy(user_opts)
 
   -- Only display what the user specifies
