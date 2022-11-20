@@ -7,7 +7,7 @@ local M = {}
 -- Best effort to infer function names for actions.which_key
 -- Copied from https://github.com/nvim-telescope/telescope.nvim/blob/75a5e5065376d9103fc4bafc3ae6327304cee6e9/lua/telescope/actions/utils.lua#L110
 local function get_lua_func_name(func_ref)
-  local Path = require "plenary.path"
+  local Path = require("plenary.path")
   local info = debug.getinfo(func_ref)
   local fname
   -- if fn defined in string (ie loadstring) source is string
@@ -24,7 +24,7 @@ local function get_lua_func_name(func_ref)
   end
 
   -- test if assignment or named function, otherwise anon
-  if (fname:match "=" == nil) and (fname:match "function %S+%(" == nil) then
+  if (fname:match("=") == nil) and (fname:match("function %S+%(") == nil) then
     return constants.anon_lua_func_name
   else
     local patterns = {
@@ -67,13 +67,21 @@ local function validate_item(item)
     cmd = { item.cmd, { "string", "function" }, false },
     desc = { item.desc, "string", true },
     keys = { item.keys, "table", true },
-    mode = { item.mode, function(mode)
-      if not mode then return true end
-      for _, mode_num in pairs(constants.mode) do
-        if mode_num == mode then return true end
-      end
-      return false
-    end, "comment_center.mode" },
+    mode = {
+      item.mode,
+      function(mode)
+        if not mode then
+          return true
+        end
+        for _, mode_num in pairs(constants.mode) do
+          if mode_num == mode then
+            return true
+          end
+        end
+        return false
+      end,
+      "comment_center.mode",
+    },
     cat = { item.cat, "string", true },
 
     hydra_head_args = { item.hydra_head_args, "table", true },
@@ -86,17 +94,23 @@ end
 ---@return string|nil err: an error message if the `is_validae` if failed; nil otherwise
 local function validate_raw_key(key)
   return validate({
-    mode = { key[1], function(mode)
-      if not mode then return false end
-      mode = type(mode) == "string" and { mode } or mode
-
-      for _, m in ipairs(mode) do
-        if not vim.tbl_contains(constants.keymap_modes, m) then
+    mode = {
+      key[1],
+      function(mode)
+        if not mode then
           return false
         end
-      end
-      return true
-    end, "one of " .. vim.inspect(constants.keymap_modes) },
+        mode = type(mode) == "string" and { mode } or mode
+
+        for _, m in ipairs(mode) do
+          if not vim.tbl_contains(constants.keymap_modes, m) then
+            return false
+          end
+        end
+        return true
+      end,
+      "one of " .. vim.inspect(constants.keymap_modes),
+    },
     lhs = { key[2], "string", false },
     opts = { key[3], "table", true },
   })
@@ -138,16 +152,17 @@ function M.convert_item(item, opts)
 
   local res, err = validate_item(item)
   if not res then
-    local message = "Invalid declaration of item; item will be ignored:\n" ..
-        (err or "") .. "\n" ..
-        vim.inspect(item)
+    local message = "Invalid declaration of item; item will be ignored:\n"
+        .. (err or "")
+        .. "\n"
+        .. vim.inspect(item)
     vim.notify(message, vim.log.levels.WARN)
     return nil
   end
 
   item.keys = M.convert_keys(item.desc, item.cmd, item.keys, opts.keys_opts)
   item.keys_str = M.get_keys_str(item.keys)
-  item.cmd_str = type(item.cmd) == 'function' and get_lua_func_name(item.cmd) or item.cmd
+  item.cmd_str = type(item.cmd) == "function" and get_lua_func_name(item.cmd) or item.cmd
   item.replaced_desc = item.desc and item.desc or item.cmd_str
   item.id = item.desc .. item.cmd_str .. item.keys_str
 
@@ -166,8 +181,9 @@ function M.convert_opts(opts)
 end
 
 function M.convert_keys(desc, cmd, keys, opts)
-
-  if not M.is_nonempty_list(keys) then return {} end
+  if not M.is_nonempty_list(keys) then
+    return {}
+  end
   opts = opts and vim.deepcopy(opts) or {}
 
   -- Check whether cmd is a string or a lua callback
@@ -176,19 +192,21 @@ function M.convert_keys(desc, cmd, keys, opts)
     cmd = ""
   end
 
-  if desc then opts.desc = desc end
+  if desc then
+    opts.desc = desc
+  end
 
   -- Convert keys to a 2D list if it is a 1D list
   local is_valid, _ = validate_raw_key(keys)
-  if is_valid then keys = { keys } end
+  if is_valid then
+    keys = { keys }
+  end
 
   local converted_key = {}
   for _, key in ipairs(keys) do
     local res, err = validate_raw_key(key)
     if not res then
-      local message = "Invalid declaration of keys:\n" ..
-          err .. "\n" ..
-          vim.inspect(key)
+      local message = "Invalid declaration of keys:\n" .. err .. "\n" .. vim.inspect(key)
       vim.notify(message, vim.log.levels.WARN)
       goto continue
     end
@@ -197,7 +215,7 @@ function M.convert_keys(desc, cmd, keys, opts)
       mode = key[1],
       lhs = key[2],
       rhs = cmd,
-      opts = vim.tbl_extend("keep", key[4] or {}, opts)
+      opts = vim.tbl_extend("keep", key[4] or {}, opts),
     }
 
     table.insert(converted_key, new_key)
@@ -225,7 +243,9 @@ end
 ---finally sort the keys based on mode
 ---@return table: a formatted keys in a 2D array
 function M.format_keys(keys, opts)
-  if not keys or vim.tbl_isempty(keys) then return {} end
+  if not keys or vim.tbl_isempty(keys) then
+    return {}
+  end
   opts = opts or {}
 
   -- Convert keys to a 2D list if it is 1D list
@@ -238,9 +258,7 @@ function M.format_keys(keys, opts)
   for _, key in ipairs(keys) do
     local res, err = validate_raw_key(key)
     if not res then
-      local message = "Invalid declaration of keys:\n" ..
-          err .. "in\n" ..
-          vim.inspect(key)
+      local message = "Invalid declaration of keys:\n" .. err .. "in\n" .. vim.inspect(key)
       vim.notify(message, vim.log.levels.WARN)
       goto continue
     end
@@ -252,7 +270,9 @@ function M.format_keys(keys, opts)
     ::continue::
   end
 
-  table.sort(formatted_keys, function(lhs, rhs) return lhs[1] < rhs[2] end)
+  table.sort(formatted_keys, function(lhs, rhs)
+    return lhs[1] < rhs[2]
+  end)
   return formatted_keys
 end
 
@@ -284,7 +304,6 @@ end
 function M.get_max_width(user_opts, length)
   local max_width = 0
   for i, component in ipairs(user_opts.components) do
-
     if component == constants.component.DESC and user_opts.auto_replace_desc_with_cmd then
       max_width = max_width + length[constants.component.REPLACED_DESC]
     else
@@ -295,7 +314,6 @@ function M.get_max_width(user_opts, length)
     if i > 0 then
       max_width = max_width + #user_opts.separator
     end
-
   end
 
   return max_width + 6 -- Leave some margin at the end
@@ -303,34 +321,55 @@ end
 
 -- Filter items based on filter
 ---@return table: filtered item as a list
+---@return integer: number of items returned
 function M.filter_items(items, filter)
-
-  local function filter_mode(item, mode)
-    for _, key in ipairs(item) do
-      if key.mode == mode then
-        return true
+  local filter_func = {
+    mode = function(item, mode)
+      for _, key in ipairs(item.keys or {}) do
+        if key.mode == mode then
+          return true
+        end
       end
-    end
-    return false
-  end
+      return false
+    end,
 
-  local function filter_cat(item, cat)
-    return item.cat == cat
-  end
+    cat = function(item, cat)
+      return item.cat == cat
+    end,
+
+    -- @deprecated
+    category = function(item, cat)
+      return item.cat == cat
+    end,
+  }
 
   local count = 0
-  return vim.tbl_filter(function(item)
+  local filtered_item = vim.tbl_filter(function(item)
     for k, v in pairs(filter) do
-      if k == "mode" then
-        if not filter_mode(item, v) then return false end
-      elseif k == "category" or k == "cat" then
-        if not filter_cat(item, v) then return false end
+      if not filter_func[k](item, v) then
+        return false
       end
     end
-    count = count + 1
 
+    count = count + 1
     return true
-  end, items), count
+  end, items)
+
+  return filtered_item, count
+end
+
+function M.sort_items(items, sort_by)
+  table.sort(items, function(a, b)
+    for _, k in ipairs(sort_by) do
+      if a[k] and b[k] then
+        return a[k] < b[k]
+      end
+    end
+    return a.id < b.id
+  end)
+
+  -- sort is in place, but we return items so it is consistent with filter_items function
+  return items
 end
 
 return M
