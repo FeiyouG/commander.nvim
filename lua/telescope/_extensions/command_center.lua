@@ -89,10 +89,10 @@ local function setup(opts)
   user_opts = vim.tbl_extend("force", user_opts, opts or {})
 end
 
-
 local function run(filter)
   filter = filter or {}
   local filtered_items, cnt = utils.filter_items(M._items, filter)
+  filtered_items = utils.sort_items(filtered_items, user_opts.sort_by)
 
   local opts = vim.deepcopy(user_opts)
 
@@ -103,7 +103,6 @@ local function run(filter)
     local component_info = {}
 
     for _, v in ipairs(opts.components) do
-
       -- When user chooses to replace desc with cmd ...
       if v == component.DESC and opts.auto_replace_desc_with_cmd then
         table.insert(display, entry.value[component.REPLACED_DESC])
@@ -135,7 +134,6 @@ local function run(filter)
     finder = finders.new_table({
       results = filtered_items,
       entry_maker = function(entry)
-
         -- Concatenate components specified in `sort_by` for better sorting
         local ordinal = ""
         for _, v in ipairs(opts.sort_by) do
@@ -145,7 +143,7 @@ local function run(filter)
         return {
           value = entry,
           display = make_display,
-          ordinal = ordinal
+          ordinal = ordinal,
         }
       end,
     }),
@@ -157,7 +155,9 @@ local function run(filter)
         actions.close(prompt_bufnr)
         local selection = action_state.get_selected_entry()
 
-        if not selection then return false end
+        if not selection then
+          return false
+        end
 
         -- Handle keys as if they were typed
         local cmd = selection.value[component.CMD]
@@ -170,20 +170,18 @@ local function run(filter)
       end)
       return true
     end,
-
   })
 
   -- MARK: Save all current settings
   -- vim.deepcopy() can't copy getfenv(),
   -- Use force extend instead, as inpsired by hydra.nvim
-  local env = vim.tbl_deep_extend('force', getfenv(), {
-    vim = { o = {}, go = {}, bo = {}, wo = {} }
+  local env = vim.tbl_deep_extend("force", getfenv(), {
+    vim = { o = {}, go = {}, bo = {}, wo = {} },
   }) --[[@as table]]
-  local o   = env.vim.o
-  local go  = env.vim.go
-  local bo  = env.vim.bo
-  local wo  = env.vim.wo
-
+  local o = env.vim.o
+  local go = env.vim.go
+  local bo = env.vim.bo
+  local wo = env.vim.wo
 
   -- MARK: Start telescope
   vim.schedule(function()

@@ -5,22 +5,26 @@ local constants = require("command_center.constants")
 local component = constants.component
 local max_len = constants.max_len
 
+--Actual comamnd_center.items are stored here
+M._items = {}
+
 ---Process commands
 ---@param items table? commands to be processed
 ---@param opts table? additional options
 ---@param add_callback function? funciton to be excuted if item's `mode` contains `ADD`
 ---@param set_callback function? function to be executed if item's `mode` contains `SET`
 local function process_commands(items, opts, set_callback, add_callback)
-
   -- Early exit from items is not an non-empty list
-  if not utils.is_nonempty_list(items) then return end
+  if not utils.is_nonempty_list(items) then
+    return
+  end
   opts = utils.convert_opts(opts)
 
   for _, item in ipairs(items) do
-
     item = utils.convert_item(item, opts)
-    if not item then goto continue end
-
+    if not item then
+      goto continue
+    end
 
     -- Register/unregister the keybindings
     if item.mode == constants.mode.SET or item.mode == constants.mode.ADD_SET then
@@ -41,22 +45,22 @@ local function process_commands(items, opts, set_callback, add_callback)
   end
 end
 
---Actual comamnd_center.items are stored here
-M._items = {}
-
 ---Add commands into command_center if `mode` contains `ADD`;
 ---Set the keybindings in the command if `mode` constains `SET`
 ---@param items table? the list of commands to be removed; do nothing if nil or empty
 ---@param opts table? additional options
 function M.add(items, opts)
-
   local set_callback = function(id, item)
-    if M._items[id] then return end
+    if M._items[id] then
+      return
+    end
     utils.set_converted_keys(item.keys)
   end
 
   local add_callback = function(id, item)
-    if M._items[id] then return end
+    if M._items[id] then
+      return
+    end
 
     -- Update max length
     for _, comp in pairs(constants.component) do
@@ -78,15 +82,18 @@ end
 ---@param items table the list of commands to be removed; do nothing if nil or empty
 ---@param opts table? additional options; share the same format as the opts for `add()`
 function M.remove(items, opts)
-
   local set_callback = function(id, item)
-    if not M._items[id] then return end
+    if not M._items[id] then
+      return
+    end
     -- utils.delete_keybindings(item.keys, item.cmd)
     utils.del_converted_keys(item.keys)
   end
 
   local add_callback = function(id, _)
-    if not M._items[id] then return end
+    if not M._items[id] then
+      return
+    end
     M._items[id] = nil
   end
 
@@ -111,7 +118,7 @@ M.mode = {
 
   ADD = constants.mode.ADD,
   SET = constants.mode.SET,
-  ADD_SET = constants.mode.ADD_SET
+  ADD_SET = constants.mode.ADD_SET,
 }
 
 M.component = {
@@ -132,6 +139,5 @@ M.component = {
   KEYS = constants.component.KEYS_STR,
   CAT = constants.component.CAT,
 }
-
 
 return M

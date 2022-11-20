@@ -98,7 +98,7 @@ for `command_center`:
     command_center.component.CATEGORY,
   },
 
-  -- Spcify by what components that search results are ordered;
+  -- Spcify by what components the commands is sorted
   -- Order does not matter
   sort_by = {
     command_center.component.DESC,
