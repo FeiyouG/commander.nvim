@@ -22,8 +22,9 @@ and search them quickly through Telescope.
   - [vim-plug](#vim-plug)
   - [Packer](#packer)
 - [Usage](#usage)
-  - [Setup](#setup)
-  - [Configure](#configure)
+  - [Setup and Configuration](#setup-and-configuration)
+    - [Setup](#setup)
+    - [Configuration](#configuration)
     - [Example configuration](#example-configuration)
   - [Add commands](#add-commands)
     - [`command_center.add`](#command_centeradd)
@@ -57,7 +58,9 @@ use {
 
 ## Usage
 
-### Setup
+### Setup and Configuration
+
+#### Setup
 
 First,
 you will need to load this plugin
@@ -82,10 +85,26 @@ the above keybindings can also be created
 in [`command-center`-way](#example-configuration).
 Keep reading the following sections.
 
-### Configure
+#### Configuration
+
+Configuration can be done through
+`telescope.setup` function:
+
+```lua
+require("telescope").setup {
+  extensions = {
+    command_center = {
+      -- Your configurations go here
+    }
+  }
+}
+
+```
 
 The following is the default configuration
-for `command_center`:
+for `command_center`,
+and you only need to pass the settings that you want to change
+to `require("telescope").setup`:
 
 ```lua
 {
@@ -118,7 +137,7 @@ for `command_center`:
   prompt_title = "Command Center",
 
   -- can be any builtin or custom telescope theme
-  theme = themes.command_center,
+  theme = require("telescope.themes").command_center,
 }
 ```
 
