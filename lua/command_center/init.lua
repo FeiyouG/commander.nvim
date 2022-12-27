@@ -1,104 +1,40 @@
+local Layer = require("command_center.model.Layer")
+local Config = require("command_center.model.Config")
+
+local Component = require("command_center.model.Component")
+
 local M = {}
 
-local utils = require("command_center.utils")
-local constants = require("command_center.constants")
-local component = constants.component
-local max_len = constants.max_len
+M.layer = Layer:new()
+M.config = Config:new()
 
---Actual comamnd_center.items are stored here
-M._items = {}
+---Setup plugin with customized configurations
+---@param config Config
+function M.setup(config)
+  M.config:update(config)
 
----Process commands
----@param items table? commands to be processed
----@param opts table? additional options
----@param add_callback function? funciton to be excuted if item's `mode` contains `ADD`
----@param set_callback function? function to be executed if item's `mode` contains `SET`
-local function process_commands(items, opts, set_callback, add_callback)
-  -- Early exit from items is not an non-empty list
-  if not utils.is_nonempty_list(items) then
-    return
-  end
-  opts = utils.convert_opts(opts)
-
-  for _, item in ipairs(items) do
-    item = utils.convert_item(item, opts)
-    if not item then
-      goto continue
-    end
-
-    -- Register/unregister the keybindings
-    if item.mode == constants.mode.SET or item.mode == constants.mode.ADD_SET then
-      if type(set_callback) == "function" then
-        set_callback(item.id, item)
+  -- Replace desc with cmd if desc is empty
+  if M.config.auto_replace_desc_with_cmd then
+    for i, component in ipairs(M.config.components) do
+      if component == Component.DESC then
+        M.config.components[i] = Component.NON_EMPTY_DESC
       end
     end
-
-    -- Add/remove the item
-    if item.mode == constants.mode.ADD or item.mode == constants.mode.ADD_SET then
-      if type(add_callback) == "function" then
-        add_callback(item.id, item)
-      end
-    end
-
-    -- Label for end of an iteration
-    ::continue::
   end
+
+  M.layer:set_sorter(M.config.sort_by)
+  M.layer:set_separator(M.config.separator)
+  M.layer:set_displayer(M.config.components)
 end
 
----Add commands into command_center if `mode` contains `ADD`;
----Set the keybindings in the command if `mode` constains `SET`
----@param items table? the list of commands to be removed; do nothing if nil or empty
----@param opts table? additional options
 function M.add(items, opts)
-  local set_callback = function(id, item)
-    if M._items[id] then
-      return
-    end
-    utils.set_converted_keys(item.keys)
+  local err = M.layer:add(items, opts)
+  if err then
+    vim.notify("command_center ignores incorrectly fomratted item:\n" .. err, vim.log.levels.WARN)
   end
-
-  local add_callback = function(id, item)
-    if M._items[id] then
-      return
-    end
-
-    -- Update max length
-    for _, comp in pairs(constants.component) do
-      if type(item[comp]) == "string" then
-        max_len[comp] = math.max(max_len[comp], #item[comp])
-      end
-    end
-
-    -- Add the entry to M.items as a list
-    M._items[id] = item
-  end
-
-  process_commands(items, opts, set_callback, add_callback)
 end
 
----Does the exact opposite as `command_center.add()`:
----* Remove the commands from `command_center` if `mode` contains `ADD`
----* Delete the keymaps if `mode` contains `SET`
----@param items table the list of commands to be removed; do nothing if nil or empty
----@param opts table? additional options; share the same format as the opts for `add()`
-function M.remove(items, opts)
-  local set_callback = function(id, item)
-    if not M._items[id] then
-      return
-    end
-    -- utils.delete_keybindings(item.keys, item.cmd)
-    utils.del_converted_keys(item.keys)
-  end
-
-  local add_callback = function(id, _)
-    if not M._items[id] then
-      return
-    end
-    M._items[id] = nil
-  end
-
-  process_commands(items, opts, set_callback, add_callback)
-end
+local constants = require("command_center.constants")
 
 -- MARK: Add some constants to M
 -- to ease the customization of command center
@@ -123,21 +59,21 @@ M.mode = {
 
 M.component = {
   -- @deprecated use `CMD` instead
-  COMMAND = constants.component.CMD_STR,
+  COMMAND = Component.CMD,
 
   -- @deprecated use `DESC` instead
-  DESCRIPTION = constants.component.DESC,
+  DESCRIPTION = Component.DESC,
 
   -- @deprecated use `KEYS` instead
-  KEYBINDINGS = constants.component.KEYS_STR,
+  KEYBINDINGS = Component.KEYS,
 
   -- @deprecated use `KEYS` instead
-  CATEGORY = constants.component.CAT,
+  CATEGORY = Component.CAT,
 
-  CMD = constants.component.CMD_STR,
-  DESC = constants.component.DESC,
-  KEYS = constants.component.KEYS_STR,
-  CAT = constants.component.CAT,
+  CMD = Component.CMD,
+  DESC = Component.DESC,
+  KEYS = Component.KEYS,
+  CAT = Component.CAT,
 }
 
 return M

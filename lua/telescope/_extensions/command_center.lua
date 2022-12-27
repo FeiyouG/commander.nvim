@@ -12,16 +12,12 @@ local actions = require("telescope.actions")
 local action_state = require("telescope.actions.state")
 local entry_display = require("telescope.pickers.entry_display")
 local conf = require("telescope.config").values
--- local defaulter = require('telescope.utils').make_default_callable
 
+local component = require("command_center.model.Component")
 local M = require("command_center")
-local utils = require("command_center.utils")
-
-local constants = require("command_center.constants")
-local component = constants.component
-local max_length = constants.max_len
 
 -- Custom theme for command center
+-- themes.command_center = require("telescope._extensions.command_center.theme")
 function themes.command_center(opts)
   opts = opts or {}
 
@@ -36,7 +32,7 @@ function themes.command_center(opts)
       prompt_position = "top",
 
       width = function(_, max_columns, _)
-        return math.min(max_columns, opts.max_width)
+        return math.min(max_columns, M.layer:get_max_width())
       end,
 
       height = function(_, _, max_lines)
@@ -62,39 +58,15 @@ function themes.command_center(opts)
   return vim.tbl_deep_extend("force", theme_opts, opts)
 end
 
--- Initial opts to defualt values
-local user_opts = {
-  components = {
-    M.component.DESC,
-    M.component.KEYS,
-    M.component.CMD,
-    M.component.CAT,
-  },
-
-  sort_by = {
-    M.component.DESC,
-    M.component.KEYS,
-    M.component.CMD,
-    M.component.CAT,
-  },
-
-  separator = " ",
-  auto_replace_desc_with_cmd = true,
-  prompt_title = "Command Center",
-  theme = themes.command_center,
-}
-
 -- Override default opts by user
 local function setup(opts)
-  user_opts = vim.tbl_extend("force", user_opts, opts or {})
+  M.setup(opts)
 end
 
 local function run(filter)
-  filter = filter or {}
-  local filtered_items, cnt = utils.filter_items(M._items, filter)
-  filtered_items = utils.sort_items(filtered_items, user_opts.sort_by)
-
-  local opts = vim.deepcopy(user_opts)
+  M.layer:set_filter(filter)
+  local commands = M.layer:get_commands()
+  local opts = vim.deepcopy(M.config)
 
   -- Only display what the user specifies
   -- And in the right order
@@ -103,14 +75,8 @@ local function run(filter)
     local component_info = {}
 
     for _, v in ipairs(opts.components) do
-      -- When user chooses to replace desc with cmd ...
-      if v == component.DESC and opts.auto_replace_desc_with_cmd then
-        table.insert(display, entry.value[component.REPLACED_DESC])
-        table.insert(component_info, { width = max_length[component.REPLACED_DESC] })
-      else
-        table.insert(display, entry.value[v])
-        table.insert(component_info, { width = max_length[v] })
-      end
+      table.insert(display, entry.value[v])
+      table.insert(component_info, { width = M.layer:get_length(v) })
     end
 
     local displayer = entry_display.create({
@@ -122,17 +88,17 @@ local function run(filter)
   end
 
   -- Insert the calculated length constants
-  opts.max_width = utils.get_max_width(opts, max_length)
-  opts.num_items = cnt
+  opts.max_width = M.layer:get_max_width()
+  opts.num_items = #commands
   -- opts = themes.command_center(opts)
-  opts = opts.theme(opts)
+  opts = opts.telescope.theme(opts)
 
   -- opts = opts or {}
   local telescope_obj = pickers.new(opts, {
     prompt_title = opts.prompt_title,
 
     finder = finders.new_table({
-      results = filtered_items,
+      results = commands,
       entry_maker = function(entry)
         -- Concatenate components specified in `sort_by` for better sorting
         local ordinal = ""
