@@ -43,6 +43,8 @@ end
 return telescope.register_extension({
   setup = setup,
   exports = {
+    ---@deprecated
     command_center = run,
+    commander = run,
   },
 })

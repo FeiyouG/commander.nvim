@@ -1,10 +1,10 @@
 local themes = require("telescope.themes")
 
-function themes.command_center(opts)
+function themes.commander(opts)
   opts = opts or {}
 
   local theme_opts = {
-    theme = "command_center",
+    theme = "commander",
     results_title = false,
     sorting_strategy = "ascending",
     layout_strategy = "center",
@@ -41,5 +41,8 @@ function themes.command_center(opts)
   return vim.tbl_deep_extend("force", theme_opts, opts)
 end
 
-return themes.command_center
+---@deprecated
+themes.command_center = themes.commander
+
+return themes.commander
 

@@ -50,9 +50,27 @@ function Config:update(config)
   self.auto_replace_desc_with_cmd = config.auto_replace_desc_with_cmd or self.auto_replace_desc_with_cmd
   self.prompt_title = config.prompt_title or self.prompt_title
 
+  -- Replace desc with cmd if desc is empty
+  if self.auto_replace_desc_with_cmd then
+    for i, component in ipairs(self.components) do
+      if component == Component.DESC then
+        self.components[i] = Component.NON_EMPTY_DESC
+      end
+    end
+  end
+
   if config.telescope and config.telescope.integrate then
     self.telescope.integrate = true
     self.theme = config.theme or self.theme
+
+    if self.telescope.integrate == true then
+      local has_telescope, telescope = pcall(require, "telescope")
+      if has_telescope then
+        ---@deprecated
+        telescope.load_extension("command_center")
+        telescope.load_extension("commander")
+      end
+    end
   end
 
   return self

@@ -28,7 +28,7 @@ local function convert_to_helper(items, opts, args_to_perserve, callback)
 
 end
 
----Converts a list of commands used by `command_center`
+---Converts a list of commands used by `commander`
 ---@param commands table?: the commands to be converted
 function M.to_nvim_set_keymap(commands, opts)
   local keys = {}
@@ -41,7 +41,7 @@ function M.to_nvim_set_keymap(commands, opts)
 
 end
 
----Converts a list of commands used by `command_center`
+---Converts a list of commands used by `commander`
 ---@param commands table?: the commands to be converted
 function M.to_hydra_heads(commands, opts)
   local keys = {}

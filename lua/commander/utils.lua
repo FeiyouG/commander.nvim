@@ -58,7 +58,7 @@ local function validate(tbl)
   return pcall(vim.validate, tbl)
 end
 
----Check if item is validate to add to command_center
+---Check if item is validate to add to commander
 ---@param item table: the item to be validated
 ---@return boolean is_validate: true if `tbl` is validate
 ---@return string|nil err: an error message if the `is_validae` if failed; nil otherwise
