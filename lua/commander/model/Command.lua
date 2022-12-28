@@ -1,5 +1,5 @@
-local Keymap = require("command_center.model.Keymap")
-local constants = require("command_center.constants")
+local Keymap = require("commander.model.Keymap")
+local constants = require("commander.constants")
 
 local anon_lua_func_name = "<anonymous> lua function"
 

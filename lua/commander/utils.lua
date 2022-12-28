@@ -1,4 +1,4 @@
-local constants = require("command_center.constants")
+local constants = require("commander.constants")
 
 local M = {}
 

@@ -1,6 +1,6 @@
 local actions = require("telescope.actions")
 local action_state = require("telescope.actions.state")
-local component = require("command_center.model.Component")
+local component = require("commander.model.Component")
 
 return function(prompt_bufnr, map)
   actions.select_default:replace(function()

@@ -15,7 +15,7 @@ function themes.command_center(opts)
 
       width = function(_, max_columns, _)
         -- If not commands found, then at least wide enough to show the prompt (~12)
-        return math.min(max_columns, math.max(opts.max_width, 32))
+        return math.min(max_columns, math.max(opts.max_width + 4, 32))
       end,
 
       height = function(_, _, max_lines)

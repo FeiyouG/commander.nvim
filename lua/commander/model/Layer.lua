@@ -1,6 +1,5 @@
-local Command = require("command_center.model.Command")
-local Filter = require("command_center.model.filter")
-local Component = require("command_center.model.Component")
+local Command = require("commander.model.Command")
+local Filter = require("commander.model.filter")
 
 ---@class Layer
 ---@field commands {[integer]: Command}

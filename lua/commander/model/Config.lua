@@ -1,4 +1,5 @@
-local Component = require("command_center.model.Component")
+local Component = require("commander.model.Component")
+local theme = require("telescope._extensions.commander.theme")
 
 ---@class Config
 ---@field components {[integer]: Component} the components to be rendered in the propmt
@@ -34,7 +35,7 @@ function Config:new()
 
     telescope = {
       integrate = false,
-      theme = require("telescope._extensions.command_center.theme"),
+      theme = theme,
     },
   }, Config.__mt)
 end

@@ -1,7 +1,7 @@
 local entry_display = require("telescope.pickers.entry_display")
 local finders = require("telescope.finders")
 
-local M = require("command_center")
+local M = require("commander")
 
 local display = function(entry)
   local display = {}
