@@ -1,6 +1,8 @@
 local Keymap = require("command_center.model.Keymap")
 local constants = require("command_center.constants")
 
+local anon_lua_func_name = "<anonymous> lua function"
+
 ---@class Command
 ---@field cmd string | function
 ---@field cmd_str string the string represetnation of the cmd
@@ -25,7 +27,7 @@ local function get_lua_func_name(func_ref)
   -- if fn defined in file, source is file name prefixed with a `@´
   local path = Path:new((info.source:gsub("@", "")))
   if not path:exists() then
-    return constants.anon_lua_func_name
+    return anon_lua_func_name
   end
   for i, line in ipairs(path:readlines()) do
     if i == info.linedefined then
@@ -36,7 +38,7 @@ local function get_lua_func_name(func_ref)
 
   -- test if assignment or named function, otherwise anon
   if (fname:match("=") == nil) and (fname:match("function %S+%(") == nil) then
-    return constants.anon_lua_func_name
+    return anon_lua_func_name
   else
     local patterns = {
       { "function", "" }, -- remove function
@@ -54,7 +56,7 @@ local function get_lua_func_name(func_ref)
     end
     -- not sure if this can happen, catch all just in case
     if fname == nil or fname == "" then
-      return constants.anon_lua_func_name
+      return anon_lua_func_name
     end
 
     return fname

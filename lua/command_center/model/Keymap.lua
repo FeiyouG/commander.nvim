@@ -1,4 +1,4 @@
-local constants = require("command_center.constants")
+local keymap_modes = { "n", "i", "c", "x", "v", "t" }
 
 ---@class Keymap
 ---@field modes {[integer]: string}
@@ -53,9 +53,9 @@ function Keymap:parse(item)
       ["[1][" .. i .. "]"] = {
         mode,
         function(m)
-          return vim.tbl_contains(constants.keymap_modes, m)
+          return vim.tbl_contains(keymap_modes, m)
         end,
-        "expect one of " .. vim.inspect(constants.keymap_modes) .. ", but got " .. mode,
+        "expect one of " .. vim.inspect(keymap_modes) .. ", but got " .. mode,
       },
     })
 
