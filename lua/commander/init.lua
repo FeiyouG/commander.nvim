@@ -5,8 +5,6 @@ local Component = require("commander.model.Component")
 local converter = require("commander.converter")
 local constants = require("commander.constants")
 
-local ui_selector = require("commander.ui.selector")
-
 local M = {}
 
 M.layer = Layer:new()
