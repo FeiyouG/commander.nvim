@@ -1,9 +1,10 @@
 local Command = require("command_center.model.Command")
+local Filter = require("command_center.model.filter")
 local Component = require("command_center.model.Component")
 
 ---@class Layer
 ---@field commands {[integer]: Command}
----@field private filter table | nil specify which commands are going to be displayed
+---@field private filter Filter specify which commands are going to be displayed
 ---@field private sorter {[integer] : Component} | nil  specify by what order the commands are diplayed
 ---@field private displayer {[integer]: Component} | nil specify which components of a command are displayed
 ---@filed private separator string
@@ -20,7 +21,7 @@ function Layer:new()
   return setmetatable({
     commands = {},
     sorter = nil,
-    filter = nil,
+    filter = Filter:new(),
     displayer = nil,
     separator = " ",
 
@@ -72,7 +73,6 @@ function Layer:get_max_width()
   for _, length in pairs(self.cache_component_width) do
     max_length = max_length + length + #self.separator
   end
-  print(max_length)
   return max_length
 end
 
@@ -107,8 +107,16 @@ function Layer:set_sorter(sorter)
 end
 
 ---Update filter used by this layer
----@param filter table | nil
-function Layer:set_filter(filter)
+---@param f table
+function Layer:set_filter(f)
+  ---@diagnostic disable-next-line: redefined-local
+  local filter, err = Filter:parse(f)
+
+  if not filter or err then
+    vim.notify("command_center.nvim: invalid filter\n" .. vim.inspect(filter) .. "\n" .. err)
+    return
+  end
+
   if self.filter ~= filter then
     self.filter = filter
     self.is_cached_valid = false
@@ -135,17 +143,7 @@ function Layer:validate_cache()
     return
   end
 
-  self.cache = self.commands
-  if self.filter then
-    self.cache_commands = vim.tbl_filter(function(command)
-      local res = true
-      -- res = res and self.filter.mode and command.mode == self.filter.mode
-      -- res = res and self.filter.cat and command.cat == self.filter.cat
-
-      -- update cache_max_length information
-      return res
-    end, self.commands)
-  end
+  self.cache_commands = self.filter:filter(self.commands)
 
   if self.sorter then
     table.sort(self.cache_commands, function(a, b)
@@ -163,8 +161,7 @@ function Layer:validate_cache()
   for _, command in ipairs(self.cache_commands) do
     for _, component in pairs(self.displayer) do
       self.cache_component_width[component] = self.cache_component_width[component] or 0
-      self.cache_component_width[component] =
-      math.max(self.cache_component_width[component], #command[component])
+      self.cache_component_width[component] = math.max(self.cache_component_width[component], #command[component])
     end
   end
 
