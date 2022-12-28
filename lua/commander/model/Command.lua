@@ -123,13 +123,16 @@ function Command:parse(item, opts)
   for i, key in ipairs(item.keys or item.keybindings or {}) do
     ---@diagnostic disable-next-line: redefined-local
     local keymap, err = Keymap:parse(key)
-    if err then
+    if not keymap or err then
       return nil, vim.inspect(item) .. "\nkeys[" .. i .. "]" .. err
     end
 
     table.insert(command.keymaps, keymap)
-    ---@diagnostic disable-next-line: need-check-nil
-    command.keymaps_str = command.keymaps_str .. " " .. keymap:str()
+
+    if i > 1 then
+      command.keymaps_str = command.keymaps_str .. " "
+    end
+    command.keymaps_str = command.keymaps_str .. keymap:str()
   end
 
   return command, nil
@@ -154,6 +157,16 @@ function Command:unset_keymaps()
 
   for _, keymap in ipairs(self.keymaps) do
     keymap:unset()
+  end
+end
+
+---Execute this command
+function Command:execute()
+  if type(self.cmd) == "function" then
+    self.cmd()
+  else
+    local cmd = vim.api.nvim_replace_termcodes(self.cmd, true, false, true)
+    vim.api.nvim_feedkeys(cmd, "t", true)
   end
 end
 

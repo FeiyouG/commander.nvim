@@ -44,12 +44,35 @@ function Layer:add(items, opts)
 
   for _, item in ipairs(items) do
     local command, err = Command:parse(item, opts)
-    if err then
+    if not command or err then
       return err
     end
     table.insert(self.commands, command)
     command:set_keymaps()
   end
+end
+
+function Layer:select(prompt_title)
+  vim.ui.select(self:get_commands(), {
+    promp = prompt_title,
+    format_item = function(command)
+      local res = ""
+      for _, component in ipairs(self.displayer) do
+        local component_str = command[component]
+        local num_space = self.cache_component_width[component] - #component_str
+        while num_space > 0 do
+          component_str = component_str .. " "
+          num_space = num_space - 1
+        end
+        res = res .. component_str
+      end
+      return res
+    end,
+  }, function(choice)
+    if choice then
+      choice:execute()
+    end
+  end)
 end
 
 ---Get filtered and sorted commands from this layer
@@ -62,6 +85,11 @@ end
 function Layer:get_length(component)
   self:validate_cache()
   return self.cache_component_width[component]
+end
+
+function Layer:get_component_length()
+  self:validate_cache()
+  return self.cache_component_width
 end
 
 ---Get the max width needed to diplay the commands in this layer
@@ -112,7 +140,7 @@ function Layer:set_filter(f)
   local filter, err = Filter:parse(f)
 
   if not filter or err then
-    vim.notify("command_center.nvim: invalid filter\n" .. vim.inspect(filter) .. "\n" .. err)
+    vim.notify("commander.nvim invalid filter\n" .. vim.inspect(filter) .. "\n" .. err)
     return
   end
 

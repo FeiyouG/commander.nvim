@@ -5,6 +5,8 @@ local Component = require("commander.model.Component")
 local converter = require("commander.converter")
 local constants = require("commander.constants")
 
+local ui_selector = require("commander.ui.selector")
+
 local M = {}
 
 M.layer = Layer:new()
@@ -15,15 +17,6 @@ M.config = Config:new()
 function M.setup(config)
   M.config:update(config)
 
-  -- Replace desc with cmd if desc is empty
-  if M.config.auto_replace_desc_with_cmd then
-    for i, component in ipairs(M.config.components) do
-      if component == Component.DESC then
-        M.config.components[i] = Component.NON_EMPTY_DESC
-      end
-    end
-  end
-
   M.layer:set_sorter(M.config.sort_by)
   M.layer:set_separator(M.config.separator)
   M.layer:set_displayer(M.config.components)
@@ -32,10 +25,20 @@ end
 function M.add(items, opts)
   local err = M.layer:add(items, opts)
   if err then
-    vim.notify("command_center ignores incorrectly fomratted item:\n" .. err, vim.log.levels.WARN)
+    vim.notify("commander will ignore the following incorrectly fomratted item:\n" .. err, vim.log.levels.WARN)
   end
 end
 
+function M.show(opts)
+  opts = opts or {}
+  M.layer:set_filter(opts.filter)
+
+  if M.config.telescope.integrate then
+    vim.cmd("Telescope commander") -- Use telecope
+  else
+    M.layer:select(M.config.prompt_title) -- Use vim.ui.select
+  end
+end
 
 -- MARK: Add some constants to M
 -- to ease the customization of command center
