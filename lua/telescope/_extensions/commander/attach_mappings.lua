@@ -11,14 +11,8 @@ return function(prompt_bufnr, map)
       return false
     end
 
-    -- Handle keys as if they were typed
-    local cmd = selection.value[component.CMD]
-    if type(cmd) == "function" then
-      cmd()
-    else
-      cmd = vim.api.nvim_replace_termcodes(cmd, true, false, true)
-      vim.api.nvim_feedkeys(cmd, "t", true)
-    end
+    local command = selection.value
+    command:execute()
   end)
   return true
 end
