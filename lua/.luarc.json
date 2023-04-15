@@ -1,0 +1,29 @@
+{
+    "$schema": "https://raw.githubusercontent.com/sumneko/vscode-lua/master/setting/schema.json",
+    "Lua.workspace.library": [
+        "/Users/feiyouguo/.config/nvim",
+        "/Users/feiyouguo/.local/share/nvim/lazy/lazy.nvim",
+        "/Users/feiyouguo/.local/share/nvim/lazy/nvim-jdtls",
+        "/Users/feiyouguo/.local/share/nvim/lazy/nvim-ts-context-commentstring",
+        "/Users/feiyouguo/.local/share/nvim/lazy/playground",
+        "/Users/feiyouguo/.local/share/nvim/lazy/nvim-treesitter-textobjects",
+        "/Users/feiyouguo/.local/share/nvim/lazy/nvim-treesitter",
+        "/Users/feiyouguo/.local/share/nvim/lazy/nvim-notify",
+        "/Users/feiyouguo/.local/share/nvim/lazy/nvim-dap",
+        "/Users/feiyouguo/.local/share/nvim/lazy/mason.nvim",
+        "/Users/feiyouguo/.local/share/nvim/lazy/plenary.nvim",
+        "/Users/feiyouguo/.local/share/nvim/lazy/trouble.nvim",
+        "/Users/feiyouguo/.local/share/nvim/lazy/telescope.nvim",
+        "/Users/feiyouguo/.local/share/nvim/dev/command_center.nvim",
+        "/Users/feiyouguo/.local/share/nvim/lazy/nvim-lspconfig",
+        "/Users/feiyouguo/.local/share/nvim/lazy/nvim-navic",
+        "/Users/feiyouguo/.local/share/nvim/lazy/hydra.nvim",
+        "/Users/feiyouguo/.local/share/nvim/lazy/nvim-web-devicons",
+        "/Users/feiyouguo/.local/share/nvim/lazy/lualine.nvim",
+        "/Users/feiyouguo/.local/share/nvim/lazy/onenord.nvim",
+        "/Users/feiyouguo/.local/share/zsh/zinit/plugins/homebrew---brew/Cellar/neovim/0.8.2/share/nvim/runtime",
+        "/Users/feiyouguo/.local/share/zsh/zinit/plugins/homebrew---brew/Cellar/neovim/0.8.2/lib/nvim",
+        "/Users/feiyouguo/.local/share/nvim/lazy/playground/after",
+        "${3rd}/luassert/library"
+    ]
+}

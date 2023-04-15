@@ -1,4 +1,4 @@
-# command_center.nvim
+# cammander.nvim
 
 Create and manage keymaps and commands
 in a more organized manner,
@@ -6,13 +6,14 @@ and search them quickly through Telescope.
 
 ## Demo
 
-![demo](https://github.com/gfeiyou/command-center.nvim/blob/assets/demo.gif)
+![demo](https://github.com/gfeiyou/command-center.nvim/blob/assets/commander_demo.png)
 
 ## Change log
 
+- **`command_center.nvim` is renamed to `commander.nvim`.**
 - Here is a GitHub issue documents
-  [breaking changes](https://github.com/FeiyouG/command_center.nvim/issues/4)
-  for `command_center.nvim`.
+  [breaking changes](https://github.com/FeiyouG/cammander.nvim/issues/4)
+  for `commander.nvim`.
 
 ## Table of Contents
 
@@ -22,9 +23,8 @@ and search them quickly through Telescope.
   - [vim-plug](#vim-plug)
   - [Packer](#packer)
 - [Usage](#usage)
-  - [Setup and Configuration](#setup-and-configuration)
-    - [Setup](#setup)
-    - [Configuration](#configuration)
+  - [Configuration](#configuration)
+    - [Configuration](#configuration-1)
     - [Example configuration](#example-configuration)
   - [Add commands](#add-commands)
     - [`command_center.add`](#command_centeradd)
@@ -58,18 +58,22 @@ use {
 
 ## Usage
 
-### Setup and Configuration
-
-#### Setup
-
-First,
-you will need to load this plugin
-as a [Telescope extension](https://github.com/nvim-telescope/telescope.nvim#extensions).
-Put this somewhere in your config:
-
+A minimal working example:
 ```lua
-require("telescope").load_extension("command_center")
+-- Add a new command
+require("commander.nvim").add({
+  {
+    desc = "Open command_center",
+    cmd = "<CMD>Telescope command_center<CR>",
+    keys = {"n", "<Leader>fc", noremap},
+  }
+})
+
+-- Show commander and select the command
+require("commander.nvim").show()
 ```
+
+### Configuration
 
 Then,
 you can open `command-center`
@@ -192,11 +196,11 @@ telescope.load_extension('command_center')
 
 The function `command_center.add(commands, opts)`
 does two things:
+
 1. Set the keymaps (if any)
 2. Add the commands to `command_center`
 
 You can find an example below:
-
 
 ```lua
 local command_center = require("command_center")
@@ -325,7 +329,7 @@ command_center.add({
 ```
 
 Above snippet will only set the keymaps
-for *"Find files"* and *"LSP code actions"*,
+for _"Find files"_ and _"LSP code actions"_,
 but not for others.
 The resulted `command_center` prompt will look like this:
 
@@ -339,63 +343,66 @@ Currently, you can filter either by mode or category.
 You can find some examples below:
 
 1. Show only commands that has keymaps that work in normal mode
+
 ```
 :Telescope command_center mode=n
 ```
 
 2. Show only commands that in "git" category
-  ```
-  :Telescope command_center category=git
-  ```
 
-  You can specify the category of a command
-  as follows:
+```
+:Telescope command_center category=git
+```
 
-  ```lua
-  command_center.add({
-    {
-      description = "Open git diffview",
-      cmd = "<CMD>DiffviewOpen<CR>",
-      keybindings = { "n", "<leader>gd", noremap },
-      category = "git",
-    }, {
-      description = "Close current git diffview",
-      cmd = "<CMD>DiffviewClose<CR>",
-      keybindings = { "n", "<leader>gc", noremap },
-      category = "git",
-    }, {
-      description = "Toggle markdown preview",
-      cmd = "<CMD>MarkdownPreviewToggle<CR>",
-      keybindings = { "n", "<leader>mp", noremap },
-      category = "markdown",
-    }
-  })
+You can specify the category of a command
+as follows:
 
-  -- Or you can set up the category for multiple commands at once
-  command_center.add({
-    {
-      description = "Open git diffview",
-      cmd = "<CMD>DiffviewOpen<CR>",
-      keybindings = { "n", "<leader>gd", noremap },
-    }, {
-      description = "Close current git diffview",
-      cmd = "<CMD>DiffviewClose<CR>",
-      keybindings = { "n", "<leader>gc", noremap },
-    }, {
-      -- category set in a smaller scope takes precedence
-      description = "Toggle markdown preview",
-      cmd = "<CMD>MarkdownPreviewToggle<CR>",
-      keybindings = { "n", "<leader>mp", noremap },
-      category = "markdown",
-    }
+```lua
+command_center.add({
+  {
+    description = "Open git diffview",
+    cmd = "<CMD>DiffviewOpen<CR>",
+    keybindings = { "n", "<leader>gd", noremap },
+    category = "git",
   }, {
-    mode = command_center.mode.ADD_ONLY,
-    category = "git"
-  })
+    description = "Close current git diffview",
+    cmd = "<CMD>DiffviewClose<CR>",
+    keybindings = { "n", "<leader>gc", noremap },
+    category = "git",
+  }, {
+    description = "Toggle markdown preview",
+    cmd = "<CMD>MarkdownPreviewToggle<CR>",
+    keybindings = { "n", "<leader>mp", noremap },
+    category = "markdown",
+  }
+})
 
-  ```
+-- Or you can set up the category for multiple commands at once
+command_center.add({
+  {
+    description = "Open git diffview",
+    cmd = "<CMD>DiffviewOpen<CR>",
+    keybindings = { "n", "<leader>gd", noremap },
+  }, {
+    description = "Close current git diffview",
+    cmd = "<CMD>DiffviewClose<CR>",
+    keybindings = { "n", "<leader>gc", noremap },
+  }, {
+    -- category set in a smaller scope takes precedence
+    description = "Toggle markdown preview",
+    cmd = "<CMD>MarkdownPreviewToggle<CR>",
+    keybindings = { "n", "<leader>mp", noremap },
+    category = "markdown",
+  }
+}, {
+  mode = command_center.mode.ADD_ONLY,
+  category = "git"
+})
+
+```
 
 3. Or both
+
 ```
 :Telescope command_center mode=n category=markdown
 ```
@@ -413,10 +420,8 @@ with the following limitations:
     `desc`, `cmd`, and `keys`
     in order to remove it from `command_center`.
 
-
 Furthermore, you can find an example usage
 in the [wiki page](https://github.com/FeiyouG/command_center.nvim/wiki/Integrations).
-
 
 ### `command_center.converter`
 
@@ -426,12 +431,12 @@ used by command_center to/from
 the conventions used by another plugin/functions.
 
 Current available converters are:
+
 - `command_center.converter.to_nvim_set_keymap(commands)`
 - `command_center.converter.to_hydra_heads(commands)`
 
 You can find some example usage of converters
 in [wiki page](https://github.com/FeiyouG/command_center.nvim/wiki/Integrations).
-
 
 ## Related Projects
 

@@ -43,16 +43,12 @@ end
 M.converter = converter
 
 M.mode = {
-
   -- @deprecated use `ADD` instead
   ADD_ONLY = constants.mode.ADD,
-
   -- @deprecated use `SET` instead
   REGISTER_ONLY = constants.mode.SET,
-
   -- @deprecated use bitwise operator `ADD | SET` instead
   ADD_AND_REGISTER = constants.mode.ADD_SET,
-
   ADD = constants.mode.ADD,
   SET = constants.mode.SET,
   ADD_SET = constants.mode.ADD_SET,
@@ -61,16 +57,12 @@ M.mode = {
 M.component = {
   -- @deprecated use `CMD` instead
   COMMAND = Component.CMD,
-
   -- @deprecated use `DESC` instead
   DESCRIPTION = Component.DESC,
-
   -- @deprecated use `KEYS` instead
   KEYBINDINGS = Component.KEYS,
-
   -- @deprecated use `KEYS` instead
   CATEGORY = Component.CAT,
-
   CMD = Component.CMD,
   DESC = Component.DESC,
   KEYS = Component.KEYS,

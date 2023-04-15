@@ -41,15 +41,15 @@ local function get_lua_func_name(func_ref)
     return anon_lua_func_name
   else
     local patterns = {
-      { "function", "" }, -- remove function
-      { "local", "" }, -- remove local
-      { "[%s=]", "" }, -- remove whitespace and =
+      { "function",   "" }, -- remove function
+      { "local",      "" }, -- remove local
+      { "[%s=]",      "" }, -- remove whitespace and =
       { [=[%[["']]=], "" }, -- remove left-hand bracket of table assignment
       { [=[["']%]]=], "" }, -- remove right-ahnd bracket of table assignment
-      { "%((.+)%)", "" }, -- remove function arguments
-      { "(.+)%.", "" }, -- remove TABLE. prefix if available
-      { "end,$", "" }, -- remove end and comma (in case of an inline function)
-      { "cmd()", "" }, -- remove cmd() (for anonymous funciton defined in cmd)
+      { "%((.+)%)",   "" }, -- remove function arguments
+      { "(.+)%.",     "" }, -- remove TABLE. prefix if available
+      { "end,$",      "" }, -- remove end and comma (in case of an inline function)
+      { "cmd%(%)",    "" }, -- remove cmd() (for anonymous funciton defined in cmd)
     }
     for _, tbl in ipairs(patterns) do
       fname = (fname:gsub(tbl[1], tbl[2])) -- make sure only string is returned
@@ -63,7 +63,7 @@ local function get_lua_func_name(func_ref)
   end
 end
 
--- MARK: Public methods
+-- MARK: PUBLIC METHODS
 
 ---Parse an item into Command
 ---@param item table | nil
@@ -79,13 +79,13 @@ function Command:parse(item, opts)
 
   local command = setmetatable({}, Command.__mt)
 
-  -- Ensure backword compatibility
+  -- 1. Ensure backward compatibility
   command.cmd = item.cmd or item.command
   command.desc = item.desc or item.description or ""
   command.cat = item.cat or item.category or opts.cat or opts.category or ""
   command.mode = item.mode or opts.mode or constants.mode.ADD_SET
 
-  -- Check whether this is a valid command
+  -- 2. Valid all entries in item (except keys)
   local _, err = pcall(vim.validate, {
     cmd = { command.cmd, { "string", "function" }, false },
     desc = { command.desc, "string", false },
@@ -100,39 +100,45 @@ function Command:parse(item, opts)
   })
 
   if err then
-    return nil, vim.inspect(item) .. err
+    return nil, err
   end
 
   command.cmd_str = type(command.cmd) == "function" and get_lua_func_name(item.cmd) or item.cmd
-  command.non_empty_desc = command.desc and command.desc or command.cmd_str
+  command.non_empty_desc = command.desc ~= "" and command.desc or command.cmd_str
 
-  -- Parse keymaps
+  -- 3. Parse and validate keys
+  -- FIX: THIS IS WRONG!
+  -- How to distinguish 1D and 2D list of keys?
+  -- 3.1 No keys to be validate
+  if not item.keys or #item.keys == 0 then
+    return command, nil
+  end
+
   command.keymaps = {}
   command.keymaps_str = ""
 
-  ---@diagnostic disable-next-line: redefined-local
-  local keymap, err = Keymap:parse(item.keys or item.keybindings or {})
-  if not err then
+  -- 3.2 If there is only one keymap in keys
+  if #item.keys >=2 and  type(item.keys[2]) ~= "table" then
+    local keymap, err = Keymap:parse(item.keys or item.keybindings or {})
+    if err then
+      return nil, "keys" .. err
+    end
+
     table.insert(command.keymaps, keymap)
-    ---@diagnostic disable-next-line: need-check-nil
     command.keymaps_str = keymap:str()
     return command, nil
   end
 
-  -- Making sure the passed-in keys is a 2D array
+  -- 3.3 If keys is a list
   for i, key in ipairs(item.keys or item.keybindings or {}) do
-    ---@diagnostic disable-next-line: redefined-local
     local keymap, err = Keymap:parse(key)
-    if not keymap or err then
-      return nil, vim.inspect(item) .. "\nkeys[" .. i .. "]" .. err
+    if err then
+      return nil, "keys[" .. i .. "]" .. err
     end
 
     table.insert(command.keymaps, keymap)
 
-    if i > 1 then
-      command.keymaps_str = command.keymaps_str .. " "
-    end
-    command.keymaps_str = command.keymaps_str .. keymap:str()
+    command.keymaps_str = command.keymaps_str .. (i > 1 and " " or "") .. keymap:str()
   end
 
   return command, nil

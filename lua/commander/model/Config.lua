@@ -12,7 +12,7 @@ local Config = {}
 Config.__mt = { __index = Config }
 
 ---Return default configuration
----@return Config the defualt config
+---@return Config the default configuration
 function Config:new()
   return setmetatable({
     components = {
@@ -39,6 +39,8 @@ function Config:new()
     },
   }, Config.__mt)
 end
+
+-- MARK: Public methods
 
 ---Update config
 ---@param config Config

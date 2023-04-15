@@ -6,7 +6,7 @@ local Filter = require("commander.model.filter")
 ---@field private filter Filter specify which commands are going to be displayed
 ---@field private sorter {[integer] : Component} | nil  specify by what order the commands are diplayed
 ---@field private displayer {[integer]: Component} | nil specify which components of a command are displayed
----@filed private separator string
+---@field private separator string
 ---@field private is_cached_valid boolean
 ---@field private cache_commands {[integer]: Command}
 ---@field private cache_component_length {[Component]: integer}
@@ -179,7 +179,7 @@ function Layer:validate_cache()
           return a[component] > b[component]
         end
       end
-      return true
+      return a.non_empty_desc > b.non_empty_desc
     end)
   end
 

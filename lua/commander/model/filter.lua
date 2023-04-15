@@ -34,6 +34,7 @@ end
 
 ---Filter commands
 ---@param commands {[integer]: Command}
+---@return {[integer]: Command}
 function Filter:filter(commands)
   if not commands or #commands == 0 then
     return {}
