@@ -5,7 +5,7 @@ in a more organized way.
 
 ## Demo
 
-![demo](https://github.com/gfeiyou/command-center.nvim/blob/assets/commander_demo.png)
+![demo](https://github.com/FeiyouG/commander.nvim/blob/assets/demo.png)
 
 ## Change log
 
@@ -268,11 +268,11 @@ comamnder.add({
 ```
 
 If you have above snippet in your config,
-`command-center` will create your specified keybindings automatically.
+commander will create your specified keybindings automatically.
 And calling `:Telescope commander`
 will open a prompt like this:
 
-![demo1](https://github.com/gfeiyou/command-center.nvim/blob/assets/demo_add.png)
+![demo1](https://github.com/FeiyouG/commander.nvim/blob/assets/demo_add.png)
 
 
 ```lua
@@ -295,7 +295,7 @@ comamnder.add({
   show = false
 })
 
--- The following commands will be shown in the prompt, 
+-- The following commands will be shown in the prompt,
 -- But the keymaps will not be registered;
 -- This is helpful if you already registered the keymap somewhere else
 -- and want to avoid set the exact keymap twice
@@ -310,7 +310,7 @@ comamnder.add({
     desc = "Show document symbols",
     cmd = "<CMD>Telescope lsp_document_symbols<CR>",
   }, {
-    -- Since `show` is set to `true` in this command, 
+    -- Since `show` is set to `true` in this command,
     -- It overwrites the opts and this keymap will still be set
     desc = "LSP cdoe actions",
     cmd = "<CMD>Telescope lsp_code_actions<CR>",
@@ -328,7 +328,7 @@ for _"Find files"_ and _"LSP code actions"_,
 but not for others.
 The resulted `comamnder` prompt will look like this:
 
-![demo2](https://github.com/gfeiyou/command-center.nvim/blob/assets/demo_mode.png)
+![demo2](https://github.com/FeiyouG/commander.nvim/blob/assets/demo_mode.png)
 
 ### `Commander.show(CommanderShowOpts)`
 
@@ -345,17 +345,17 @@ Open Commander's sprompt.
 | `cat`    | `string?` | `nil`   | Filter by the category of the comamnds            |
 | `mode`   | `string?` | `nil`   | Filter by the mode of the keymaps of the commands |
 
-If you enabled the integration with telescope, 
+If you enabled the integration with telescope,
 then the following comamnds are also equivalent:
 ```lua
 -- The same as require("commander").show()
-Telescope commander 
+Telescope commander
 
 -- The same as require("commander").show({ filter = { mode = "i" } })
-Telescope commander filter mode=i 
+Telescope commander filter mode=i
 
 -- The same as require("commander").show({ filter = { mode = "i", cat = "git" } })
-Telescope commander filter mode=i cat=git 
+Telescope commander filter mode=i cat=git
 ```
 
 ## Integration
@@ -379,7 +379,7 @@ Now, commander.nvim does two things:
 
 1. Commander will find and add all the `keys`
     that you registered through `lazy.nvim`.
-2. Command will look for a new field called `commander` 
+2. Command will look for a new field called `commander`
     in `LazyPlugin`.
     The value of the field is expected to be `CommanderItemp[]`,
     and commander can automatically add those comamnds too.
@@ -406,7 +406,7 @@ Now, commander.nvim does two things:
     ```
 
 
-## Special Thanks 
+## Special Thanks
 - [technicalpickle](https://github.com/technicalpickles)
     for the suggestion of integrating commander.nvim with lazy.nvim
 
