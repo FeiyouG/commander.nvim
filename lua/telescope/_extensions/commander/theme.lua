@@ -41,8 +41,5 @@ function themes.commander(opts)
   return vim.tbl_deep_extend("force", theme_opts, opts)
 end
 
----@deprecated
-themes.command_center = themes.commander
-
 return themes.commander
 

@@ -14,12 +14,6 @@ local telescope_conf = require("telescope.config").values
 
 local M = require("commander")
 
--- Override default opts by user
----@deprecated Use require("commander").setup instead
-local function setup(opts)
-  M.setup(opts)
-end
-
 local function run(filter)
   M.layer:set_filter(filter)
   local commands = M.layer:get_commands()
@@ -41,10 +35,7 @@ local function run(filter)
 end
 
 return telescope.register_extension({
-  setup = setup,
   exports = {
-    ---@deprecated
-    command_center = run,
     commander = run,
   },
 })
