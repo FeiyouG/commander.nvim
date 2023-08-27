@@ -30,6 +30,18 @@ function Layer:new()
   }, Layer.__mt)
 end
 
+---comment
+---@param commands {integer: Command}
+function Layer:insert(commands)
+  if not commands or #commands == 0 then return end
+
+  self.is_cache_valid = false
+  for _, command in ipairs(commands) do
+    table.insert(self.commands, command)
+    command:set_keymaps()
+  end
+end
+
 ---Add a list of items to this layer
 ---@param items {[integer]: table} | nil
 ---@param opts table | nil
@@ -40,13 +52,13 @@ function Layer:add(items, opts)
   end
 
   opts = opts or {}
-  self.is_cache_valid = false
 
   for _, item in ipairs(items) do
     local command, err = Command:parse(item, opts)
     if not command or err then
       return err
     end
+    self.is_cache_valid = false
     table.insert(self.commands, command)
     command:set_keymaps()
   end
@@ -124,15 +136,6 @@ function Layer:unset_keymaps()
   end
 end
 
----Update sorter used by this layer
----@param sorter {[integer]: Component} | nil
-function Layer:set_sorter(sorter)
-  if self.sorter ~= sorter then
-    self.sorter = sorter
-    self.is_cached_valid = false
-  end
-end
-
 ---Update filter used by this layer
 ---@param f table
 function Layer:set_filter(f)
@@ -150,6 +153,25 @@ function Layer:set_filter(f)
   end
 end
 
+---Update layer settings with the given config
+---@param config Config
+function Layer:setup(config)
+  self:set_sorter(config.sort_by)
+  self:set_displayer(config.components)
+  self:set_separator(config.separator)
+end
+
+---@private
+---Update sorter used by this layer
+---@param sorter {[integer]: Component} | nil
+function Layer:set_sorter(sorter)
+  if self.sorter ~= sorter then
+    self.sorter = sorter
+    self.is_cached_valid = false
+  end
+end
+
+---@private
 ---Update displayer used by this layer
 ---@param displayer {[integer]: Component} | nil
 function Layer:set_displayer(displayer)
@@ -159,6 +181,7 @@ function Layer:set_displayer(displayer)
   end
 end
 
+---@private
 function Layer:set_separator(separator)
   self.separator = separator
 end
