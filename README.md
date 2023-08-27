@@ -28,9 +28,11 @@ in a more organized way.
     - [Example configuration](#example-configuration)
 - [API](#api)
         - [`comamnder.add(CommanderItem[], CommanderAddOpts)`](#comamnderaddcommanderitem-commanderaddopts)
-            - [Example One:](#example-one)
-            - [Example Two](#example-two)
+            - [Examples](#examples)
     - [`Commander.show(CommanderShowOpts)`](#commandershowcommandershowopts)
+- [Integration](#integration)
+    - [Lazy.nvim](#lazynvim)
+- [Special Thanks](#special-thanks)
 - [Related Projects](#related-projects)
 
 <!-- /TOC -->
@@ -156,8 +158,7 @@ return {
     { "<leader>fc", "<CMD>Telescope commander<CR>", mode = "n" }
   },
   config = function()
-    local commander = require("commander")
-    commander.setup({
+    require("commander").setup({
       components = {
         "DESC",
         "KEYS",
@@ -212,7 +213,7 @@ Add a list of `CommanderItem` to Commander.
 | `[2]`    | `string`               | Required | The lhs of this keymap                    |
 | `[3]`    | `string` or `string[]` | `{}`     | Same opts accepted by nvim.keymap.set     |
 
-##### Example One:
+##### Examples
 
 ```lua
 local comamnder = require("comamnder")
@@ -273,7 +274,6 @@ will open a prompt like this:
 
 ![demo1](https://github.com/gfeiyou/command-center.nvim/blob/assets/demo_add.png)
 
-##### Example Two
 
 ```lua
 local comamnder = require("comamnder")
@@ -357,6 +357,58 @@ Telescope commander filter mode=i
 -- The same as require("commander").show({ filter = { mode = "i", cat = "git" } })
 Telescope commander filter mode=i cat=git 
 ```
+
+## Integration
+
+### [Lazy.nvim](https://github.com/folke/lazy.nvim)
+
+Enable integration in the config:
+```lua
+require("commander").setup({
+  ...
+  integration = {
+    ...
+    lazy = {
+        enable = true
+    }
+  }
+})
+```
+
+Now, commander.nvim does two things:
+
+1. Commander will find and add all the `keys`
+    that you registered through `lazy.nvim`.
+2. Command will look for a new field called `commander` 
+    in `LazyPlugin`.
+    The value of the field is expected to be `CommanderItemp[]`,
+    and commander can automatically add those comamnds too.
+
+    For example:
+    ```lua
+    {
+      "mzlogin/vim-markdown-toc",
+
+      ft = { "markdown" },
+
+      cmd = { "GenTocGFM" },
+
+      -- This command will be added to commander automatically
+      commander = {
+        {
+          cmd = "<CMD>GenTocGFM<CR>",
+          desc = "Generate table of contents (GFM)",
+        }
+      },
+
+      config = function() ... end,
+    }
+    ```
+
+
+## Special Thanks 
+- [technicalpickle](https://github.com/technicalpickles)
+    for the suggestion of integrating commander.nvim with lazy.nvim
 
 ## Related Projects
 
