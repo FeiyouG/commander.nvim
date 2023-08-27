@@ -22,16 +22,16 @@ and search them quickly through Telescope.
 - [Install](#install)
   - [vim-plug](#vim-plug)
   - [Packer](#packer)
-- [Usage](#usage)
+  - [Lazy](#lazy)
+- [Configuration and Usage](#configuration-and-usage)
+  - [A minimal working example](#a-minimal-working-example)
   - [Configuration](#configuration)
-    - [Configuration](#configuration-1)
-    - [Example configuration](#example-configuration)
-  - [Add commands](#add-commands)
-    - [`comamnder.add`](#comamnderadd)
-    - [`comamnder.mode`](#comamndermode)
-  - [Filter](#filter)
-  - [`comamnder.remove`](#comamnderremove)
-  - [`comamnder.converter`](#comamnderconverter)
+  - [Example configuration](#example-configuration)
+- [API](#api)
+    - [`comamnder.add(CommanderItem[], CommanderAddOpts)`](#comamnderaddcommanderitem-commanderaddopts)
+      - [Example One:](#example-one)
+      - [Example Two](#example-two)
+  - [`Commander.show(opts)`](#commandershowopts)
 - [Related Projects](#related-projects)
 
 <!-- /TOC -->
@@ -62,29 +62,28 @@ return {
   "FeiyouG/comamnder.nvim",
   dependencies = { "nvim-telescope/telescope.nvim" }
 }
+```
 
 
-## Usage
+## Configuration and Usage
 
-A minimal working example:
+### A minimal working example
 ```lua
 -- Add a new command
 require("commander.nvim").add({
   {
     desc = "Open comamnder",
-    cmd = "<CMD>Telescope comamnder<CR>",
-    keys = {"n", "<Leader>fc", noremap},
+    cmd = require("commander").show,
+    keys = { "n", "<Leader>fc" },
   }
 })
-
--- Show commander and select the command
-require("commander.nvim").show()
+-- Show commander and select the command by pressing "<leader>fc"
 ```
 
-#### Configuration
+### Configuration
 
 Configuration can be done through
-`telescope.setup` function:
+`setup` function:
 
 ```lua
 require("commander").setup({
@@ -98,7 +97,7 @@ and you only need to pass the settings that you want to change:
 
 ```lua
 {
-  -- Specify what components are shown in telescope prompt;
+  -- Specify what components are shown in the prompt;
   -- Order matters, and components may repeat
   components = {
     "DESC",
@@ -119,29 +118,29 @@ and you only need to pass the settings that you want to change:
   -- Change the separator used to separate each component
   separator = " ",
 
-  -- When set to false,
-  -- The description compoenent will be empty if it is not specified
+  -- When set to true,
+  -- The desc component will be populated with cmd if desc is empty or missing.
   auto_replace_desc_with_cmd = true,
 
-  -- Default title to Telescope prompt
-  prompt_title = "Command Center",
+  -- Default title of the prompt
+  prompt_title = "Commander",
 
   integration = {
     telescope = {
-      -- Set to true to use telescope instead of vim.ui.select 
+      -- Set to true to use telescope instead of vim.ui.select for the UI
       enable = false,
       -- Can be any builtin or custom telescope theme
-      theme = theme, 
+      theme = theme,
     },
     lazy = {
-      -- Set to true to automatically add all keymaps set by lazy
-      enable = false, 
+      -- Set to true to automatically add all keymaps set through lazy.nvim
+      enable = false,
     }
   }
 }
 ```
 
-#### Example configuration
+### Example configuration
 
 Below is my personal configuration for `comamnder`.
 You can use it as a reference.
@@ -164,7 +163,6 @@ return {
         "DESC",
         "KEYS",
         "CAT",
-        "CMD"
       },
       sort_by = {
         "DESC",
@@ -172,12 +170,9 @@ return {
         "CAT",
         "CMD"
       },
-      auto_replace_desc_with_cmd = true,
-      separator = " │ ",
       integration = {
         telescope = {
           enable = true,
-          theme = require("telescope.themes").commander,
         },
         lazy = {
           enable = true
@@ -188,35 +183,53 @@ return {
 }
 ```
 
-### Add commands
+## API
 
-#### `comamnder.add`
+#### `comamnder.add(CommanderItem[], CommanderAddOpts)`
+Add a list of `CommanderItem` to Commander.
 
-The function `comamnder.add(commands, opts)`
-does two things:
+**ComamnderItem**
 
-1. Set the keymaps (if any)
-2. Add the commands to `comamnder`
+| Property | Type                                        | Default  | Descirption                                |
+|----------|---------------------------------------------|----------|--------------------------------------------|
+| `cmd`    | `string` or `function`                      | Required | The command to be executed                 |
+| `desc`   | `string?`                                   | `""`     | A nice description of the command          |
+| `keys`   | `CommanderItemKey[]?` or `CommanderItemKey` | `{}`     | The keymap(s) associated with this command |
+| `cat`    | `string?                                    | `""`     | The category of this command               |
+| `set`    | `boolean?`                                  | `true`   | Whether to set the keymaps in `keys`       |
+| `show`   | `boolean?`                                  | `true`   | Wether to show this command in the prompt  |
 
-You can find an example below:
+**CommanderAddOpts**
+| Property | Type       | Default | Description                                             |
+|----------|------------|---------|---------------------------------------------------------|
+| `cat`    | `string?`  | `""`    | The category of all the `CommanderItem[]` to be added   |
+| `set`    | `boolean?` | `true`  | Whether to set the keymaps in all the `CommanderItem[]` |
+| `show`   | `boolean?` | `true`  | Wether to show all the `CommanderItem[]` in the prompt  |
+
+**CommanderItemKey**
+| Property | Type                   | Default  | Description                               |
+|----------|------------------------|----------|-------------------------------------------|
+| `[1]`    | `string` or `string[]` | Required | Mode, or a list of modes, for this keymap |
+| `[2]`    | `string`               | Required | The lhs of this keymap                    |
+| `[3]`    | `string` or `string[]` | `{}`     | Same opts accepted by nvim.keymap.set     |
+
+##### Example One:
 
 ```lua
 local comamnder = require("comamnder")
-local noremap = {noremap = true}
-local silent_noremap = {noremap = true, silent = true}
 
 comamnder.add({
   {
     desc = "Search inside current buffer",
     cmd = "<CMD>Telescope current_buffer_fuzzy_find<CR>",
-    keys = { "n", "<leader>fl", noremap },
+    keys = { "n", "<leader>fl" },
   },  {
-    -- If no descirption is specified, cmd is used to replace descirption by default
+    -- If desc is not provided, cmd is used to replace descirption by default
     -- You can change this behavior in setup()
     cmd = "<CMD>Telescope find_files<CR>",
-    keys = { "n", "<leader>ff", noremap },
+    keys = { "n", "<leader>ff" },
   }, {
-    -- If no keys are specified, no keymaps will be displayed nor set
+    -- If keys are not provided, no keymaps will be displayed nor set
     desc = "Find hidden files",
     cmd = "<CMD>Telescope find_files hidden=true<CR>",
   }, {
@@ -232,7 +245,7 @@ comamnder.add({
     desc = "Show function signaure (hover)",
     cmd = "<CMD>lua vim.lsp.buf.hover()<CR>",
     keys = {
-      {"n", "K", silent_noremap },
+      {{"n", "x"}, "K", silent_noremap },
       {"i", "<C-k>", silent_noremap },
     }
   }, {
@@ -242,7 +255,7 @@ comamnder.add({
     keys = {"n", "<leader>Ac", noremap}
   }, {
     -- You can also pass in a lua functions as cmd
-    -- NOTE: binding lua funciton to a keymap requires nvim 0.7 and above
+    -- NOTE: binding lua funciton to a keymap requires nvim >= 0.7
     desc = "Run lua function",
     cmd = function() print("ANONYMOUS LUA FUNCTION") end,
     keys = {"n", "<leader>alf", noremap},
@@ -261,29 +274,13 @@ will open a prompt like this:
 
 ![demo1](https://github.com/gfeiyou/command-center.nvim/blob/assets/demo_add.png)
 
-#### `comamnder.mode`
-
-`comamnder.add()` will add **and** set
-the keymaps for you by default.
-You can use `comamnder.mode`
-to override this behavior.
-
-```lua
-mode = {
-  ADD = 1,      -- only add the commands to comamnder
-  SET = 2,      -- only set the keymaps
-  ADD_SET = 3,  -- add the commands and set the keymaps
-}
-```
-
-An example usage of `comamnder.mode`:
+##### Example Two
 
 ```lua
 local comamnder = require("comamnder")
 
--- Set the keymaps for commands only
--- This allows you to use comamnder just as a convenient
--- and organized way to manage your keymaps
+-- The keymaps of the following commands will be key (if any)
+-- But the commands won't be shown when you call `require("commander").show()`
 comamnder.add({
   {
     desc = "Find files",
@@ -296,17 +293,17 @@ comamnder.add({
     cmd = "<CMD>Telescope current_buffer_fuzzy_find<CR>",
   }
 }, {
-  mode = comamnder.mode.SET
+  show = false
 })
 
-
--- Only add the commands to comamnder
+-- The following commands will be shown in the prompt, 
+-- But the keymaps will not be registered;
 -- This is helpful if you already registered the keymap somewhere else
 -- and want to avoid set the exact keymap twice
 comamnder.add({
   {
     -- If keys are specified,
-    -- then they will still show up in comamnder but won't be registered
+    -- then they will still show up in comamnder but won't be set
     desc = "Find hidden files",
     cmd = "<CMD>Telescope find_files hidden=true<CR>",
     keys = { "n", "<leader>f.f", noremap },
@@ -314,14 +311,15 @@ comamnder.add({
     desc = "Show document symbols",
     cmd = "<CMD>Telescope lsp_document_symbols<CR>",
   }, {
-    -- The mode can be even further overridden within each item
+    -- Since `show` is set to `true` in this command, 
+    -- It overwrites the opts and this keymap will still be set
     desc = "LSP cdoe actions",
     cmd = "<CMD>Telescope lsp_code_actions<CR>",
     keybinginds = { "n", "<leader>sa", noremap },
-    mode = comamnder.mode.ADD_SET,
+    set = true
   }
 }, {
-  mode = comamnder.mode.ADD
+    set = false
 })
 
 ```
@@ -333,7 +331,7 @@ The resulted `comamnder` prompt will look like this:
 
 ![demo2](https://github.com/gfeiyou/command-center.nvim/blob/assets/demo_mode.png)
 
-### Filter
+### `Commander.show(opts)`
 
 You can filter the commands upon invoking `:Telescope comamnder`.
 
@@ -404,37 +402,6 @@ comamnder.add({
 ```
 :Telescope comamnder mode=n category=markdown
 ```
-
-### `comamnder.remove`
-
-```lua
-comamnder.remove(commands, opts)
-```
-
-You can also remove commands from `comamnder`,
-with the following limitations:
-
-1.  You need to pass in commands with the exact same
-    `desc`, `cmd`, and `keys`
-    in order to remove it from `comamnder`.
-
-Furthermore, you can find an example usage
-in the [wiki page](https://github.com/FeiyouG/comamnder.nvim/wiki/Integrations).
-
-### `comamnder.converter`
-
-The functions in `comamnder.converter`
-can be used to convert commands
-used by comamnder to/from
-the conventions used by another plugin/functions.
-
-Current available converters are:
-
-- `comamnder.converter.to_nvim_set_keymap(commands)`
-- `comamnder.converter.to_hydra_heads(commands)`
-
-You can find some example usage of converters
-in [wiki page](https://github.com/FeiyouG/comamnder.nvim/wiki/Integrations).
 
 ## Related Projects
 

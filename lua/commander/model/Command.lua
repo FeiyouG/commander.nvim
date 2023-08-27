@@ -1,17 +1,29 @@
 local Keymap = require("commander.model.Keymap")
-local constants = require("commander.constants")
-
 local anon_lua_func_name = "<anonymous> lua function"
 
----@class Command
+---@class CommanderAddOpts opts for `add` api
+---@field cat? string category of the items
+---@field set? boolean whether to set all the keymaps in items
+---@field show? boolean whether to show all the commands in the prompt
+
+---@class CommanderItem
+---@field cmd string | function the command to be added
+---@field desc? string a nice description of the command
+---@field keys? CommanderItemKey[] | CommanderItemKey the keymaps associated with this command
+---@field cat? string  the category of this command
+---@field set? boolean whether to set the keymaps for this command
+---@field show? boolean whether to show this command in the prompt
+
+---@class CommanderCommand
 ---@field cmd string | function
----@field cmd_str string the string represetnation of the cmd
+---@field cmd_str string the string representation of cmd
 ---@field desc string
 ---@field non_empty_desc string same as cmd_str if desc is empty; otherwise same as desc
----@field keymaps {[integer]: Keymap}
+---@field keymaps CommanderKeymap[]
 ---@field keymaps_str string the string representation of the keymaps
 ---@field cat string
----@field mode integer
+---@field set boolean | nil
+---@field show boolean | nil
 local Command = {}
 Command.__mt = { __index = Command }
 
@@ -63,46 +75,51 @@ local function get_lua_func_name(func_ref)
   end
 end
 
+local function tenary(cond, val_1, val_2)
+  if cond then return val_1 else return val_2 end
+end
+
 -- MARK: PUBLIC METHODS
 
+---@return CommanderAddOpts
+function Command:default_add_opts()
+  return {
+    cat = "",
+    set = true,
+    show = true
+  }
+end
+
 ---Parse an item into Command
----@param item table | nil
----@param opts table | nil
----@return Command|nil command
+---@param item CommanderItem
+---@param opts? CommanderAddOpts
+---@return CommanderCommand|nil command
 ---@return string | nil error
 function Command:parse(item, opts)
-  if not item then
-    return
-  end
-
-  opts = opts or {}
+  if not item then return end
 
   local command = setmetatable({}, Command.__mt)
 
-  -- 1. Ensure backward compatibility
-  command.cmd = item.cmd or item.command
-  command.desc = item.desc or item.description or ""
-  command.cat = item.cat or item.category or opts.cat or opts.category or ""
-  command.mode = item.mode or opts.mode or constants.mode.ADD_SET
+  opts = opts or self:default_add_opts()
+
+  command.cmd = item.cmd
+  command.desc = item.desc or ""
+  command.cat = item.cat or opts.cat
+  command.set = tenary(item.set ~= nil, item.set, opts.set)
+  command.show = tenary(item.show ~= nil, item.show, opts.show)
 
   -- 2. Valid all entries in item (except keys)
   local _, err = pcall(vim.validate, {
     cmd = { command.cmd, { "string", "function" }, false },
     desc = { command.desc, "string", false },
     cat = { command.cat, "string", false },
-    mode = {
-      command.mode,
-      function(m)
-        return m >= constants.mode.ADD and m <= constants.mode.ADD_SET
-      end,
-      "expect one of " .. vim.inspect(constants.mode) .. ", but got " .. command.mode,
-    },
+    set = { command.set, "boolean", false },
+    show = { command.show, "boolean", false },
   })
 
-  if err then
-    return nil, err
-  end
+  if err then return nil, err end
 
+  ---@diagnostic disable-next-line: assign-type-mismatch
   command.cmd_str = type(command.cmd) == "function" and get_lua_func_name(item.cmd) or item.cmd
   command.non_empty_desc = command.desc ~= "" and command.desc or command.cmd_str
 
@@ -110,16 +127,16 @@ function Command:parse(item, opts)
   -- FIX: THIS IS WRONG!
   -- How to distinguish 1D and 2D list of keys?
   -- 3.1 No keys to be validate
+  command.keymaps = {}
+  command.keymaps_str = ""
+
   if not item.keys or #item.keys == 0 then
     return command, nil
   end
 
-  command.keymaps = {}
-  command.keymaps_str = ""
-
   -- 3.2 If there is only one keymap in keys
-  if #item.keys >=2 and  type(item.keys[2]) ~= "table" then
-    local keymap, err = Keymap:parse(item.keys or item.keybindings or {})
+  if #item.keys >= 2 and type(item.keys[2]) ~= "table" then
+    local keymap, err = Keymap:parse(item.keys)
     if err then
       return nil, "keys" .. err
     end
@@ -130,7 +147,7 @@ function Command:parse(item, opts)
   end
 
   -- 3.3 If keys is a list
-  for i, key in ipairs(item.keys or item.keybindings or {}) do
+  for i, key in ipairs(item.keys) do
     local keymap, err = Keymap:parse(key)
     if err then
       return nil, "keys[" .. i .. "]" .. err
@@ -146,9 +163,7 @@ end
 
 ---Set all keymaps in this command
 function Command:set_keymaps()
-  if self.mode == constants.mode.ADD then
-    return
-  end
+  if not self.set then return end
 
   for _, keymap in ipairs(self.keymaps) do
     keymap:set(self.cmd)
@@ -157,9 +172,7 @@ end
 
 ---Unset all keymaps in this command
 function Command:unset_keymaps()
-  if self.mode == constants.mode.ADD then
-    return
-  end
+  if not self.set then return end
 
   for _, keymap in ipairs(self.keymaps) do
     keymap:unset()

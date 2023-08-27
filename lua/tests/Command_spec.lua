@@ -11,7 +11,8 @@ describe("Command:parse()", function()
       desc = "test parsing a command",
       cmd = "<CMD>echo hello<CR>",
       keys = { "n", "<leader>a" },
-      mode = constants.mode.ADD,
+      set = false,
+      show = true,
       cat = "test",
     }
     local command, err = Command:parse(item)
@@ -22,7 +23,8 @@ describe("Command:parse()", function()
     assert.equal(command.cmd_str, item.cmd)
     assert.equal(#command.keymaps, 1)
     assert.equal(command.cat, item.cat)
-    assert.equal(command.mode, item.mode)
+    assert.equal(command.set, item.set)
+    assert.equal(command.show, item.show)
   end)
 
   it("correct complex item", function()
@@ -35,7 +37,6 @@ describe("Command:parse()", function()
         { "v",     "<leader>b" },
         { { "i" }, "<leader>c" },
       },
-      mode = constants.mode.ADD_SET,
       cat = "test",
     }
     local command, err = Command:parse(item)
@@ -46,15 +47,15 @@ describe("Command:parse()", function()
     assert.equal(command.cmd, item.cmd)
     assert.equal(command.cmd_str, "<anonymous> lua function")
     assert.equal(#command.keymaps, #item.keys)
-    assert.equal(command.cat, item.cat)
-    assert.equal(command.mode, item.mode)
+    assert.equal(command.set, true)
+    assert.equal(command.show, true)
   end)
 
   it("command without valid cmd", function()
     local item = {
       desc = "test parsing a command",
       keys = { "n", "<leader>a" },
-      mode = constants.mode.ADD,
+      set = false,
       cat = "test",
     }
     local _, err = Command:parse(item)
@@ -63,7 +64,7 @@ describe("Command:parse()", function()
     item = {
       desc = "test parsing a command",
       keys = { "n", "<leader>a" },
-      mode = constants.mode.ADD,
+      set = false,
       cat = "test",
       cmd = 123,
     }
@@ -107,7 +108,7 @@ describe("Command:execute()", function()
         cnt = cnt + 1
       end,
       keys = { "n", "<leader>a" },
-      mode = constants.mode.ADD,
+      set = false,
       cat = "test",
     }
     local command, _ = Command:parse(item)

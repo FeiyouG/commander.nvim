@@ -1,16 +1,16 @@
 local Component = require("commander.model.Component")
 local theme = require("telescope._extensions.commander.theme")
 
----@class IntegrationConfig
+---@class CommanderIntegrationConfig
 ---@field telescope {enable: boolean, theme: function}
 ---@field lazy {enable: boolean}
 
----@class Config
+---@class CommanderConfig
 ---@field components string[] the components to be rendered in the propmt; possible values are DESC, KEYS, CMD, and CAT
 ---@field sort_by string[] the default ordering of commands in the prompt; possible values are DESC, KEYS, CMD, and CAT
 ---@field separator string the separator between each component in the prompt
 ---@field auto_replace_desc_with_cmd boolean automatically replace empty desc with cmd
----@field integration IntegrationConfig | nil
+---@field integration CommanderIntegrationConfig | nil
 ---@field prompt_title string the title of the prompt
 local Config = {}
 Config.__mt = { __index = Config }
@@ -23,7 +23,7 @@ local cmp_keys = {
 }
 
 ---Return default configuration
----@return Config the default configuration
+---@return CommanderConfig the default configuration
 function Config:new()
   return setmetatable({
     components = {
@@ -42,7 +42,7 @@ function Config:new()
 
     separator = " ",
     auto_replace_desc_with_cmd = true,
-    prompt_title = "Command Center",
+    prompt_title = "Commander",
 
     integration = {
       telescope = {
@@ -58,7 +58,7 @@ function Config:new()
 end
 
 ---Validate passed config
----@param config Config
+---@param config CommanderConfig
 ---@return string | nil error
 local function validate(config)
   local _, err = pcall(vim.validate, {
@@ -91,7 +91,7 @@ local function validate(config)
 end
 
 ---Merge config into self if and only if config is valid
----@param config Config | nil
+---@param config CommanderConfig | nil
 ---@return string | nil err
 function Config:merge(config)
   if config == nil or config == {} then return nil end
@@ -111,7 +111,7 @@ function Config:merge(config)
 
   for i, cmp in ipairs(self.components) do
     self.components[i] = Component[cmp]
-    if self.auto_replace_desc_with_cmd and cmp == "NON_ENPTY_DESC" then
+    if self.auto_replace_desc_with_cmd and cmp == "DESC" then
       self.components[i] = Component.NON_EMPTY_DESC
     end
   end

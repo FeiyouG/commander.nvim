@@ -33,22 +33,33 @@ function Filter:parse(filter)
 end
 
 ---Filter commands
----@param commands {[integer]: Command}
----@return {[integer]: Command}
+---@param commands Command[]
+---@return Command[]
 function Filter:filter(commands)
   if not commands or #commands == 0 then
     return {}
   end
 
   return vim.tbl_filter(function(command)
-    local res = true
+    if not command.show then
+      return false
+    end
+
     if self.mode then
-      res = res and command.mode == self.mode
+      local mode_match = false
+      for _, keys in ipairs(command.keymaps) do
+        mode_match = mode_match or vim.tbl_contains(keys.modes, self.mode)
+      end
+      if not mode_match then return false end
     end
+
     if self.cat then
-      res = res and command.cat == self.cat
+      if command.cat ~= self.cat then
+        return false
+      end
     end
-    return res
+
+    return true
   end, commands)
 end
 

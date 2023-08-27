@@ -1,6 +1,5 @@
 local Command = require("commander.model.Command")
 local Filter = require("commander.model.filter")
-local Component = require("commander.model.Component")
 
 ---@class Layer
 ---@field commands {[integer]: Command}
@@ -31,8 +30,7 @@ function Layer:new()
   }, Layer.__mt)
 end
 
----comment
----@param commands {integer: Command}
+---@param commands Command[]
 function Layer:insert(commands)
   if not commands or #commands == 0 then return end
 
@@ -44,15 +42,15 @@ function Layer:insert(commands)
 end
 
 ---Add a list of items to this layer
----@param items {[integer]: table} | nil
----@param opts table | nil
+---@param items? CommanderItem[]
+---@param opts? CommanderAddOpts
 ---@return string | nil error
 function Layer:add(items, opts)
   if not items or #items == 0 then
     return nil
   end
 
-  opts = opts or {}
+  opts = opts or Command:default_add_opts()
 
   for _, item in ipairs(items) do
     local command, err = Command:parse(item, opts)
@@ -67,7 +65,7 @@ end
 
 function Layer:select(prompt_title)
   vim.ui.select(self:get_commands(), {
-    promp = prompt_title,
+    prompt = prompt_title,
     format_item = function(command)
       local res = ""
       for _, component in ipairs(self.displayer) do
@@ -155,9 +153,8 @@ function Layer:set_filter(f)
 end
 
 ---Update layer settings with the given config
----@param config Config
+---@param config CommanderConfig
 function Layer:setup(config)
-  print(vim.inspect(config))
   self:set_sorter(config.sort_by)
   self:set_displayer(config.components)
   self:set_separator(config.separator)
