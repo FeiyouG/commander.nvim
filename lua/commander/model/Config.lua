@@ -97,6 +97,7 @@ function Config:merge(config)
   if config == nil or config == {} then return nil end
 
   local mergedConfig = vim.tbl_deep_extend("force", self, config)
+  setmetatable(mergedConfig, Config.__mt)
 
   local err = validate(mergedConfig)
   if err then

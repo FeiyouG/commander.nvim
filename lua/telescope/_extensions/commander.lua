@@ -14,20 +14,21 @@ local telescope_conf = require("telescope.config").values
 
 local M = require("commander")
 
-local function run(filter)
-  M.layer:set_filter(filter)
+---@param opts CommanderShowOpts
+local function run(opts)
+  M.layer:set_filter(opts.filter)
   local commands = M.layer:get_commands()
-  local opts = vim.deepcopy(M.config)
+  local config = vim.deepcopy(M.config)
 
   -- Insert the calculated length constants
-  opts.max_width = M.layer:get_max_width()
-  opts.num_items = #commands
-  opts = theme(opts)
+  config.max_width = M.layer:get_max_width()
+  config.num_items = #commands
+  config = theme(config)
 
-  local telescope_obj = pickers.new(opts, {
+  local telescope_obj = pickers.new(config, {
     prompt_title = M.config.prompt_title,
     finder = finder(commands),
-    sorter = telescope_conf.generic_sorter(opts),
+    sorter = telescope_conf.generic_sorter(config),
     attach_mappings = attach_mappings,
   })
 
@@ -37,5 +38,8 @@ end
 return telescope.register_extension({
   exports = {
     commander = run,
+    filter = function(filter)
+      run({ filter = filter })
+    end
   },
 })

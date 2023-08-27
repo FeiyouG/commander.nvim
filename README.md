@@ -1,8 +1,7 @@
 # cammander.nvim
 
 Create and manage keymaps and commands
-in a more organized manner,
-and search them quickly through Telescope.
+in a more organized way.
 
 ## Demo
 
@@ -20,18 +19,18 @@ and search them quickly through Telescope.
 <!-- TOC GFM -->
 
 - [Install](#install)
-  - [vim-plug](#vim-plug)
-  - [Packer](#packer)
-  - [Lazy](#lazy)
+    - [vim-plug](#vim-plug)
+    - [Packer](#packer)
+    - [Lazy](#lazy)
 - [Configuration and Usage](#configuration-and-usage)
-  - [A minimal working example](#a-minimal-working-example)
-  - [Configuration](#configuration)
-  - [Example configuration](#example-configuration)
+    - [A minimal working example](#a-minimal-working-example)
+    - [Configuration](#configuration)
+    - [Example configuration](#example-configuration)
 - [API](#api)
-    - [`comamnder.add(CommanderItem[], CommanderAddOpts)`](#comamnderaddcommanderitem-commanderaddopts)
-      - [Example One:](#example-one)
-      - [Example Two](#example-two)
-  - [`Commander.show(opts)`](#commandershowopts)
+        - [`comamnder.add(CommanderItem[], CommanderAddOpts)`](#comamnderaddcommanderitem-commanderaddopts)
+            - [Example One:](#example-one)
+            - [Example Two](#example-two)
+    - [`Commander.show(CommanderShowOpts)`](#commandershowcommandershowopts)
 - [Related Projects](#related-projects)
 
 <!-- /TOC -->
@@ -331,76 +330,32 @@ The resulted `comamnder` prompt will look like this:
 
 ![demo2](https://github.com/gfeiyou/command-center.nvim/blob/assets/demo_mode.png)
 
-### `Commander.show(opts)`
+### `Commander.show(CommanderShowOpts)`
 
-You can filter the commands upon invoking `:Telescope comamnder`.
+Open Commander's sprompt.
 
-Currently, you can filter either by mode or category.
-You can find some examples below:
+**CommanderFilter**
+| Property | Type               | Default | Description           |
+|----------|--------------------|---------|-----------------------|
+| `filter` | `CommanderFilter?` | `nil`   | The filter to be used |
 
-1. Show only commands that has keymaps that work in normal mode
+**CommanderFilter**
+| Property | Type      | Default | Description                                       |
+|----------|-----------|---------|---------------------------------------------------|
+| `cat`    | `string?` | `nil`   | Filter by the category of the comamnds            |
+| `mode`   | `string?` | `nil`   | Filter by the mode of the keymaps of the commands |
 
-```
-:Telescope comamnder mode=n
-```
-
-2. Show only commands that in "git" category
-
-```
-:Telescope comamnder category=git
-```
-
-You can specify the category of a command
-as follows:
-
+If you enabled the integration with telescope, 
+then the following comamnds are also equivalent:
 ```lua
-comamnder.add({
-  {
-    description = "Open git diffview",
-    cmd = "<CMD>DiffviewOpen<CR>",
-    keybindings = { "n", "<leader>gd", noremap },
-    category = "git",
-  }, {
-    description = "Close current git diffview",
-    cmd = "<CMD>DiffviewClose<CR>",
-    keybindings = { "n", "<leader>gc", noremap },
-    category = "git",
-  }, {
-    description = "Toggle markdown preview",
-    cmd = "<CMD>MarkdownPreviewToggle<CR>",
-    keybindings = { "n", "<leader>mp", noremap },
-    category = "markdown",
-  }
-})
+-- The same as require("commander").show()
+Telescope commander 
 
--- Or you can set up the category for multiple commands at once
-comamnder.add({
-  {
-    description = "Open git diffview",
-    cmd = "<CMD>DiffviewOpen<CR>",
-    keybindings = { "n", "<leader>gd", noremap },
-  }, {
-    description = "Close current git diffview",
-    cmd = "<CMD>DiffviewClose<CR>",
-    keybindings = { "n", "<leader>gc", noremap },
-  }, {
-    -- category set in a smaller scope takes precedence
-    description = "Toggle markdown preview",
-    cmd = "<CMD>MarkdownPreviewToggle<CR>",
-    keybindings = { "n", "<leader>mp", noremap },
-    category = "markdown",
-  }
-}, {
-  mode = comamnder.mode.ADD_ONLY,
-  category = "git"
-})
+-- The same as require("commander").show({ filter = { mode = "i" } })
+Telescope commander filter mode=i 
 
-```
-
-3. Or both
-
-```
-:Telescope comamnder mode=n category=markdown
+-- The same as require("commander").show({ filter = { mode = "i", cat = "git" } })
+Telescope commander filter mode=i cat=git 
 ```
 
 ## Related Projects

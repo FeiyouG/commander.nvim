@@ -1,35 +1,38 @@
----@class Filter
----@field mode string | nil
----@field cat string | nil
+---@class CommanderFilter
+---@field mode? string
+---@field cat? string
 local Filter = {}
 Filter.__mt = { __index = Filter }
 
----Return an empty filter object
-function Filter:new()
-  return setmetatable({}, nil)
+---@return CommanderFilter filter the default empty filter
+function Filter:default()
+  return setmetatable({
+    mode = nil,
+    cat = nil,
+  }, Filter.__mt)
 end
 
 ---Parse a filter object
----@param filter table | nil
----@return Filter | nil
----@return string | nil error
-function Filter:parse(filter)
+---@param filter CommanderFilter
+---@return CommanderFilter?
+---@return string? error
+function Filter.parse(filter)
   filter = filter or {}
 
+  local default = Filter:default()
+  local mergedFilter = vim.tbl_deep_extend("keep", default, filter)
+  setmetatable(mergedFilter, Filter.__mt)
+
   local _, err = pcall(vim.validate, {
-    mode = { filter.mode, "string", true },
-    cat = { filter.cat, "string", true },
-    category = { filter.category, "string", true },
+    mode = { mergedFilter.mode, "string", true },
+    cat = { mergedFilter.cat, "string", true },
   })
 
   if err then
     return nil, err
   end
 
-  return setmetatable({
-    mode = filter.mode,
-    cat = filter.cat or filter.category,
-  }, Filter.__mt), nil
+  return mergedFilter, nil
 end
 
 ---Filter commands

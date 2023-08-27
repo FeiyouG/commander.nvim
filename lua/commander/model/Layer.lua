@@ -3,7 +3,7 @@ local Filter = require("commander.model.filter")
 
 ---@class Layer
 ---@field commands {[integer]: Command}
----@field private filter Filter specify which commands are going to be displayed
+---@field private filter CommanderFilter specify which commands are going to be displayed
 ---@field private sorter {[integer] : Component} | nil  specify by what order the commands are diplayed
 ---@field private displayer {[integer]: Component} | nil specify which components of a command are displayed
 ---@field private separator string
@@ -20,7 +20,7 @@ function Layer:new()
   return setmetatable({
     commands = {},
     sorter = nil,
-    filter = Filter:new(),
+    filter = Filter:default(),
     displayer = nil,
     separator = " ",
 
@@ -139,9 +139,9 @@ end
 ---@param f table
 function Layer:set_filter(f)
   ---@diagnostic disable-next-line: redefined-local
-  local filter, err = Filter:parse(f)
+  local filter, err = Filter.parse(f)
 
-  if not filter or err then
+  if err then
     vim.notify("commander.nvim invalid filter\n" .. vim.inspect(filter) .. "\n" .. err)
     return
   end

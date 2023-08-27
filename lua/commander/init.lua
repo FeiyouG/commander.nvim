@@ -24,6 +24,7 @@ function M.setup(config)
     if telescop_avail then
       telescope.load_extension("commander")
     else
+      M.config.integration.telescope.enable = false
       vim.notify("Commander.nvim: telscope integration failed; telescope is not installed.")
     end
   end
@@ -39,13 +40,17 @@ function M.add(items, opts)
 
 end
 
+---@class CommanderShowOpts
+---@field filter? CommanderFilter
+
+---@param opts CommanderShowOpts
 function M.show(opts)
   opts = opts or {}
-  M.layer:set_filter(opts.filter)
 
   if M.config.integration.telescope.enable then
-    vim.cmd("Telescope commander")        -- Use telecope
+    require("telescope").extensions.commander.commander(opts) -- Use telescope
   else
+    M.layer:set_filter(opts.filter)
     M.layer:select(M.config.prompt_title) -- Use vim.ui.select
   end
 end
