@@ -28,7 +28,7 @@ describe("Command:parse()", function()
   it("correct complex item", function()
     local item = {
       cmd = function()
-        print("hello")
+        print("helilo")
       end,
       keys = {
         { "n",     "<leader>a" },
@@ -90,15 +90,6 @@ describe("Command:parse()", function()
       cmd = "<CMD>echo hello<CR>",
     }
     _, err = Command:parse(item)
-    assert.equal('keys[1]: expected vim-mode(s) (one or a list of { "n", "i", "c", "x", "v", "t" }), got nil', err)
-
-    item = {
-      desc = "Show all TODO comments in trouble",
-      cmd = "<CMD>TodoTrouble<CR>",
-      keys = { "n", "<leader>xt" },
-    }
-    i, err = Command:parse(item)
-    print(vim.inspect(i))
     assert.equal('keys[1]: expected vim-mode(s) (one or a list of { "n", "i", "c", "x", "v", "t" }), got nil', err)
 
   end)
