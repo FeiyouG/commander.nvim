@@ -5,6 +5,6 @@ return {
   KEYS = "keymaps_str",
   CAT = "cat",
 
-  -- Private
+  ---@private
   NON_EMPTY_DESC = "non_empty_desc",
 }

@@ -13,11 +13,22 @@ M.config = Config:new()
 ---Setup plugin with customized configurations
 ---@param config Config
 function M.setup(config)
-  M.config:update(config)
+  M.config:merge(config)
+  M.layer:setup(config)
 
-  M.layer:set_sorter(M.config.sort_by)
-  M.layer:set_separator(M.config.separator)
-  M.layer:set_displayer(M.config.components)
+  if M.config.integration.lazy.enable then
+    local cmds = converter.get_lazy_keys()
+    M.layer:insert(cmds)
+  end
+
+  if M.config.integration.telescope.enable then
+    local telescop_avail, telescope = pcall(require, "telescope")
+    if telescop_avail then
+      telescope.load_extension("commander")
+    else
+      vim.notify("Commander.nvim: telscope integration failed; telescope is not installed.")
+    end
+  end
 end
 
 function M.add(items, opts)
@@ -31,8 +42,8 @@ function M.show(opts)
   opts = opts or {}
   M.layer:set_filter(opts.filter)
 
-  if M.config.telescope.integrate then
-    vim.cmd("Telescope commander") -- Use telecope
+  if M.config.integration.telescope.integrate then
+    vim.cmd("Telescope commander")        -- Use telecope
   else
     M.layer:select(M.config.prompt_title) -- Use vim.ui.select
   end
