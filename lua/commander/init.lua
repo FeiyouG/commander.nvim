@@ -14,7 +14,7 @@ M.config = Config:new()
 ---@param config Config
 function M.setup(config)
   M.config:merge(config)
-  M.layer:setup(config)
+  M.layer:setup(M.config)
 
   if M.config.integration.lazy.enable then
     local cmds = converter.get_lazy_keys()
@@ -42,7 +42,7 @@ function M.show(opts)
   opts = opts or {}
   M.layer:set_filter(opts.filter)
 
-  if M.config.integration.telescope.integrate then
+  if M.config.integration.telescope.enable then
     vim.cmd("Telescope commander")        -- Use telecope
   else
     M.layer:select(M.config.prompt_title) -- Use vim.ui.select

@@ -27,11 +27,11 @@ and search them quickly through Telescope.
     - [Configuration](#configuration-1)
     - [Example configuration](#example-configuration)
   - [Add commands](#add-commands)
-    - [`command_center.add`](#command_centeradd)
-    - [`command_center.mode`](#command_centermode)
+    - [`comamnder.add`](#comamnderadd)
+    - [`comamnder.mode`](#comamndermode)
   - [Filter](#filter)
-  - [`command_center.remove`](#command_centerremove)
-  - [`command_center.converter`](#command_centerconverter)
+  - [`comamnder.remove`](#comamnderremove)
+  - [`comamnder.converter`](#comamnderconverter)
 - [Related Projects](#related-projects)
 
 <!-- /TOC -->
@@ -44,17 +44,25 @@ This plugin requires [Telescope](https://github.com/nvim-telescope/telescope.nvi
 
 ```vim
 Plug "nvim-telescope/telescope.nvim"
-Plug "FeiyouG/command_center.nvim"
+Plug "FeiyouG/comamnder.nvim"
 ```
 
 ### Packer
 
 ```lua
 use {
-  "FeiyouG/command_center.nvim",
+  "FeiyouG/comamnder.nvim",
   requires = { "nvim-telescope/telescope.nvim" }
 }
 ```
+
+### Lazy
+```lua
+return {
+  "FeiyouG/comamnder.nvim",
+  dependencies = { "nvim-telescope/telescope.nvim" }
+}
+
 
 ## Usage
 
@@ -63,8 +71,8 @@ A minimal working example:
 -- Add a new command
 require("commander.nvim").add({
   {
-    desc = "Open command_center",
-    cmd = "<CMD>Telescope command_center<CR>",
+    desc = "Open comamnder",
+    cmd = "<CMD>Telescope comamnder<CR>",
     keys = {"n", "<Leader>fc", noremap},
   }
 })
@@ -73,61 +81,39 @@ require("commander.nvim").add({
 require("commander.nvim").show()
 ```
 
-### Configuration
-
-Then,
-you can open `command-center`
-by calling `:Telescope command_center`.
-I also use the following keybinding:
-
-```lua
-vim.cmd "nnoremap <leader>fc <CMD>Telescope command_center<CR>"
-```
-
-And, of course,
-the above keybindings can also be created
-in [`command-center`-way](#example-configuration).
-Keep reading the following sections.
-
 #### Configuration
 
 Configuration can be done through
 `telescope.setup` function:
 
 ```lua
-require("telescope").setup {
-  extensions = {
-    command_center = {
-      -- Your configurations go here
-    }
-  }
-}
+require("commander").setup({
+    ...
+})
 
 ```
 
-The following is the default configuration
-for `command_center`,
-and you only need to pass the settings that you want to change
-to `require("telescope").setup`:
+The following is the default configuration,
+and you only need to pass the settings that you want to change:
 
 ```lua
 {
   -- Specify what components are shown in telescope prompt;
   -- Order matters, and components may repeat
   components = {
-    command_center.component.DESC,
-    command_center.component.KEYS,
-    command_center.component.CMD,
-    command_center.component.CATEGORY,
+    "DESC",
+    "KEYS",
+    "CMD",
+    "CAT",
   },
 
   -- Spcify by what components the commands is sorted
   -- Order does not matter
   sort_by = {
-    command_center.component.DESC,
-    command_center.component.KEYS,
-    command_center.component.CMD,
-    command_center.component.CATEGORY,
+    "DESC",
+    "KEYS",
+    "CMD",
+    "CAT",
   },
 
   -- Change the separator used to separate each component
@@ -140,74 +126,86 @@ to `require("telescope").setup`:
   -- Default title to Telescope prompt
   prompt_title = "Command Center",
 
-  -- can be any builtin or custom telescope theme
-  theme = require("telescope.themes").command_center,
+  integration = {
+    telescope = {
+      -- Set to true to use telescope instead of vim.ui.select 
+      enable = false,
+      -- Can be any builtin or custom telescope theme
+      theme = theme, 
+    },
+    lazy = {
+      -- Set to true to automatically add all keymaps set by lazy
+      enable = false, 
+    }
+  }
 }
 ```
 
 #### Example configuration
 
-Below is my personal configuration for `command_center`.
+Below is my personal configuration for `comamnder`.
 You can use it as a reference.
 
 ```lua
-local telescope = require("telescope")
-local command_center = require("command_center")
-local noremap = { noremap = true }
-
-command_center.add({
-  {
-    desc = "Open command_center",
-    cmd = "<CMD>Telescope command_center<CR>",
-    keys = {
-      {"n", "<Leader>fc", noremap},
-      {"v", "<Leader>fc", noremap},
-
-      -- If ever hesitate when using telescope start with <leader>f,
-      -- also open command center
-      {"n", "<Leader>f", noremap},
-      {"v", "<Leader>f", noremap},
-    },
-  }
-}, command_center.mode.REGISTER_ONLY)
-
-telescope.setup {
-  extensions = {
-    command_center = {
+-- Plugin Manager: lazy.nvim
+return {
+  "FeiyouG/commander.nvim",
+  dependencies = {
+    "nvim-telescope/telescope.nvim",
+  },
+  keys = {
+    { "<leader>f",  "<CMD>Telescope commander<CR>", mode = "n" },
+    { "<leader>fc", "<CMD>Telescope commander<CR>", mode = "n" }
+  },
+  config = function()
+    local commander = require("commander")
+    commander.setup({
       components = {
-        command_center.component.DESC,
-        command_center.component.KEYS,
+        "DESC",
+        "KEYS",
+        "CAT",
+        "CMD"
       },
       sort_by = {
-        command_center.component.DESC,
-        command_center.component.KEYS,
+        "DESC",
+        "KEYS",
+        "CAT",
+        "CMD"
       },
-      auto_replace_desc_with_cmd = false,
-    }
-  }
+      auto_replace_desc_with_cmd = true,
+      separator = " │ ",
+      integration = {
+        telescope = {
+          enable = true,
+          theme = require("telescope.themes").commander,
+        },
+        lazy = {
+          enable = true
+        }
+      }
+    })
+  end,
 }
-
-telescope.load_extension('command_center')
 ```
 
 ### Add commands
 
-#### `command_center.add`
+#### `comamnder.add`
 
-The function `command_center.add(commands, opts)`
+The function `comamnder.add(commands, opts)`
 does two things:
 
 1. Set the keymaps (if any)
-2. Add the commands to `command_center`
+2. Add the commands to `comamnder`
 
 You can find an example below:
 
 ```lua
-local command_center = require("command_center")
+local comamnder = require("comamnder")
 local noremap = {noremap = true}
 local silent_noremap = {noremap = true, silent = true}
 
-command_center.add({
+comamnder.add({
   {
     desc = "Search inside current buffer",
     cmd = "<CMD>Telescope current_buffer_fuzzy_find<CR>",
@@ -258,35 +256,35 @@ command_center.add({
 
 If you have above snippet in your config,
 `command-center` will create your specified keybindings automatically.
-And calling `:Telescope command_center`
+And calling `:Telescope commander`
 will open a prompt like this:
 
 ![demo1](https://github.com/gfeiyou/command-center.nvim/blob/assets/demo_add.png)
 
-#### `command_center.mode`
+#### `comamnder.mode`
 
-`command_center.add()` will add **and** set
+`comamnder.add()` will add **and** set
 the keymaps for you by default.
-You can use `command_center.mode`
+You can use `comamnder.mode`
 to override this behavior.
 
 ```lua
 mode = {
-  ADD = 1,      -- only add the commands to command_center
+  ADD = 1,      -- only add the commands to comamnder
   SET = 2,      -- only set the keymaps
   ADD_SET = 3,  -- add the commands and set the keymaps
 }
 ```
 
-An example usage of `command_center.mode`:
+An example usage of `comamnder.mode`:
 
 ```lua
-local command_center = require("command_center")
+local comamnder = require("comamnder")
 
 -- Set the keymaps for commands only
--- This allows you to use command_center just as a convenient
+-- This allows you to use comamnder just as a convenient
 -- and organized way to manage your keymaps
-command_center.add({
+comamnder.add({
   {
     desc = "Find files",
     cmd = "<CMR>telescope find_files<CR>",
@@ -298,17 +296,17 @@ command_center.add({
     cmd = "<CMD>Telescope current_buffer_fuzzy_find<CR>",
   }
 }, {
-  mode = command_center.mode.SET
+  mode = comamnder.mode.SET
 })
 
 
--- Only add the commands to command_center
+-- Only add the commands to comamnder
 -- This is helpful if you already registered the keymap somewhere else
 -- and want to avoid set the exact keymap twice
-command_center.add({
+comamnder.add({
   {
     -- If keys are specified,
-    -- then they will still show up in command_center but won't be registered
+    -- then they will still show up in comamnder but won't be registered
     desc = "Find hidden files",
     cmd = "<CMD>Telescope find_files hidden=true<CR>",
     keys = { "n", "<leader>f.f", noremap },
@@ -320,10 +318,10 @@ command_center.add({
     desc = "LSP cdoe actions",
     cmd = "<CMD>Telescope lsp_code_actions<CR>",
     keybinginds = { "n", "<leader>sa", noremap },
-    mode = command_center.mode.ADD_SET,
+    mode = comamnder.mode.ADD_SET,
   }
 }, {
-  mode = command_center.mode.ADD
+  mode = comamnder.mode.ADD
 })
 
 ```
@@ -331,13 +329,13 @@ command_center.add({
 Above snippet will only set the keymaps
 for _"Find files"_ and _"LSP code actions"_,
 but not for others.
-The resulted `command_center` prompt will look like this:
+The resulted `comamnder` prompt will look like this:
 
 ![demo2](https://github.com/gfeiyou/command-center.nvim/blob/assets/demo_mode.png)
 
 ### Filter
 
-You can filter the commands upon invoking `:Telescope command_center`.
+You can filter the commands upon invoking `:Telescope comamnder`.
 
 Currently, you can filter either by mode or category.
 You can find some examples below:
@@ -345,20 +343,20 @@ You can find some examples below:
 1. Show only commands that has keymaps that work in normal mode
 
 ```
-:Telescope command_center mode=n
+:Telescope comamnder mode=n
 ```
 
 2. Show only commands that in "git" category
 
 ```
-:Telescope command_center category=git
+:Telescope comamnder category=git
 ```
 
 You can specify the category of a command
 as follows:
 
 ```lua
-command_center.add({
+comamnder.add({
   {
     description = "Open git diffview",
     cmd = "<CMD>DiffviewOpen<CR>",
@@ -378,7 +376,7 @@ command_center.add({
 })
 
 -- Or you can set up the category for multiple commands at once
-command_center.add({
+comamnder.add({
   {
     description = "Open git diffview",
     cmd = "<CMD>DiffviewOpen<CR>",
@@ -395,7 +393,7 @@ command_center.add({
     category = "markdown",
   }
 }, {
-  mode = command_center.mode.ADD_ONLY,
+  mode = comamnder.mode.ADD_ONLY,
   category = "git"
 })
 
@@ -404,39 +402,39 @@ command_center.add({
 3. Or both
 
 ```
-:Telescope command_center mode=n category=markdown
+:Telescope comamnder mode=n category=markdown
 ```
 
-### `command_center.remove`
+### `comamnder.remove`
 
 ```lua
-command_center.remove(commands, opts)
+comamnder.remove(commands, opts)
 ```
 
-You can also remove commands from `command_center`,
+You can also remove commands from `comamnder`,
 with the following limitations:
 
 1.  You need to pass in commands with the exact same
     `desc`, `cmd`, and `keys`
-    in order to remove it from `command_center`.
+    in order to remove it from `comamnder`.
 
 Furthermore, you can find an example usage
-in the [wiki page](https://github.com/FeiyouG/command_center.nvim/wiki/Integrations).
+in the [wiki page](https://github.com/FeiyouG/comamnder.nvim/wiki/Integrations).
 
-### `command_center.converter`
+### `comamnder.converter`
 
-The functions in `command_center.converter`
+The functions in `comamnder.converter`
 can be used to convert commands
-used by command_center to/from
+used by comamnder to/from
 the conventions used by another plugin/functions.
 
 Current available converters are:
 
-- `command_center.converter.to_nvim_set_keymap(commands)`
-- `command_center.converter.to_hydra_heads(commands)`
+- `comamnder.converter.to_nvim_set_keymap(commands)`
+- `comamnder.converter.to_hydra_heads(commands)`
 
 You can find some example usage of converters
-in [wiki page](https://github.com/FeiyouG/command_center.nvim/wiki/Integrations).
+in [wiki page](https://github.com/FeiyouG/comamnder.nvim/wiki/Integrations).
 
 ## Related Projects
 

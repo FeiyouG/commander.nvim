@@ -1,5 +1,6 @@
 local Command = require("commander.model.Command")
 local Filter = require("commander.model.filter")
+local Component = require("commander.model.Component")
 
 ---@class Layer
 ---@field commands {[integer]: Command}
@@ -156,6 +157,7 @@ end
 ---Update layer settings with the given config
 ---@param config Config
 function Layer:setup(config)
+  print(vim.inspect(config))
   self:set_sorter(config.sort_by)
   self:set_displayer(config.components)
   self:set_separator(config.separator)
