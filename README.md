@@ -45,14 +45,14 @@ This plugin requires [Telescope](https://github.com/nvim-telescope/telescope.nvi
 
 ```vim
 Plug "nvim-telescope/telescope.nvim"
-Plug "FeiyouG/comamnder.nvim"
+Plug "FeiyouG/commander.nvim"
 ```
 
 ### Packer
 
 ```lua
 use {
-  "FeiyouG/comamnder.nvim",
+  "FeiyouG/commander.nvim",
   requires = { "nvim-telescope/telescope.nvim" }
 }
 ```
@@ -60,7 +60,7 @@ use {
 ### Lazy
 ```lua
 return {
-  "FeiyouG/comamnder.nvim",
+  "FeiyouG/commander.nvim",
   dependencies = { "nvim-telescope/telescope.nvim" }
 }
 ```
