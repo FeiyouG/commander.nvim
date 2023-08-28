@@ -11,7 +11,7 @@ in a more organized way.
 
 - **`command_center.nvim` is renamed to `commander.nvim`.**
 - Here is a GitHub issue documents
-  [breaking changes](https://github.com/FeiyouG/cammander.nvim/issues/4)
+  [breaking changes](https://github.com/FeiyouG/commander.nvim/issues/4)
   for `commander.nvim`.
 
 ## Table of Contents
@@ -134,7 +134,7 @@ and you only need to pass the settings that you want to change:
       theme = theme,
     },
     lazy = {
-      -- Set to true to automatically add all keymaps set through lazy.nvim
+      -- Set to true to automatically add all key bindings set through lazy.nvim
       enable = false,
     }
   }
@@ -143,7 +143,7 @@ and you only need to pass the settings that you want to change:
 
 ### Example configuration
 
-Below is my personal configuration for `commander`.
+Below is my configuration for `commander`.
 You can use it as a reference.
 
 ```lua
@@ -237,8 +237,8 @@ commander.add({
     desc = "Show document symbols",
     cmd = "<CMD>Telescope lsp_document_symbols<CR>",
     keys = {
-      {"n", "<leader>ss", noremap},
-      {"n", "<leader>ssd", noremap},
+      {"n", "<leader>ss", { noremap = true } },
+      {"n", "<leader>ssd", { noremap = true } },
     },
   }, {
     -- ... and for different modes
@@ -246,23 +246,23 @@ commander.add({
     cmd = "<CMD>lua vim.lsp.buf.hover()<CR>",
     keys = {
       {{"n", "x"}, "K", silent_noremap },
-      {"i", "<C-k>", silent_noremap },
+      {"i", "<C-k>" },
     }
   }, {
     -- You can pass in a key sequences as if you would type them in nvim
     desc = "My favorite key sequence",
     cmd = "A  -- Add a comment at the end of a line",
-    keys = {"n", "<leader>Ac", noremap}
+    keys = {"n", "<leader>Ac" }
   }, {
     -- You can also pass in a lua functions as cmd
     -- NOTE: binding lua funciton to a keymap requires nvim >= 0.7
     desc = "Run lua function",
     cmd = function() print("ANONYMOUS LUA FUNCTION") end,
-    keys = {"n", "<leader>alf", noremap},
+    keys = {"n", "<leader>alf" },
   }, {
     -- If no cmd is specified, then this entry will be ignored
     desc = "lsp run linter",
-    keys = {"n", "<leader>sf", noremap},
+    keys = {"n", "<leader>sf" },
   }
 })
 ```
@@ -305,7 +305,7 @@ commander.add({
     -- then they will still show up in commander but won't be set
     desc = "Find hidden files",
     cmd = "<CMD>Telescope find_files hidden=true<CR>",
-    keys = { "n", "<leader>f.f", noremap },
+    keys = { "n", "<leader>f.f" },
   }, {
     desc = "Show document symbols",
     cmd = "<CMD>Telescope lsp_document_symbols<CR>",
@@ -314,7 +314,7 @@ commander.add({
     -- It overwrites the opts and this keymap will still be set
     desc = "LSP cdoe actions",
     cmd = "<CMD>Telescope lsp_code_actions<CR>",
-    keybinginds = { "n", "<leader>sa", noremap },
+    keybinginds = { "n", "<leader>sa" },
     set = true
   }
 }, {
@@ -334,7 +334,7 @@ The resulted `commander` prompt will look like this:
 
 Open Commander's sprompt.
 
-**CommanderFilter**
+**CommanderShowOpts**
 | Property | Type               | Default | Description           |
 |----------|--------------------|---------|-----------------------|
 | `filter` | `CommanderFilter?` | `nil`   | The filter to be used |
@@ -345,8 +345,29 @@ Open Commander's sprompt.
 | `cat`    | `string?` | `nil`   | Filter by the category of the commands            |
 | `mode`   | `string?` | `nil`   | Filter by the mode of the keymaps of the commands |
 
-If you enabled the integration with telescope,
-then the following commands are also equivalent:
+
+
+## Integration
+
+### [telescope.nvim](https://github.com/nvim-telescope/telescope.nvim)
+
+Enable integration in the config:
+```lua
+require("commander").setup({
+  ...
+  integration = {
+    ...
+    telescope = {
+      enable = true,
+      -- Optional, you can use any telescope supported theme
+      theme = require("telescope.themes").commander 
+    }
+  }
+})
+```
+
+When enabled,
+then the following commands will be exposed:
 ```lua
 -- The same as require("commander").show()
 Telescope commander
@@ -358,9 +379,11 @@ Telescope commander filter mode=i
 Telescope commander filter mode=i cat=git
 ```
 
-## Integration
+Moreover, 
+the prompt will be shown using telescope 
+instead of `vim.ui.select`.
 
-### [Lazy.nvim](https://github.com/folke/lazy.nvim)
+### [lazy.nvim](https://github.com/folke/lazy.nvim)
 
 Enable integration in the config:
 ```lua
@@ -375,13 +398,14 @@ require("commander").setup({
 })
 ```
 
-Now, commander.nvim does two things:
+When enabled, 
+commander will do two things:
 
 1. Commander will find and add all the `keys`
     that you registered through `lazy.nvim`.
 2. Command will look for a new field called `commander`
     in `LazyPlugin`.
-    The value of the field is expected to be `CommanderItemp[]`,
+    The value of the field is expected to be `CommanderItem[]`,
     and commander can automatically add those commands too.
 
     For example:
@@ -411,8 +435,7 @@ Now, commander.nvim does two things:
     for the suggestion of integrating commander.nvim with lazy.nvim
 
 ## Related Projects
-
-- [which-key](https://github.com/folke/which-key.nvim)
-- [hydra](https://github.com/anuvyklack/hydra.nvim)
-- [Telescope-command-palette](https://github.com/LinArcX/telescope-command-palette.nvim)
 - [legendary.nvim](https://github.com/mrjones2014/legendary.nvim)
+- [easy-commands.nvim](https://github.com/LintaoAmons/easy-commands.nvim)
+- [which-key](https://github.com/folke/which-key.nvim)
+- [Telescope-command-palette](https://github.com/LinArcX/telescope-command-palette.nvim)
