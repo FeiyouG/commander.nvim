@@ -1,4 +1,4 @@
-local keymap_modes = { "n", "i", "c", "x", "v", "t" }
+local keymap_modes = { "n", "v", "x", "s", "o", "!", "i", "l", "c", "t", }
 
 ---@class CommanderItemKey
 ---@field [1] string | string[] mode or a list of modes
