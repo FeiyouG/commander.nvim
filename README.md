@@ -27,9 +27,9 @@ in a more organized way.
     - [Configuration](#configuration)
     - [Example configuration](#example-configuration)
 - [API](#api)
-        - [`commander.add(CommanderItem[], CommanderAddOpts)`](#comamnderaddcommanderitem-commanderaddopts)
-            - [Examples](#examples)
-    - [`Commander.show(CommanderShowOpts)`](#commandershowcommandershowopts)
+  - [`commander.add(CommanderItem[], CommanderAddOpts)`](#comamnderaddcommanderitem-commanderaddopts)
+    - [Examples](#examples)
+  - [`Commander.show(CommanderShowOpts)`](#commandershowcommandershowopts)
 - [Integration](#integration)
     - [Lazy.nvim](#lazynvim)
 - [Special Thanks](#special-thanks)
@@ -332,7 +332,7 @@ The resulted `commander` prompt will look like this:
 
 ### `Commander.show(CommanderShowOpts)`
 
-Open Commander's sprompt.
+Open Commander's prompt.
 
 **CommanderShowOpts**
 | Property | Type               | Default | Description           |
