@@ -1,4 +1,4 @@
-# cammander.nvim
+# commander.nvim
 
 Create and manage keymaps and commands
 in a more organized way.
@@ -27,7 +27,7 @@ in a more organized way.
     - [Configuration](#configuration)
     - [Example configuration](#example-configuration)
 - [API](#api)
-        - [`comamnder.add(CommanderItem[], CommanderAddOpts)`](#comamnderaddcommanderitem-commanderaddopts)
+        - [`commander.add(CommanderItem[], CommanderAddOpts)`](#comamnderaddcommanderitem-commanderaddopts)
             - [Examples](#examples)
     - [`Commander.show(CommanderShowOpts)`](#commandershowcommandershowopts)
 - [Integration](#integration)
@@ -45,14 +45,14 @@ This plugin requires [Telescope](https://github.com/nvim-telescope/telescope.nvi
 
 ```vim
 Plug "nvim-telescope/telescope.nvim"
-Plug "FeiyouG/comamnder.nvim"
+Plug "FeiyouG/commander.nvim"
 ```
 
 ### Packer
 
 ```lua
 use {
-  "FeiyouG/comamnder.nvim",
+  "FeiyouG/commander.nvim",
   requires = { "nvim-telescope/telescope.nvim" }
 }
 ```
@@ -60,7 +60,7 @@ use {
 ### Lazy
 ```lua
 return {
-  "FeiyouG/comamnder.nvim",
+  "FeiyouG/commander.nvim",
   dependencies = { "nvim-telescope/telescope.nvim" }
 }
 ```
@@ -73,7 +73,7 @@ return {
 -- Add a new command
 require("commander.nvim").add({
   {
-    desc = "Open comamnder",
+    desc = "Open commander",
     cmd = require("commander").show,
     keys = { "n", "<Leader>fc" },
   }
@@ -143,7 +143,7 @@ and you only need to pass the settings that you want to change:
 
 ### Example configuration
 
-Below is my personal configuration for `comamnder`.
+Below is my personal configuration for `commander`.
 You can use it as a reference.
 
 ```lua
@@ -185,10 +185,10 @@ return {
 
 ## API
 
-#### `comamnder.add(CommanderItem[], CommanderAddOpts)`
+#### `commander.add(CommanderItem[], CommanderAddOpts)`
 Add a list of `CommanderItem` to Commander.
 
-**ComamnderItem**
+**CommanderItem**
 
 | Property | Type                                        | Default  | Descirption                                |
 |----------|---------------------------------------------|----------|--------------------------------------------|
@@ -216,9 +216,9 @@ Add a list of `CommanderItem` to Commander.
 ##### Examples
 
 ```lua
-local comamnder = require("comamnder")
+local commander = require("commander")
 
-comamnder.add({
+commander.add({
   {
     desc = "Search inside current buffer",
     cmd = "<CMD>Telescope current_buffer_fuzzy_find<CR>",
@@ -276,11 +276,11 @@ will open a prompt like this:
 
 
 ```lua
-local comamnder = require("comamnder")
+local commander = require("commander")
 
 -- The keymaps of the following commands will be key (if any)
 -- But the commands won't be shown when you call `require("commander").show()`
-comamnder.add({
+commander.add({
   {
     desc = "Find files",
     cmd = "<CMR>telescope find_files<CR>",
@@ -299,10 +299,10 @@ comamnder.add({
 -- But the keymaps will not be registered;
 -- This is helpful if you already registered the keymap somewhere else
 -- and want to avoid set the exact keymap twice
-comamnder.add({
+commander.add({
   {
     -- If keys are specified,
-    -- then they will still show up in comamnder but won't be set
+    -- then they will still show up in commander but won't be set
     desc = "Find hidden files",
     cmd = "<CMD>Telescope find_files hidden=true<CR>",
     keys = { "n", "<leader>f.f", noremap },
@@ -326,7 +326,7 @@ comamnder.add({
 Above snippet will only set the keymaps
 for _"Find files"_ and _"LSP code actions"_,
 but not for others.
-The resulted `comamnder` prompt will look like this:
+The resulted `commander` prompt will look like this:
 
 ![demo2](https://github.com/FeiyouG/commander.nvim/blob/assets/demo_mode.png)
 
@@ -342,11 +342,11 @@ Open Commander's sprompt.
 **CommanderFilter**
 | Property | Type      | Default | Description                                       |
 |----------|-----------|---------|---------------------------------------------------|
-| `cat`    | `string?` | `nil`   | Filter by the category of the comamnds            |
+| `cat`    | `string?` | `nil`   | Filter by the category of the commands            |
 | `mode`   | `string?` | `nil`   | Filter by the mode of the keymaps of the commands |
 
 If you enabled the integration with telescope,
-then the following comamnds are also equivalent:
+then the following commands are also equivalent:
 ```lua
 -- The same as require("commander").show()
 Telescope commander
@@ -382,7 +382,7 @@ Now, commander.nvim does two things:
 2. Command will look for a new field called `commander`
     in `LazyPlugin`.
     The value of the field is expected to be `CommanderItemp[]`,
-    and commander can automatically add those comamnds too.
+    and commander can automatically add those commands too.
 
     For example:
     ```lua
