@@ -312,13 +312,13 @@ commander.add({
   }, {
     -- Since `show` is set to `true` in this command,
     -- It overwrites the opts and this keymap will still be set
-    desc = "LSP cdoe actions",
+    desc = "LSP code actions",
     cmd = "<CMD>Telescope lsp_code_actions<CR>",
-    keybinginds = { "n", "<leader>sa" },
-    set = true
+    keys = { "n", "<leader>sa" },
+    show = true
   }
 }, {
-    set = false
+    show = false
 })
 
 ```
