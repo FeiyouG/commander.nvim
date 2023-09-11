@@ -15,7 +15,7 @@ function M.setup(config)
   M.layer:setup(M.config)
 
   if M.config.integration.lazy.enable then
-    local cmds = converter.get_lazy_keys()
+    local cmds = converter.get_lazy_keys(M.config.integration.lazy.set_plugin_name_as_cat)
     M.layer:insert(cmds)
   end
 

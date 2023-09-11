@@ -3,14 +3,14 @@ local theme = require("telescope._extensions.commander.theme")
 
 ---@class CommanderIntegrationConfig
 ---@field telescope {enable: boolean, theme: function}
----@field lazy {enable: boolean}
+---@field lazy {enable: boolean, set_plugin_name_as_cat: boolean}
 
 ---@class CommanderConfig
 ---@field components string[] the components to be rendered in the propmt; possible values are DESC, KEYS, CMD, and CAT
 ---@field sort_by string[] the default ordering of commands in the prompt; possible values are DESC, KEYS, CMD, and CAT
 ---@field separator string the separator between each component in the prompt
 ---@field auto_replace_desc_with_cmd boolean automatically replace empty desc with cmd
----@field integration CommanderIntegrationConfig | nil
+---@field integration CommanderIntegrationConfig?
 ---@field prompt_title string the title of the prompt
 local Config = {}
 Config.__mt = { __index = Config }
@@ -51,6 +51,7 @@ function Config:new()
       },
       lazy = {
         enable = false,
+        set_plugin_name_as_cat = false,
       }
     }
 
@@ -65,9 +66,10 @@ local function validate(config)
     separator = { config.separator, "string", true },
     auto_replace_desc_with_cmd = { config.auto_replace_desc_with_cmd, "boolean", true },
     prompt_title = { config.prompt_title, "string", true },
-    ["integration.enable"] = { config.integration.telescope.enable, "boolean", true },
-    ["integration.theme"] = { config.integration.telescope.theme, "function", true },
-    ["lazy.enable"] = { config.integration.lazy.enable, "boolean", true },
+    ["integration.telescope.enable"] = { config.integration.telescope.enable, "boolean", true },
+    ["integration.telescope.theme"] = { config.integration.telescope.theme, "function", true },
+    ["integration.lazy.enable"] = { config.integration.lazy.enable, "boolean", true },
+    ["integration.lazy.set_plugin_name_as_cat"] = { config.integration.lazy.set_plugin_name_as_cat, "boolean", true },
   })
   if err then return err end
 

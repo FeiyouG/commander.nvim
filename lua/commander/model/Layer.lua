@@ -2,13 +2,13 @@ local Command = require("commander.model.Command")
 local Filter = require("commander.model.filter")
 
 ---@class Layer
----@field commands {[integer]: Command}
+---@field commands {[integer]: CommanderCommand}
 ---@field private filter CommanderFilter specify which commands are going to be displayed
 ---@field private sorter {[integer] : Component} | nil  specify by what order the commands are diplayed
 ---@field private displayer {[integer]: Component} | nil specify which components of a command are displayed
 ---@field private separator string
 ---@field private is_cached_valid boolean
----@field private cache_commands {[integer]: Command}
+---@field private cache_commands {[integer]: CommanderCommand}
 ---@field private cache_component_length {[Component]: integer}
 local Layer = {}
 Layer.__mt = { __index = Layer }
@@ -30,7 +30,7 @@ function Layer:new()
   }, Layer.__mt)
 end
 
----@param commands Command[]
+---@param commands CommanderCommand[]
 function Layer:insert(commands)
   if not commands or #commands == 0 then return end
 
@@ -87,7 +87,7 @@ function Layer:select(prompt_title)
 end
 
 ---Get filtered and sorted commands from this layer
----@return { [integer]: Command }
+---@return { [integer]: CommanderCommand }
 function Layer:get_commands()
   self:validate_cache()
   return self.cache_commands

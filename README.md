@@ -136,6 +136,8 @@ and you only need to pass the settings that you want to change:
     lazy = {
       -- Set to true to automatically add all key bindings set through lazy.nvim
       enable = false,
+      -- Set to true to use plugin name as category for each keybinding added from lazy.nvim
+      set_plugin_name_as_cat = false
     }
   }
 }
@@ -176,6 +178,7 @@ return {
         },
         lazy = {
           enable = true
+      set_plugin_name_as_cat = true
         }
       }
     })

@@ -100,7 +100,7 @@ function Command:parse(item, opts)
 
   local command = setmetatable({}, Command.__mt)
 
-  opts = opts or self:default_add_opts()
+  opts = vim.tbl_deep_extend("keep", opts or {}, self:default_add_opts())
 
   command.cmd = item.cmd
   command.desc = item.desc or ""

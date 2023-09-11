@@ -1,8 +1,9 @@
 local M = {}
 local Command = require("commander.model.Command")
 
+---@param set_plugin_name_as_cat boolean
 ---@return CommanderCommand[]
-function M.get_lazy_keys()
+function M.get_lazy_keys(set_plugin_name_as_cat)
   local lazy_avail, lazy = pcall(require, "lazy")
   if not lazy_avail then return {} end
 
@@ -10,6 +11,7 @@ function M.get_lazy_keys()
 
   for _, plugin_config in ipairs(lazy.plugins()) do
     local keys = plugin_config.keys
+    local main = require("lazy.core.loader").get_main(plugin_config)
     if keys then
       for _, key in ipairs(keys) do
         local command, err = Command:parse({
@@ -24,11 +26,10 @@ function M.get_lazy_keys()
             }
           }
         }, {
-          cat = "",
+          cat = set_plugin_name_as_cat and main or "",
           set = false,
           show = true,
         })
-
 
         if not err then
           if not lazy_commands then lazy_commands = {} end
@@ -41,7 +42,7 @@ function M.get_lazy_keys()
     if items then
       for _, item in ipairs(items) do
         local command, err = Command:parse(item, {
-          cat = "",
+          cat = set_plugin_name_as_cat and main or "",
           set = false,
           show = true,
         })
