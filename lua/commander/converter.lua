@@ -10,7 +10,7 @@ function M.get_lazy_keys(set_plugin_name_as_cat)
   if lazy_commands then return lazy_commands end
 
   for _, plugin_config in ipairs(lazy.plugins()) do
-    local keys = plugin_config.keys
+    local keys = require("lazy.core.plugin").values(plugin_config, "keys")
     local main = require("lazy.core.loader").get_main(plugin_config)
     if keys then
       for _, key in ipairs(keys) do
