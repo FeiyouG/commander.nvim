@@ -1,9 +1,5 @@
 local Command = require("commander.model.Command")
-local Keymap = require("commander.model.Keymap")
-local constants = require("commander.constants")
-
-local mock = require("luassert.mock")
-local stub = require("luassert.stub")
+local keymap_modes = { "n", "v", "x", "s", "o", "!", "i", "l", "c", "t", }
 
 describe("Command:parse()", function()
   it("correct simple item", function()
@@ -82,7 +78,7 @@ describe("Command:parse()", function()
     }
     local _, err = Command:parse(item)
     assert.equal(
-      'keys[2][1]: expected vim-mode(s) (one or a list of { "n", "i", "c", "x", "v", "t" }), got { "a" }',
+      'keys[2][1]: expected vim-mode(s) (one or a list of ' .. vim.inspect(keymap_modes) .. '), got { "a" }',
       err
     )
 
@@ -91,7 +87,7 @@ describe("Command:parse()", function()
       cmd = "<CMD>echo hello<CR>",
     }
     _, err = Command:parse(item)
-    assert.equal('keys[1]: expected vim-mode(s) (one or a list of { "n", "i", "c", "x", "v", "t" }), got nil', err)
+    assert.equal('keys[1]: expected vim-mode(s) (one or a list of ' .. vim.inspect(keymap_modes) .. '), got nil', err)
 
   end)
 end)

@@ -1,4 +1,5 @@
 local Keymap = require("commander.model.Keymap")
+local keymap_modes = { "n", "v", "x", "s", "o", "!", "i", "l", "c", "t", }
 
 describe("Keymap:parse()", function()
 	it("correct keymap", function()
@@ -42,14 +43,14 @@ describe("Keymap:parse()", function()
 		local item = { nil, "<leader>a", nil }
 		local keymap, err = Keymap:parse(item)
 		assert.Nil(keymap)
-		assert.equal('[1]: expected vim-mode(s) (one or a list of { "n", "i", "c", "x", "v", "t" }), got nil', err)
+		assert.equal('[1]: expected vim-mode(s) (one or a list of ' .. vim.inspect(keymap_modes) .. '), got nil', err)
 	end)
 
 	it("keymap without correct mode", function()
 		local item = { "a", "<leader>a", nil }
 		local keymap, err = Keymap:parse(item)
 		assert.Nil(keymap)
-		assert.equal('[1]: expected vim-mode(s) (one or a list of { "n", "i", "c", "x", "v", "t" }), got "a"', err)
+		assert.equal('[1]: expected vim-mode(s) (one or a list of ' .. vim.inspect(keymap_modes) .. '), got "a"', err)
 	end)
 
 	it("keymap without lhs", function()

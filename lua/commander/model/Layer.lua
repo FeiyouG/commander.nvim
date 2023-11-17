@@ -55,7 +55,7 @@ function Layer:add(items, opts)
   for _, item in ipairs(items) do
     local command, err = Command:parse(item, opts)
     if not command or err then
-      return err
+      return vim.inspect(item) .. "\n -> " .. err
     end
     self.is_cache_valid = false
     table.insert(self.commands, command)

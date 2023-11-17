@@ -1,6 +1,9 @@
 local M = {}
 local Command = require("commander.model.Command")
 
+-- Caching the result of parsing lazy's plugin_config
+local lazy_commands = nil
+
 ---@param set_plugin_name_as_cat boolean
 ---@return CommanderCommand[]
 function M.get_lazy_keys(set_plugin_name_as_cat)
@@ -8,6 +11,7 @@ function M.get_lazy_keys(set_plugin_name_as_cat)
   if not lazy_avail then return {} end
 
   if lazy_commands then return lazy_commands end
+  lazy_commands = lazy_commands or {}
 
   for _, plugin_config in ipairs(lazy.plugins()) do
     local keys = require("lazy.core.plugin").values(plugin_config, "keys")
@@ -32,7 +36,6 @@ function M.get_lazy_keys(set_plugin_name_as_cat)
         })
 
         if not err then
-          if not lazy_commands then lazy_commands = {} end
           lazy_commands[#lazy_commands + 1] = command
         end
       end
@@ -43,12 +46,14 @@ function M.get_lazy_keys(set_plugin_name_as_cat)
       for _, item in ipairs(items) do
         local command, err = Command:parse(item, {
           cat = set_plugin_name_as_cat and main or "",
-          set = false,
+          set = true,
           show = true,
         })
 
-        if not err then
-          if not lazy_commands then lazy_commands = {} end
+        if err then
+          err = vim.inspect(item) .. "\n -> " .. err
+          vim.notify("Commander will ignore the following incorrectly fomratted item:\n" .. err, vim.log.levels.WARN)
+        else
           lazy_commands[#lazy_commands + 1] = command
         end
       end
