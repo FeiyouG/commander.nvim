@@ -5,8 +5,10 @@ local converter = require("commander.converter")
 
 local M = {}
 
-M.layer = Layer:new()
 M.config = Config:new()
+
+M.layer = Layer:new()
+M.layer:setup(M.config)
 
 ---Setup plugin with customized configurations
 ---@param config CommanderConfig

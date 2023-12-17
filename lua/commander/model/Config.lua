@@ -15,29 +15,23 @@ local theme = require("telescope._extensions.commander.theme")
 local Config = {}
 Config.__mt = { __index = Config }
 
-local cmp_keys = {
-  "DESC",
-  "KEYS",
-  "CMD",
-  "CAT",
-}
 
 ---Return default configuration
 ---@return CommanderConfig the default configuration
 function Config:new()
   return setmetatable({
     components = {
-      "DESC",
-      "KEYS",
-      "CMD",
-      "CAT",
+      Component.DESC,
+      Component.KEYS,
+      Component.CMD,
+      Component.CAT,
     },
 
     sort_by = {
-      "DESC",
-      "KEYS",
-      "CMD",
-      "CAT",
+      Component.DESC,
+      Component.KEYS,
+      Component.CMD,
+      Component.CAT,
     },
 
     separator = " ",
@@ -74,6 +68,11 @@ local function validate(config)
   if err then return err end
 
   local function validate_cmps(name, cmps)
+    local cmp_keys = {}
+    for _, cmp in pairs(Component) do
+      cmp_keys[#cmp_keys + 1] = cmp
+    end
+
     for i, cmp in ipairs(cmps) do
       _, err = pcall(vim.validate, {
         [name .. "[" .. i .. "]"] = {
@@ -81,8 +80,8 @@ local function validate(config)
           "one of " .. vim.inspect(cmp_keys)
         }
       })
+      if err then return err end
     end
-    if err then return err end
   end
 
   err = validate_cmps("components", config.components)
@@ -98,9 +97,32 @@ end
 function Config:merge(config)
   if config == nil or config == {} then return nil end
 
+  -- Clean up
+  if config.components ~= nil then
+    local components = {}
+    for _, cmp in ipairs(config.components or {}) do
+      if Component[cmp] ~= nil then
+        components[#components + 1] = Component[cmp]
+      end
+    end
+    config.components = components
+  end
+
+  if config.sort_by ~= nil then
+    local sort_by = {}
+    for _, cmp in ipairs(config.sort_by or {}) do
+      if Component[cmp] ~= nil then
+        sort_by[#sort_by + 1] = Component[cmp]
+      end
+    end
+    config.sort_by = sort_by
+  end
+
+  -- Merge
   local mergedConfig = vim.tbl_deep_extend("force", self, config)
   setmetatable(mergedConfig, Config.__mt)
 
+  -- Validate
   local err = validate(mergedConfig)
   if err then
     vim.notify("Commander.nvim: setup failed; " .. err)
@@ -113,14 +135,9 @@ function Config:merge(config)
   end
 
   for i, cmp in ipairs(self.components) do
-    self.components[i] = Component[cmp]
     if self.auto_replace_desc_with_cmd and cmp == "DESC" then
-      self.components[i] = Component.NON_EMPTY_DESC
+      self.components[i] = Component.non_empty_desc
     end
-  end
-
-  for i, cmp in ipairs(self.sort_by) do
-    self.sort_by[i] = Component[cmp]
   end
 end
 

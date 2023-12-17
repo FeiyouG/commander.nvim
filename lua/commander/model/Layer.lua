@@ -68,13 +68,14 @@ function Layer:select(prompt_title)
     prompt = prompt_title,
     format_item = function(command)
       local res = ""
-      for _, component in ipairs(self.displayer) do
+      for i, component in ipairs(self.displayer) do
         local component_str = command[component]
         local num_space = self.cache_component_width[component] - #component_str
         while num_space > 0 do
           component_str = component_str .. " "
           num_space = num_space - 1
         end
+        if i > 1 then component_str = self.separator .. component_str end
         res = res .. component_str
       end
       return res
@@ -210,7 +211,7 @@ function Layer:validate_cache()
   for _, command in ipairs(self.cache_commands) do
     for _, component in pairs(self.displayer) do
       self.cache_component_width[component] = self.cache_component_width[component] or 0
-      self.cache_component_width[component] = math.max(self.cache_component_width[component], #command[component])
+      self.cache_component_width[component] = command[component] and math.max(self.cache_component_width[component], #command[component]) or 0
     end
   end
 

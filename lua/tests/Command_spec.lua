@@ -26,7 +26,7 @@ describe("Command:parse()", function()
   it("correct complex item", function()
     local item = {
       cmd = function()
-        print("helilo")
+        print("hello")
       end,
       keys = {
         { "n",     "<leader>a" },

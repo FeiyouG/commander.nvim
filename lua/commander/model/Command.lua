@@ -67,7 +67,7 @@ local function get_lua_func_name(func_ref)
       fname = (fname:gsub(tbl[1], tbl[2])) -- make sure only string is returned
     end
     -- not sure if this can happen, catch all just in case
-    if fname == nil or fname == "" then
+    if fname == nil or fname == "" or fname == "cmd" then
       return anon_lua_func_name
     end
 
