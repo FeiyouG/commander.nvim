@@ -27,11 +27,13 @@ in a more organized way.
     - [Configuration](#configuration)
     - [Example configuration](#example-configuration)
 - [API](#api)
-  - [`commander.add(CommanderItem[], CommanderAddOpts)`](#comamnderaddcommanderitem-commanderaddopts)
-    - [Examples](#examples)
-  - [`Commander.show(CommanderShowOpts)`](#commandershowcommandershowopts)
+        - [`commander.add(CommanderItem[], CommanderAddOpts)`](#commanderaddcommanderitem-commanderaddopts)
+            - [Examples](#examples)
+    - [`Commander.show(CommanderShowOpts)`](#commandershowcommandershowopts)
+    - [`Commander.clear()`](#commanderclear)
 - [Integration](#integration)
-    - [Lazy.nvim](#lazynvim)
+    - [telescope.nvim](#telescopenvim)
+    - [lazy.nvim](#lazynvim)
 - [Special Thanks](#special-thanks)
 - [Related Projects](#related-projects)
 
@@ -348,6 +350,11 @@ Open Commander's prompt.
 | `cat`    | `string?` | `nil`   | Filter by the category of the commands            |
 | `mode`   | `string?` | `nil`   | Filter by the mode of the keymaps of the commands |
 
+
+### `Commander.clear()`
+
+Remove all items from commander. 
+Note this method will not delete any existing keymaps
 
 
 ## Integration

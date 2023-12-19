@@ -9,7 +9,7 @@ local Filter = require("commander.model.filter")
 ---@field private separator string
 ---@field private is_cached_valid boolean
 ---@field private cache_commands {[integer]: CommanderCommand}
----@field private cache_component_length {[Component]: integer}
+---@field private cache_component_width {[Component]: integer}
 local Layer = {}
 Layer.__mt = { __index = Layer }
 
@@ -26,7 +26,7 @@ function Layer:new()
 
     is_cached_valid = false,
     cache_commands = {},
-    cache_component_length = {},
+    cache_component_width = {},
   }, Layer.__mt)
 end
 
@@ -34,7 +34,7 @@ end
 function Layer:insert(commands)
   if not commands or #commands == 0 then return end
 
-  self.is_cache_valid = false
+  self.is_cached_valid = false
   for _, command in ipairs(commands) do
     table.insert(self.commands, command)
     command:set_keymaps()
@@ -57,7 +57,7 @@ function Layer:add(items, opts)
     if not command or err then
       return vim.inspect(item) .. "\n -> " .. err
     end
-    self.is_cache_valid = false
+    self.is_cached_valid = false
     table.insert(self.commands, command)
     command:set_keymaps()
   end
@@ -211,11 +211,18 @@ function Layer:validate_cache()
   for _, command in ipairs(self.cache_commands) do
     for _, component in pairs(self.displayer) do
       self.cache_component_width[component] = self.cache_component_width[component] or 0
-      self.cache_component_width[component] = command[component] and math.max(self.cache_component_width[component], #command[component]) or 0
+      self.cache_component_width[component] = command[component] and
+      math.max(self.cache_component_width[component], #command[component]) or 0
     end
   end
 
   self.is_cached_valid = true
+end
+
+---Remove all commands from this layer
+function Layer:clear()
+  self.commands = {}
+  self.cache_commands = {}
 end
 
 ---Return a clone of this layer

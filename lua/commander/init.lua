@@ -57,4 +57,10 @@ function M.show(opts)
   end
 end
 
+---Remove all added commands
+---@note This will not de-register the keymaps
+function M.clear()
+  M.layer:clear()
+end
+
 return M
