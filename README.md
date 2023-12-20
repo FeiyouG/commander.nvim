@@ -109,7 +109,7 @@ and you only need to pass the settings that you want to change:
     "CAT",
   },
 
-  -- Spcify by what components the commands is sorted
+  -- Specify by what components the commands is sorted
   -- Order does not matter
   sort_by = {
     "DESC",
