@@ -37,7 +37,7 @@ end
 function M.add(items, opts)
   local err = M.layer:add(items, opts)
   if err then
-    vim.notify("Commander will ignore the following incorrectly fomratted item:\n" .. err, vim.log.levels.WARN)
+    vim.notify("Commander will ignore the following incorrectly formatted item:\n" .. err, vim.log.levels.WARN)
   end
 
 end
