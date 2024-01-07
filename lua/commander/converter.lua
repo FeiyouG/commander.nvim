@@ -52,7 +52,7 @@ function M.get_lazy_keys(set_plugin_name_as_cat)
 
         if err then
           err = vim.inspect(item) .. "\n -> " .. err
-          vim.notify("Commander will ignore the following incorrectly fomratted item:\n" .. err, vim.log.levels.WARN)
+          vim.notify("Commander will ignore the following incorrectly formatted item:\n" .. err, vim.log.levels.WARN)
         else
           lazy_commands[#lazy_commands + 1] = command
         end
