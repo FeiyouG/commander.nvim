@@ -19,7 +19,6 @@ local function run(opts)
   -- So M can't be a global variable
   local M = require("commander")
   M.layer:set_filter(opts.filter)
-  print(vim.inspect(M.layer.cache_component_width))
   local commands = M.layer:get_commands()
   local config = vim.deepcopy(M.config)
 

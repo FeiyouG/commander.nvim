@@ -133,7 +133,7 @@ and you only need to pass the settings that you want to change:
       -- Set to true to use telescope instead of vim.ui.select for the UI
       enable = false,
       -- Can be any builtin or custom telescope theme
-      theme = theme,
+      theme = require("telescope.themes").commander 
     },
     lazy = {
       -- Set to true to automatically add all key bindings set through lazy.nvim
