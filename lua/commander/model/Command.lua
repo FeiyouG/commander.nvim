@@ -136,7 +136,7 @@ function Command:parse(item, opts)
 
   -- 3.2 If there is only one keymap in keys
   if #item.keys >= 2 and type(item.keys[2]) ~= "table" then
-    local keymap, err = Keymap:parse(item.keys)
+    local keymap, err = Keymap:parse(item.keys, item.desc)
     if err then
       return nil, "keys" .. err
     end
@@ -148,7 +148,7 @@ function Command:parse(item, opts)
 
   -- 3.3 If keys is a list
   for i, key in ipairs(item.keys) do
-    local keymap, err = Keymap:parse(key)
+    local keymap, err = Keymap:parse(key, item.desc)
     if err then
       return nil, "keys[" .. i .. "]" .. err
     end

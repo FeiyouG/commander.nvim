@@ -39,6 +39,20 @@ describe("Keymap:parse()", function()
 		assert.True(keymap.opts.buffer)
 	end)
 
+	it("keymap with desc", function()
+		local item, keymap, err, desc
+
+		item = { { "n" }, "<leader>l", { noremap = false, buffer = true } }
+		desc = "[L]ogs"
+		keymap, err = Keymap:parse(item, desc)
+		assert.Nil(err)
+		assert.equal("n", keymap.modes[1])
+		assert.equal("<leader>l", keymap.lhs)
+		assert.equal("[L]ogs", keymap.opts.desc)
+		assert.False(keymap.opts.noremap)
+		assert.True(keymap.opts.buffer)
+	end)
+
 	it("keymap without mode", function()
 		local item = { nil, "<leader>a", nil }
 		local keymap, err = Keymap:parse(item)

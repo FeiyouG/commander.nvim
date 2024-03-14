@@ -15,9 +15,10 @@ Keymap.__mt = { __index = Keymap }
 
 ---Parse an item into Keymap object
 ---@param itemKey CommanderItemKey
+---@param desc string?
 ---@return CommanderKeymap | nil
 ---@return string | nil
-function Keymap:parse(itemKey)
+function Keymap:parse(itemKey, desc)
   itemKey = itemKey or {}
   local keymap = setmetatable({}, Keymap.__mt)
 
@@ -25,6 +26,11 @@ function Keymap:parse(itemKey)
   keymap.modes = type(itemKey[1]) == "table" and itemKey[1] or { itemKey[1] }
   keymap.lhs = itemKey[2]
   keymap.opts = itemKey[3] or {}
+
+  -- 1.1, Check if there is a description
+  if desc ~= nil then
+    keymap.opts["desc"] = desc
+  end
 
   -- 2, validate lhs and opts
   local _, err = pcall(vim.validate, {
