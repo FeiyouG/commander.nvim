@@ -179,8 +179,8 @@ return {
           enable = true,
         },
         lazy = {
-          enable = true
-      set_plugin_name_as_cat = true
+          enable = true,
+          set_plugin_name_as_cat = true
         }
       }
     })
