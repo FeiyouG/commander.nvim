@@ -43,6 +43,7 @@ function M.get_lazy_keys(set_plugin_name_as_cat)
 
     local items = plugin_config.commander
     if items then
+      if type(items) == "function" then items = items() end
       for _, item in ipairs(items) do
         local command, err = Command:parse(item, {
           cat = set_plugin_name_as_cat and main or "",

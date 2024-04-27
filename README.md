@@ -19,21 +19,21 @@ in a more organized way.
 <!-- TOC GFM -->
 
 - [Install](#install)
-    - [vim-plug](#vim-plug)
-    - [Packer](#packer)
-    - [Lazy](#lazy)
+  - [vim-plug](#vim-plug)
+  - [Packer](#packer)
+  - [Lazy](#lazy)
 - [Configuration and Usage](#configuration-and-usage)
-    - [A minimal working example](#a-minimal-working-example)
-    - [Configuration](#configuration)
-    - [Example configuration](#example-configuration)
+  - [A minimal working example](#a-minimal-working-example)
+  - [Configuration](#configuration)
+  - [Example configuration](#example-configuration)
 - [API](#api)
-        - [`commander.add(CommanderItem[], CommanderAddOpts)`](#commanderaddcommanderitem-commanderaddopts)
-            - [Examples](#examples)
-    - [`Commander.show(CommanderShowOpts)`](#commandershowcommandershowopts)
-    - [`Commander.clear()`](#commanderclear)
+    - [`commander.add(CommanderItem[], CommanderAddOpts)`](#commanderaddcommanderitem-commanderaddopts)
+      - [Examples](#examples)
+  - [`Commander.show(CommanderShowOpts)`](#commandershowcommandershowopts)
+  - [`Commander.clear()`](#commanderclear)
 - [Integration](#integration)
-    - [telescope.nvim](#telescopenvim)
-    - [lazy.nvim](#lazynvim)
+  - [telescope.nvim](#telescopenvim)
+  - [lazy.nvim](#lazynvim)
 - [Special Thanks](#special-thanks)
 - [Related Projects](#related-projects)
 
@@ -133,7 +133,7 @@ and you only need to pass the settings that you want to change:
       -- Set to true to use telescope instead of vim.ui.select for the UI
       enable = false,
       -- Can be any builtin or custom telescope theme
-      theme = require("telescope.themes").commander 
+      theme = require("telescope.themes").commander
     },
     lazy = {
       -- Set to true to automatically add all key bindings set through lazy.nvim
@@ -353,7 +353,7 @@ Open Commander's prompt.
 
 ### `Commander.clear()`
 
-Remove all items from commander. 
+Remove all items from commander.
 Note this method will not delete any existing keymaps
 
 
@@ -370,7 +370,7 @@ require("commander").setup({
     telescope = {
       enable = true,
       -- Optional, you can use any telescope supported theme
-      theme = require("telescope.themes").commander 
+      theme = require("telescope.themes").commander
     }
   }
 })
@@ -389,8 +389,8 @@ Telescope commander filter mode=i
 Telescope commander filter mode=i cat=git
 ```
 
-Moreover, 
-the prompt will be shown using telescope 
+Moreover,
+the prompt will be shown using telescope
 instead of `vim.ui.select`.
 
 ### [lazy.nvim](https://github.com/folke/lazy.nvim)
@@ -408,14 +408,15 @@ require("commander").setup({
 })
 ```
 
-When enabled, 
+When enabled,
 commander will do two things:
 
 1. Commander will find and add all the `keys`
     that you registered through `lazy.nvim`.
 2. Command will look for a new field called `commander`
     in `LazyPlugin`.
-    The value of the field is expected to be `CommanderItem[]`,
+    The value of the field is expected to be `CommanderItem[]`
+    (or a function that returns `CommanderItem[]`)
     and commander can automatically add those commands too.
 
     For example:
