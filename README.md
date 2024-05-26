@@ -73,7 +73,7 @@ return {
 ### A minimal working example
 ```lua
 -- Add a new command
-require("commander.nvim").add({
+require("commander").add({
   {
     desc = "Open commander",
     cmd = require("commander").show,
